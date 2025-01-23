@@ -1,2 +1,2 @@
-# Sean-C-Crandall
+# seancrandall
 # Nutmeg
