@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Nutmeg::MainWindow</class>
+ <widget class="QMainWindow" name="Nutmeg::MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="0">
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Orientation::Vertical</enum>
+      </property>
+      <widget class="QFrame" name="frameTop">
+       <property name="frameShape">
+        <enum>QFrame::Shape::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Shadow::Raised</enum>
+       </property>
+      </widget>
+      <widget class="QFrame" name="frameMiddle">
+       <property name="frameShape">
+        <enum>QFrame::Shape::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Shadow::Raised</enum>
+       </property>
+      </widget>
+      <widget class="QFrame" name="frameBottom">
+       <property name="frameShape">
+        <enum>QFrame::Shape::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Shadow::Raised</enum>
+       </property>
+      </widget>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QFrame" name="frameMenuArea">
+      <property name="frameShape">
+       <enum>QFrame::Shape::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Shadow::Raised</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuB_ackend">
+    <property name="title">
+     <string>&amp;Backend</string>
+    </property>
+    <addaction name="actionConnect"/>
+   </widget>
+   <widget class="QMenu" name="menuTables">
+    <property name="title">
+     <string>&amp;Tables</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuReports">
+    <property name="title">
+     <string>&amp;Reports</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuAdd_New">
+    <property name="title">
+     <string>&amp;Add New</string>
+    </property>
+    <widget class="QMenu" name="menuPerson">
+     <property name="title">
+      <string>Person</string>
+     </property>
+     <addaction name="separator"/>
+     <addaction name="actionAddPerson"/>
+     <addaction name="separator"/>
+     <addaction name="separator"/>
+     <addaction name="actionAddInventor"/>
+     <addaction name="actionAddParalegal"/>
+     <addaction name="actionAddWorkAttorney"/>
+     <addaction name="separator"/>
+     <addaction name="actionAddPatentExaminer"/>
+     <addaction name="actionAddTrademarkExaminer"/>
+     <addaction name="separator"/>
+    </widget>
+    <widget class="QMenu" name="menuClient">
+     <property name="title">
+      <string>Client</string>
+     </property>
+     <addaction name="actionAddClientNaturalPerson"/>
+     <addaction name="actionAddEnterprise"/>
+    </widget>
+    <widget class="QMenu" name="menuTask">
+     <property name="title">
+      <string>Task</string>
+     </property>
+     <addaction name="actionNonfinal_Office_Action"/>
+     <addaction name="actionFinal_Office_Action"/>
+     <addaction name="actionOther_Patent"/>
+     <addaction name="separator"/>
+     <addaction name="actionTrademark_Response"/>
+     <addaction name="separator"/>
+     <addaction name="actionOther_Task"/>
+    </widget>
+    <widget class="QMenu" name="menuMatter">
+     <property name="title">
+      <string>Matter</string>
+     </property>
+     <addaction name="actionPatent_Matter"/>
+     <addaction name="actionTrademark_Matter"/>
+     <addaction name="actionCopyright_Matter"/>
+     <addaction name="actionGeneral_Matter"/>
+    </widget>
+    <addaction name="menuTask"/>
+    <addaction name="menuMatter"/>
+    <addaction name="menuPerson"/>
+    <addaction name="menuClient"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <addaction name="actionRefreshData"/>
+   </widget>
+   <widget class="QMenu" name="menu_Edit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="actionPreferences"/>
+   </widget>
+   <addaction name="menuB_ackend"/>
+   <addaction name="menuTables"/>
+   <addaction name="menuReports"/>
+   <addaction name="menuAdd_New"/>
+   <addaction name="menuView"/>
+   <addaction name="menu_Edit"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionConnect">
+   <property name="text">
+    <string>&amp;Connect</string>
+   </property>
+  </action>
+  <action name="actionAddClientNaturalPerson">
+   <property name="icon">
+    <iconset theme="preferences-desktop-accessibility"/>
+   </property>
+   <property name="text">
+    <string>Natural Person</string>
+   </property>
+  </action>
+  <action name="actionAddEnterprise">
+   <property name="text">
+    <string>Enterprise</string>
+   </property>
+  </action>
+  <action name="actionAddPerson">
+   <property name="text">
+    <string>Person</string>
+   </property>
+  </action>
+  <action name="actionAddInventor">
+   <property name="text">
+    <string>Inventor</string>
+   </property>
+  </action>
+  <action name="actionAddParalegal">
+   <property name="text">
+    <string>Paralegal</string>
+   </property>
+  </action>
+  <action name="actionAddPatentExaminer">
+   <property name="text">
+    <string>Patent Examiner</string>
+   </property>
+  </action>
+  <action name="actionAddTrademarkExaminer">
+   <property name="text">
+    <string>Trademark Examiner</string>
+   </property>
+  </action>
+  <action name="actionAddWorkAttorney">
+   <property name="text">
+    <string>Work Attorney</string>
+   </property>
+  </action>
+  <action name="actionNonfinal_Office_Action">
+   <property name="text">
+    <string>Nonfinal Office Action</string>
+   </property>
+  </action>
+  <action name="actionFinal_Office_Action">
+   <property name="text">
+    <string>Final Office Action</string>
+   </property>
+  </action>
+  <action name="actionOther_Patent">
+   <property name="text">
+    <string>Other (Patent ...)</string>
+   </property>
+  </action>
+  <action name="actionTrademark_Response">
+   <property name="text">
+    <string>Trademark Response</string>
+   </property>
+  </action>
+  <action name="actionOther_Task">
+   <property name="text">
+    <string>Other Task ...</string>
+   </property>
+  </action>
+  <action name="actionPatent_Matter">
+   <property name="text">
+    <string>Patent Matter</string>
+   </property>
+  </action>
+  <action name="actionTrademark_Matter">
+   <property name="text">
+    <string>Trademark Matter</string>
+   </property>
+  </action>
+  <action name="actionCopyright_Matter">
+   <property name="text">
+    <string>Copyright Matter</string>
+   </property>
+  </action>
+  <action name="actionGeneral_Matter">
+   <property name="text">
+    <string>General Matter</string>
+   </property>
+  </action>
+  <action name="actionRefreshData">
+   <property name="icon">
+    <iconset theme="software-update-available"/>
+   </property>
+   <property name="text">
+    <string>&amp;Refresh Data</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="text">
+    <string>P&amp;references</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
