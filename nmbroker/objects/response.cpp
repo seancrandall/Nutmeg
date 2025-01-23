@@ -49,7 +49,7 @@ bool Response::slotCommit()
 }
 
 bool Response::slotSetfkClientOfficeHours(Key newval)
-{ SLOTUPDATE(fkClientOfficeHours)
+{
     bool result = WriteKey(responseTableName, "fkClientOfficeHours", newval);
     if(result)
         mDat.fkClientOfficeHours = newval;

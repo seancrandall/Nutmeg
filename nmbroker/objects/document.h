@@ -40,14 +40,17 @@ class Document : public Nutmeg::Object
     virtual bool slotSetId(Key newval) override;
     bool slotUpdate(DocumentData dat);
     virtual bool slotCommit(void) override;
+    bool slotSetFullyQualifiedPath(String newval);
+    bool slotSetURL(String newval);
 
-    void slotSetFullyQualifiedPath(String newval);
-    void slotSetURL(String newval);
+    //Hold properties
+    void holdFullyQualifiedPath(QString newval) {mDat.FullyQualifiedPath = newval; dirty["FullyQualifiedPath"] = true;};
+    void holdURL(QString newval) {mDat.URL = newval; dirty["URL"] = true;};
 
   protected:
     DocumentData mDat;
 
-    void InitializeDocument(Key id);
+    bool InitializeDocument(Key id);
 
     // Not sure I'm going to use this
     Property(getFileContent, slotSetFileContent) QFile Content;
@@ -64,6 +67,8 @@ class Document : public Nutmeg::Object
     void slotSetFilename(String newval);
     void slotSetExtension(String newval);
     void slotSetTitle(String newval);
+
+    const QString documentTableName = "document";
 };
 
 } // namespace Nutmeg

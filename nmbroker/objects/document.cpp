@@ -17,30 +17,55 @@ Document::Document(String Title, QObject *parent) : Object(parent) // Call the b
     InitializeDocument(newid);
 }
 
-bool Document::slotSetId(Key newval) { TRY(InitializeDocument(newval);) }
-
-bool Document::slotUpdate(DocumentData dat) { TRY(Nutdb::UpdateDocument(dat); InitializeDocument(dat.DocumentId);) }
-
-bool Document::slotCommit() { TRY(slotUpdate(mDat); Object::slotCommit();) }
-
-void Document::slotSetFullyQualifiedPath(String newval)
+bool Document::slotSetId(Key newval)
 {
-    TRY(mDat.FullyQualifiedPath = newval;
-
-        // We can derive the other properties here.
-
-        UpdateMacro;)
+    return InitializeDocument(newval);
 }
 
-void Document::slotSetURL(String newval)
+bool Document::slotUpdate(DocumentData dat)
 {
-    TRY(mDat.URL = newval;
+    bool result = Nutdb::UpdateDocument(dat);
+    if(!result) return false;
 
-        // We can derive the other properties here.
+    result = Object::slotCommit();
+    if(!result) return false;
 
-        UpdateMacro;)
+    return InitializeDocument(dat.DocumentId);
 }
 
-void Document::InitializeDocument(Key id) { TRY(mDat = Nutdb::GetDocument(id); Object::InitializeObject(id);) }
+bool Document::slotCommit()
+{
+    return slotUpdate(mDat);
+}
+
+bool Document::slotSetFullyQualifiedPath(String newval)
+{
+    bool result = WriteString(documentTableName, "FullyQualifiedPath", newval);
+    if(result)
+        mDat.FullyQualifiedPath = newval;
+    return result;
+}
+
+bool Document::slotSetURL(String newval)
+{
+    bool result = WriteString(documentTableName, "URL", newval);
+    if(result)
+        mDat.URL = newval;
+    return result;
+}
+
+bool Document::InitializeDocument(Key id)
+{
+    if(id == 0)
+    {
+        mDat = DocumentData();
+        return InitializeObject(0);
+    }
+
+    mDat = Nutdb::GetDocument(id);
+    if(mDat.DocumentId == 0) return InitializeObject(0);
+
+    return InitializeObject(id);
+}
 
 } // namespace Nutmeg
