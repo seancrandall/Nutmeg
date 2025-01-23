@@ -1,1 +1,2 @@
-A pre-alpha build of docket manager for patent attorneys
+# Sean-C-Crandall
+# Nutmeg
