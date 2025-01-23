@@ -1,0 +1,26 @@
+TEMPLATE = app
+CONFIG += console c++20
+CONFIG -= app_bundle
+CONFIG -= qt
+
+SOURCES += \
+        dmdatabase.cpp \
+        main.cpp
+
+HEADERS += \
+    dmdatabase.h \
+    docketminder.h \
+    structures.h
+
+#Include Boost
+INCLUDEPATH += $$PWD/../boost
+
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/mariadb/lib/mariadb/release/ -lmariadbcpp
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/mariadb/lib/mariadb/debug/ -lmariadbcpp
+else:unix: LIBS += -L$$PWD/mariadb/lib/mariadb/ -lmariadbcpp
+
+INCLUDEPATH += $$PWD/mariadb/include/mariadb
+DEPENDPATH += $$PWD/mariadb/include/mariadb
+
+QMAKE_CXXFLAGS += -fdeclspec
