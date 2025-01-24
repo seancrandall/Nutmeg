@@ -9,11 +9,6 @@
 #include "property.h"
 #include "structures.h"
 
-#define UpdateMacro                                                                                                    \
-    if (mUpdatePolicy == Instant)                                                                                      \
-    slotCommit()
-#define SLOTUPDATE(x) TRY(mDat.x = newval; UpdateMacro;)
-
 namespace Nutmeg
 {
 

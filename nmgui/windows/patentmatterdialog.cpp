@@ -48,7 +48,7 @@ void PatentMatterDialog::slotGather()
     pmatter.fkExaminer = cExaminer->key;
     pmatter.fkSupervisoryExaminer = cSupervisoryExaminer->key;
     pmatter.fkFirstInventor = cFirstInventor->key;
-    Key visibleKey = cApplicant->key;
+    //Key visibleKey = cApplicant->key;
     pmatter.fkApplicant = cApplicant->key;
 
     MatterDialog::slotGather();
