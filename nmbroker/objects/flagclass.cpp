@@ -13,25 +13,25 @@ FlagClass::FlagClass(String camelCase) : mCamelCase(camelCase)
     mDescription = dat.Description;
 
     // Get a list of objects associated with this flag
-    TRY(mAssociatedObjects = Nutdb::GetFlagObjects(mCamelCase);)
+    mAssociatedObjects = Nutdb::GetFlagObjects(mCamelCase);
 }
 
 void FlagClass::setCamelCase(String newCamelCase)
 {
     mCamelCase = newCamelCase;
-    TRY(Nutdb::UpdateField("FlagClass", "CamelCase", mFlagClassId, newCamelCase);)
+    Nutdb::UpdateField("FlagClass", "CamelCase", mFlagClassId, newCamelCase);
 }
 
 void FlagClass::setLabel(String newLabel)
 {
     mLabel = newLabel;
-    TRY(Nutdb::UpdateField("FlagClass", "Label", mFlagClassId, newLabel);)
+    Nutdb::UpdateField("FlagClass", "Label", mFlagClassId, newLabel);
 }
 
 void FlagClass::setDescription(String newDescription)
 {
     mDescription = newDescription;
-    TRY(Nutdb::UpdateField("FlagClass", "Description", mFlagClassId, newDescription);)
+    Nutdb::UpdateField("FlagClass", "Description", mFlagClassId, newDescription);
 }
 
 } // namespace Nutmeg
