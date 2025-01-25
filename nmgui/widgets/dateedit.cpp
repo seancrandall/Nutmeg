@@ -56,17 +56,18 @@ void DateEdit::paintEvent(QPaintEvent *event)
 
 void DateEdit::InitializeDateEdit()
 {
+    setMinimumDate(QDate::fromString("1970-01-01", Qt::ISODate));
     setCalendarPopup(true);
     setDisplayFormat("yyyy-MM-dd");
     setMaximumWidth(120);
 
     //If non-date, change color
-    QDate nonDate = QDate::fromString("2000-01-01", Qt::ISODate);
-    if (date <= nonDate)
-    {
-        //setStyleSheet("background-color: red");
-        //setColor(Qt::red);
-    }
+    // QDate nonDate = QDate::fromString("2000-01-01", Qt::ISODate);
+    // if (date <= nonDate)
+    // {
+    //     //setStyleSheet("background-color: red");
+    //     //setColor(Qt::red);
+    // }
 }
 
 } // namespace Nutmeg
