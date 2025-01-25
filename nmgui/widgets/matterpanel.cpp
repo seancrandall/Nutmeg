@@ -9,6 +9,7 @@ MatterPanel::MatterPanel(Matter *matterin, QWidget *parent)
     ConnectSignalsAndSlots();
     initializeObjects();
     setupLayouts();
+    slotScatter();
 }
 
 MatterPanel::MatterPanel(Key matterid, QWidget *parent)
@@ -18,6 +19,7 @@ MatterPanel::MatterPanel(Key matterid, QWidget *parent)
     ConnectSignalsAndSlots();
     initializeObjects();
     setupLayouts();
+    slotScatter();
 }
 
 void MatterPanel::ConnectSignalsAndSlots()
@@ -57,7 +59,11 @@ void MatterPanel::slotGather()
 
 void MatterPanel::initializeObjects()
 {
+    groupGeneralMatter = new GroupBox(this);
     groupGeneralMatter->setTitle("General Matter Info");
+
+    grid = new QGridLayout();
+    fullLayout = new QGridLayout();
 
     cId = new LineDisplayId(matter.MatterId);
 
@@ -92,7 +98,6 @@ void MatterPanel::initializeObjects()
 
 void MatterPanel::setupLayouts()
 {
-
     lId = new LabeledWidgetLeft("Matter Id", cId);
     lDocketNumber = new LabeledWidgetLeft("Attorney Docket Number", cDocketNumber);
     lParent = new LabeledWidgetLeft("Parent Matter", cParent);
@@ -115,7 +120,11 @@ void MatterPanel::setupLayouts()
 
     // groupGeneralMatter->setParent(workspace);
     groupGeneralMatter->setLayout(grid);
+    //grid->setParent(this);
 
+    //fullLayout->addLayout(grid, 0, 0, -1, -1);
+    //this->setLayout(fullLayout);
+    //setLayout(fullLayout);
 
     setMinimumWidth(680);
     setMinimumHeight(450);

@@ -49,7 +49,7 @@ protected:
     // Layouts
 
     QVBoxLayout *vone = new QVBoxLayout();
-    QGridLayout *grid = new QGridLayout();
+    QGridLayout *grid, *fullLayout;
 
     // Labels
     LabeledWidgetLeft *lId, *lDocketNumber, *lParent, *lClientDocket, *lClient, *lTitle, *lAssigningFirm,
@@ -59,7 +59,7 @@ protected:
     viewParalegalsModel *modParalegals = new viewParalegalsModel(this);
 
     // Controls
-    GroupBox *groupGeneralMatter = new GroupBox();
+    GroupBox *groupGeneralMatter;
     LineDisplayId *cId;
     LineEdit *cDocketNumber;
     MatterSearchBox *cParent;
