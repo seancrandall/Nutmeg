@@ -122,8 +122,8 @@ void MatterPanel::setupLayouts()
     groupGeneralMatter->setLayout(grid);
     //grid->setParent(this);
 
-    //fullLayout->addLayout(grid, 0, 0, -1, -1);
-    //this->setLayout(fullLayout);
+    fullLayout->addWidget(groupGeneralMatter, 0, 0, -1, -1);
+    this->setLayout(fullLayout);
     //setLayout(fullLayout);
 
     setMinimumWidth(680);
