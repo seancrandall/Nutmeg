@@ -1390,9 +1390,9 @@ bool Nutdb::UpdateCopyrightMatter(CopyrightMatterData dat)
 
     params.append(QVariant::fromValue(dat.CopyrightMatterId));
     params.append(NullableInteger(dat.fkAuthor));
-    params.append(QVariant(dat.Created));
-    params.append(QVariant(dat.Filed));
-    params.append(QVariant(dat.Registered));
+    params.append(NullableDate(dat.Created));
+    params.append(NullableDate(dat.Filed));
+    params.append(NullableDate(dat.Registered));
     params.append(QVariant(dat.SerialNumber));
     params.append(QVariant(dat.RegistrationNumber));
     params.append(NullableInteger(dat.fkDeposit));

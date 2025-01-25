@@ -7,6 +7,8 @@
 #include <QEvent>
 #include <QObject>
 #include <QWidget>
+#include <QStyleOption>
+#include <QPainter>
 
 #include "property.h"
 
@@ -21,16 +23,24 @@ class DateEdit : public QDateEdit
     DateEdit(QWidget *parent = nullptr);
 
     Property(getDate, setDate) QDate date;
+    Property(getColor, setColor) QColor color;
 
     QDate getDate(void) { return QDateEdit::date(); }
+    QColor getColor(void) { return mColor;}
 
-    void setDate(QDate newdate) { QDateEdit::setDate(newdate); }
+    void setDate(QDate newdate);
+    void setColor(QColor newColor);
 
   protected:
-    bool eventFilter(QObject *object, QEvent *event);
+    bool eventFilter(QObject *object, QEvent *event) override;
+
+    //Change color
+    void paintEvent(QPaintEvent *event) override;
 
   private:
     void InitializeDateEdit(void);
+
+      QColor mColor;
 };
 
 } // namespace Nutmeg
