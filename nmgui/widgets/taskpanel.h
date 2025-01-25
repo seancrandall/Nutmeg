@@ -21,6 +21,7 @@
 
 #include "windows/matterdialog.h"
 #include "windows/patentmatterdialog.h"
+#include "widgets/informationbox.h"
 
 namespace Nutmeg
 {
@@ -36,6 +37,7 @@ class TaskPanel : public Frame
   protected slots:
     void slotUpdateTitle(void);
     void slotUpdateTaskType(Key newval);
+    void slotOpenTaskWindow(void);
     void slotOpenMatterWindow(void);
     virtual void slotExtraButtonAction(void) = 0;
 
@@ -48,9 +50,9 @@ class TaskPanel : public Frame
     Person *paralegal;
     Person *workAttorney;
     DocketNumberButton *docketNumberButton;
+    ArrowButton *openTaskButton = new ArrowButton(this);
     TaskTypeCombo *taskTypeCombo;
     TitleEdit *titleEdit;
-    // EIButton *addEIButton;
     PushButton *extraButton = nullptr;
 
   private:

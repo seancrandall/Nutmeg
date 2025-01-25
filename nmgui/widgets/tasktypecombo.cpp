@@ -5,20 +5,9 @@ namespace Nutmeg
 
 TaskTypeCombo::TaskTypeCombo(Task *task, QWidget *parent) : ComboBox(parent), mTask(task)
 {
-    // QSqlDatabase db = QSqlDatabase::database();
-    // model = new QSqlTableModel(this, db);
 
-    // First, figure out whether this is a filing or response
-    // bool isResponse;
-
-    // if( (task->fkObjectType >= 9100) && (task->fkObjectType < 9200) )
-    // isResponse = true;
-
-    // switch(task->fkObjectType)
-    // {
-    // case 9100 ... 9199:
-    // }
-
+    //Grab the right model based on teh filing type, which is embedded in object:fkObjectType
+    //Then set the current key of the combo box to the right value
     switch (task->fkObjectType)
     {
     case 2000: // General filing
@@ -64,25 +53,6 @@ TaskTypeCombo::TaskTypeCombo(Task *task, QWidget *parent) : ComboBox(parent), mT
         setToKey(task->fkTaskType);
     }
 
-    //  if (task->objectType == "patentResponse") {
-    // model = new viewPatentTaskTypesModel(this);
-    // column = 2;
-    // setToKey(task->fkTaskType);
-    //  } else if (task->objectType == "trademarkResponse") {
-    // model = new viewTrademarkTaskTypesModel(this);
-    // column = 2;
-    // setToKey(task->fkTaskType);
-    //  } else if (task->objectType == "copyrightResponse") {
-    // model = new viewTrademarkTaskTypesModel(this);
-    // column = 2;
-    // setToKey(task->fkTaskType);
-    //  } else {
-    // model = new taskTypeModel(this);
-    // model->setSort(2, Qt::SortOrder::AscendingOrder);
-    // model->select();
-    // column = 2;
-    // setToKey(task->fkTaskType);
-    //  }
 }
 
 } // namespace Nutmeg

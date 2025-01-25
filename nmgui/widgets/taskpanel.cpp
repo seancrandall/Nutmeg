@@ -34,11 +34,24 @@ void Nutmeg::TaskPanel::ConnectSigalsAndSlots()
 
     QObject::connect(extraButton, &QAbstractButton::clicked, this, &Nutmeg::TaskPanel::slotExtraButtonAction,
                      Qt::UniqueConnection);
+
+    QObject::connect(openTaskButton,    &ArrowButton::clicked,
+                     this,              &TaskPanel::slotOpenTaskWindow,
+                    Qt::UniqueConnection);
+
+
 }
 
 void Nutmeg::TaskPanel::slotUpdateTitle() { matter->Title = titleEdit->toPlainText(); }
 
 void Nutmeg::TaskPanel::slotUpdateTaskType(Key newval) { task->fkTaskType = newval; }
+
+void TaskPanel::slotOpenTaskWindow()
+{
+    InformationBox info(this);
+    info.text = "Open Task Window";
+    info.exec();
+}
 
 void Nutmeg::TaskPanel::slotOpenMatterWindow()
 {
@@ -55,8 +68,8 @@ void Nutmeg::TaskPanel::SetupDisplay()
     QHBoxLayout *tasklayout = new QHBoxLayout();
     taskTypeCombo = new TaskTypeCombo(task, this);
     taskTypeCombo->setMaximumWidth(220);
-    ArrowButton *openTaskButton = new ArrowButton(this);
     tasklayout->addWidget(taskTypeCombo);
+    openTaskButton = new ArrowButton(this);
     tasklayout->addWidget(openTaskButton);
     tasklayout->setAlignment(Qt::AlignHCenter);
 
