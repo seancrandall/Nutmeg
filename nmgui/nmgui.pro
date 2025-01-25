@@ -39,6 +39,7 @@ SOURCES += \
     widgets/frame.cpp \
     widgets/inventorbutton.cpp \
     widgets/inventoreditadd.cpp \
+    widgets/matterpanel.cpp \
     widgets/peoplecompleter.cpp \
     widgets/personsearchbox.cpp \
     widgets/workattorneysearchbox.cpp \
@@ -167,6 +168,7 @@ HEADERS += \
     widgets/frame.h \
     widgets/inventorbutton.h \
     widgets/inventoreditadd.h \
+    widgets/matterpanel.h \
     widgets/peoplecompleter.h \
     widgets/personsearchbox.h \
     widgets/workattorneysearchbox.h \
