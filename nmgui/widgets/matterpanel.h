@@ -71,8 +71,7 @@ protected:
     ComboBox *cDefaultParalegal;
     ComboBox *cJurisdiction;
 
-    Object object;
-    Matter matter;
+    Matter *matter;
 
 private:
     //void SetupDisplay(void);

@@ -4,8 +4,8 @@ namespace Nutmeg {
 
 MatterPanel::MatterPanel(Matter *matterin, QWidget *parent)
     : Frame(parent)
-    , matter(matterin)
 {
+    matter = matterin;
     ConnectSignalsAndSlots();
     initializeObjects();
     setupLayouts();
@@ -14,8 +14,8 @@ MatterPanel::MatterPanel(Matter *matterin, QWidget *parent)
 
 MatterPanel::MatterPanel(Key matterid, QWidget *parent)
     : Frame(parent)
-    , matter(new Matter(matterid, this))
 {
+    matter = new Matter(matterid);
     ConnectSignalsAndSlots();
     initializeObjects();
     setupLayouts();
@@ -29,14 +29,14 @@ void MatterPanel::ConnectSignalsAndSlots()
 
 void MatterPanel::slotScatter()
 {
-    cDocketNumber->text = matter.AttorneyDocketNumber;
-    cParent->key = matter.fkParent;
-    cClientDocket->text = matter.ClientDocketNumber;
-    cClient->key = matter.fkClient;
-    cAssigningFirm->key = matter.fkAssigningFirm;
-    cDefaultWorkAttorney->key = matter.fkDefaultWorkAttorney;
-    cDefaultParalegal->key = matter.fkDefaultParalegal;
-    cJurisdiction->key = matter.fkMatterJurisdiction;
+    cDocketNumber->text = matter->AttorneyDocketNumber;
+    cParent->key = matter->fkParent;
+    cClientDocket->text = matter->ClientDocketNumber;
+    cClient->key = matter->fkClient;
+    cAssigningFirm->key = matter->fkAssigningFirm;
+    cDefaultWorkAttorney->key = matter->fkDefaultWorkAttorney;
+    cDefaultParalegal->key = matter->fkDefaultParalegal;
+    cJurisdiction->key = matter->fkMatterJurisdiction;
 }
 
 void MatterPanel::slotGather()
@@ -46,15 +46,15 @@ void MatterPanel::slotGather()
     Key parentKey = cParent->key;
     qDebug() << "Parent key is: " << parentKey;
 #endif
-    matter.fkParent = cParent->key;
-    matter.AttorneyDocketNumber = cDocketNumber->text;
-    matter.ClientDocketNumber = cClientDocket->text;
-    matter.Title = cTitle->text;
-    matter.fkClient = cClient->key;
-    matter.fkAssigningFirm = cAssigningFirm->key;
-    matter.fkDefaultWorkAttorney = cDefaultWorkAttorney->key;
-    matter.fkDefaultParalegal = cDefaultParalegal->key;
-    matter.fkMatterJurisdiction = cJurisdiction->key;
+    matter->fkParent = cParent->key;
+    matter->AttorneyDocketNumber = cDocketNumber->text;
+    matter->ClientDocketNumber = cClientDocket->text;
+    matter->Title = cTitle->text;
+    matter->fkClient = cClient->key;
+    matter->fkAssigningFirm = cAssigningFirm->key;
+    matter->fkDefaultWorkAttorney = cDefaultWorkAttorney->key;
+    matter->fkDefaultParalegal = cDefaultParalegal->key;
+    matter->fkMatterJurisdiction = cJurisdiction->key;
 }
 
 void MatterPanel::initializeObjects()
@@ -65,7 +65,7 @@ void MatterPanel::initializeObjects()
     grid = new QGridLayout();
     fullLayout = new QGridLayout();
 
-    cId = new LineDisplayId(matter.MatterId);
+    cId = new LineDisplayId(matter->MatterId);
 
     cDocketNumber = new LineEdit();
 
@@ -77,7 +77,7 @@ void MatterPanel::initializeObjects()
     cClient->model = new viewClientsModel();
     cClient->column = 3;
 
-    cTitle = new TitleEdit(&matter);
+    cTitle = new TitleEdit(matter);
 
     cAssigningFirm = new ComboBox();
     cAssigningFirm->model = new viewContractingFirmsModel(this);
