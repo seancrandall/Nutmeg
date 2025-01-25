@@ -6,7 +6,7 @@ namespace Nutmeg
 MatterDialog::MatterDialog(Key matterid, QWidget *parent)
     : Nutmeg::Dialog(parent)
     , matter(Matter(matterid))
-    , panel(&matter, this)
+    , panel(new MatterPanel(&matter, this))
 {
     MatterDialog::setupDisplay();
     MatterDialog::connectSignalsAndSlots();
@@ -28,17 +28,17 @@ void MatterDialog::connectSignalsAndSlots(void)
 
 void MatterDialog::slotScatter(void)
 {
-    panel.slotScatter();
+    panel->slotScatter();
 }
 
 void MatterDialog::slotGather(void)
 {
-    panel.slotGather();
+    panel->slotGather();
 }
 
 void MatterDialog::layoutWorkspace()
 {
-    workLayout->addWidget(&panel);
+    workLayout->addWidget(panel, 0, 0);
 }
 
 } // namespace Nutmeg

@@ -26,7 +26,7 @@ class MatterDialog : public Nutmeg::Dialog
     void layoutWorkspace(void);
 
     Matter matter;
-    MatterPanel panel;
+    MatterPanel *panel;
 };
 
 } // namespace Nutmeg

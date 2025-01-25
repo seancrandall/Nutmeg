@@ -50,7 +50,7 @@ class TaskPanel : public Frame
     Person *paralegal;
     Person *workAttorney;
     DocketNumberButton *docketNumberButton;
-    ArrowButton *openTaskButton = new ArrowButton(this);
+    ArrowButton *openTaskButton;
     TaskTypeCombo *taskTypeCombo;
     TitleEdit *titleEdit;
     PushButton *extraButton = nullptr;
