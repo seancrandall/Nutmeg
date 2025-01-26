@@ -25,8 +25,6 @@ class Flag : public FlagClass
 
     Key getObjectId(void) { return mObjectId; }
 
-    // Flag operator=(const Flag &other);
-
   signals:
 
   protected:
