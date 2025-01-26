@@ -35,6 +35,7 @@ SOURCES += \
     widgets/filingpanel.cpp \
     widgets/filingtaskpanel.cpp \
     widgets/filingtypelabel.cpp \
+    widgets/flagcheckbox.cpp \
     widgets/flagspanel.cpp \
     widgets/frame.cpp \
     widgets/inventorbutton.cpp \
@@ -166,6 +167,7 @@ HEADERS += \
     widgets/filingpanel.h \
     widgets/filingtaskpanel.h \
     widgets/filingtypelabel.h \
+    widgets/flagcheckbox.h \
     widgets/flagspanel.h \
     widgets/frame.h \
     widgets/inventorbutton.h \
