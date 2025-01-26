@@ -43,6 +43,7 @@ SOURCES += \
     widgets/patentmatterpanel.cpp \
     widgets/peoplecompleter.cpp \
     widgets/personsearchbox.cpp \
+    widgets/taskgroup.cpp \
     widgets/workattorneysearchbox.cpp \
     widgets/xbutton.cpp \
     ../nmbroker/dbaccess/nutdb.cpp \
@@ -173,6 +174,7 @@ HEADERS += \
     widgets/patentmatterpanel.h \
     widgets/peoplecompleter.h \
     widgets/personsearchbox.h \
+    widgets/taskgroup.h \
     widgets/workattorneysearchbox.h \
     widgets/xbutton.h \
     ../nmbroker/dbaccess/viewcontractingfirmsmodel.h \
