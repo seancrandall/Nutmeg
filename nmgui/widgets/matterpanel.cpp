@@ -4,7 +4,7 @@ namespace Nutmeg {
 
 MatterPanel::MatterPanel(std::shared_ptr<Matter> matterin, QWidget *parent)
     : GroupBox(parent)
-    , matter(std::move(matterin))
+    , matter(matterin)
 {
     setTitle("Matter Data");
     ConnectSignalsAndSlots();
