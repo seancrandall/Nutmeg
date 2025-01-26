@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QCheckBox>
 #include <QLabel>
+#include <QGridLayout>
 
 #include "nutmeg.h"
 #include "objects/flag.h"
@@ -11,9 +12,15 @@
 
 namespace Nutmeg {
 
+/**
+ * @brief CBoxOrientation
+ * Is the label above, below, right, or left
+ */
 typedef enum{
-     Horizontal
-    ,Vertical
+     Top
+    , Bottom
+    , Left
+    , Right
 } CBoxOrientation;
 
 class FlagCheckbox : public QWidget
@@ -42,6 +49,8 @@ protected:
     CBoxOrientation mOrientation;
     QString mLabel;
     QString mTooltip;
+
+    QGridLayout *layout;
 };
 
 } // namespace Nutmeg
