@@ -3,25 +3,23 @@
 namespace Nutmeg {
 
 MatterPanel::MatterPanel(std::shared_ptr<Matter> matterin, QWidget *parent)
-    : GroupBox(parent)
+    : GroupBox("Matter Data", parent)
     , matter(matterin)
 {
-    setTitle("Matter Data");
-    ConnectSignalsAndSlots();
     initializeObjects();
     setupLayouts();
     slotScatter();
+    ConnectSignalsAndSlots();
 }
 
 MatterPanel::MatterPanel(Key matterid, QWidget *parent)
-    : GroupBox(parent)
+    : GroupBox("Matter Data", parent)
     , matter(std::make_shared<Matter>(matterid))
 {
-    setTitle("Matter Data");
-    ConnectSignalsAndSlots();
     initializeObjects();
     setupLayouts();
     slotScatter();
+    ConnectSignalsAndSlots();
 }
 
 void MatterPanel::ConnectSignalsAndSlots()

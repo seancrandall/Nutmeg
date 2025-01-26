@@ -55,6 +55,7 @@ void PatentMatterDialog::connectSignalsAndSlots()
 
 void PatentMatterDialog::setupDisplay()
 {
+    setWindowTitle("Patent Matter " + QString::number(pmatter->PatentMatterId));
     mPanel = new MatterPanel(pmatter, this);
     pmPanel = new PatentMatterPanel(pmatter, this);
 

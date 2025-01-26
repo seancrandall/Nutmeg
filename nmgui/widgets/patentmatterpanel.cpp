@@ -6,14 +6,18 @@ PatentMatterPanel::PatentMatterPanel(std::shared_ptr<PatentMatter> patMatterIn, 
     : GroupBox("Patent Matter Data", parent)
     , patMatter(patMatterIn)
 {
-
+    LayoutWidgets();
+    slotScatter();
+    ConnectSignalsAndSlots();
 }
 
 PatentMatterPanel::PatentMatterPanel(Key patentMatterId, QWidget *parent)
     : GroupBox("Patent Matter Data", parent)
     , patMatter(std::make_shared<PatentMatter>(patentMatterId))
 {
-
+    LayoutWidgets();
+    slotScatter();
+    ConnectSignalsAndSlots();
 }
 
 void PatentMatterPanel::slotScatter()
@@ -114,7 +118,7 @@ void PatentMatterPanel::LayoutWidgets()
     scrollLayout->addWidget(inventorScroll);
     inventorBox->setLayout(scrollLayout);
 
-    QGridLayout *pmgrid = new QGridLayout();
+    QGridLayout *pmgrid = new QGridLayout(this);
     // Layout the rest of the group box
     pmgrid->addLayout(lApplicationSearialNumber, 0, 0);
     pmgrid->addWidget(cFirstInventor);
