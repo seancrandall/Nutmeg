@@ -7,7 +7,6 @@
 #include "nutmeg.h"
 #include "frame.h"
 #include "property.h"
-#include "objects/object.h"
 #include "objects/matter.h"
 #include "objects/person.h"
 #include "objects/entity.h"
@@ -28,12 +27,13 @@
 
 namespace Nutmeg {
 
-class MatterPanel : public Nutmeg::Frame
+//class MatterPanel : public Nutmeg::Frame
+class MatterPanel : public Nutmeg::GroupBox
 {
     Q_OBJECT
 
 public:
-    MatterPanel(Matter *matterin, QWidget *parent = nullptr);
+    MatterPanel(std::shared_ptr<Matter> matterin, QWidget *parent = nullptr);
     MatterPanel(Key matterid, QWidget *parent = nullptr);
 
 public slots:
@@ -59,7 +59,7 @@ protected:
     viewParalegalsModel *modParalegals = new viewParalegalsModel(this);
 
     // Controls
-    GroupBox *groupGeneralMatter;
+    //GroupBox *groupGeneralMatter;
     LineDisplayId *cId;
     LineEdit *cDocketNumber;
     MatterSearchBox *cParent;
@@ -71,7 +71,8 @@ protected:
     ComboBox *cDefaultParalegal;
     ComboBox *cJurisdiction;
 
-    Matter *matter;
+    //Matter *matter;
+    std::shared_ptr<Matter> matter;
 
 private:
     //void SetupDisplay(void);

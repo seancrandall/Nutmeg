@@ -14,13 +14,13 @@ class EmailInventorsButton : public Nutmeg::PushButton
 {
     Q_OBJECT
   public:
-    EmailInventorsButton(Filing *fil, QWidget *parent = nullptr);
+    EmailInventorsButton(std::shared_ptr<Filing> fil, QWidget *parent = nullptr);
 
   public slots:
     void slotHandleClick(void);
 
   protected:
-    Filing *mFiling;
+    std::shared_ptr<Filing> mFiling;
 };
 
 } // namespace Nutmeg

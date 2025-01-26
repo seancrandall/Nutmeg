@@ -14,7 +14,7 @@ class ResponseTypeLabel : public QLabel
 {
     Q_OBJECT
   public:
-    ResponseTypeLabel(Response *response, QWidget *parent = nullptr);
+    ResponseTypeLabel(std::shared_ptr<Response> response, QWidget *parent = nullptr);
 };
 
 } // namespace Nutmeg

@@ -14,7 +14,7 @@ class FilingTypeLabel : public QLabel
 {
     Q_OBJECT
   public:
-    FilingTypeLabel(Filing *filing, QWidget *parent = nullptr);
+    FilingTypeLabel(std::shared_ptr<Filing> filing, QWidget *parent = nullptr);
 };
 
 } // namespace Nutmeg

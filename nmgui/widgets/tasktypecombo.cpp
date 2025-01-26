@@ -3,7 +3,7 @@
 namespace Nutmeg
 {
 
-TaskTypeCombo::TaskTypeCombo(Task *task, QWidget *parent) : ComboBox(parent), mTask(task)
+TaskTypeCombo::TaskTypeCombo(std::shared_ptr<Task> task, QWidget *parent) : ComboBox(parent), mTask(task)
 {
 
     //Grab the right model based on teh filing type, which is embedded in object:fkObjectType

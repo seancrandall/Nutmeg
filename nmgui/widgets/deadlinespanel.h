@@ -19,12 +19,12 @@ class DeadlinesPanel : public Frame
 {
     Q_OBJECT
   public:
-    explicit DeadlinesPanel(Deadline *deadline, QWidget *parent = nullptr);
+    explicit DeadlinesPanel(std::shared_ptr<Deadline> deadline, QWidget *parent = nullptr);
 
   signals:
 
   protected:
-    Deadline *mDeadline;
+    std::shared_ptr<Deadline> mDeadline;
 
     Nutmeg::DateEdit *triggerEdit, *nextEdit, *softEdit, *hardEdit;
 

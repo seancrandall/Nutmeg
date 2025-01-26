@@ -5,9 +5,8 @@ namespace Nutmeg
 
 FilingPanel::FilingPanel(Key id, QWidget *parent)
     : QWidget(parent)
-      , filing(id)
-      , task(id)
-      , matter(filing.fkMatter)
+    , filing(std::make_shared<Filing>(id))
+    , matter(std::make_shared<Matter>(filing->fkMatter))
 {
     LoadData();
 }
@@ -30,21 +29,21 @@ void FilingPanel::ConnectSignalsAndSlots()
 
 void FilingPanel::LoadData()
 {
-    Deadline deadline(filing.fkDeadline); //= std::make_unique<Deadline>(filing.fkDeadline);
+    deadline = std::make_shared<Deadline>(filing->fkDeadline);
 
     // Set color according to how close the deadline is
     QPalette pal;
-    QColor background = Deadline(task.fkDeadline).color;
+    QColor background = Deadline(filing->fkDeadline).color;
     pal.setColor(QPalette::Window, background);
     setPalette(pal);
     setAutoFillBackground(true);
 
-    QLabel *label = new FilingTypeLabel(&filing);
-    doneButton = new DoneButton(&task);
-    FilingTaskPanel *taskPanel = new FilingTaskPanel(&filing);
-    DeadlinesPanel *deadlinePanel = new DeadlinesPanel(&deadline);
-    EntitiesPanel *entitiesPanel = new EntitiesPanel(filing.FilingId);
-    FlagsPanel *flagsPanel = new FlagsPanel(filing.FilingId);
+    QLabel *label = new FilingTypeLabel(filing);
+    doneButton = new DoneButton(filing);
+    FilingTaskPanel *taskPanel = new FilingTaskPanel(filing);
+    DeadlinesPanel *deadlinePanel = new DeadlinesPanel(deadline);
+    EntitiesPanel *entitiesPanel = new EntitiesPanel(filing->FilingId);
+    FlagsPanel *flagsPanel = new FlagsPanel(filing->FilingId);
 
     QHBoxLayout *layout;
     layout = new QHBoxLayout(this);

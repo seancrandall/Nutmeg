@@ -42,10 +42,9 @@ class ResponsePanel : public QWidget
 
   protected:
     // Deadline *deadline;
-    std::unique_ptr<Deadline> deadline;
-    Response response;
-    Task task;
-    Matter matter;
+    std::shared_ptr<Deadline> deadline;
+    std::shared_ptr<Response> response;
+    std::shared_ptr<Matter> matter;
 
     DoneButton *doneButton;
     // Need a flags panel too

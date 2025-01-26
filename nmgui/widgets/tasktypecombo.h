@@ -35,10 +35,10 @@ class TaskTypeCombo : public Nutmeg::ComboBox
 {
     Q_OBJECT
   public:
-    TaskTypeCombo(Task *task, QWidget *parent = nullptr);
+    TaskTypeCombo(std::shared_ptr<Task> task, QWidget *parent = nullptr);
 
   protected:
-    Task *mTask;
+    std::shared_ptr<Task> mTask;
 
   protected slots:
 };

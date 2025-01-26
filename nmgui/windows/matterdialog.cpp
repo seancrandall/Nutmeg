@@ -5,8 +5,8 @@ namespace Nutmeg
 
 MatterDialog::MatterDialog(Key matterid, QWidget *parent)
     : Nutmeg::Dialog(parent)
-    , matter(Matter(matterid))
-    , panel(new MatterPanel(&matter, this))
+    , matter(std::make_shared<Matter>(matterid))
+    , panel(new MatterPanel(matter, this))
 {
     MatterDialog::setupDisplay();
     MatterDialog::connectSignalsAndSlots();
@@ -18,7 +18,7 @@ MatterDialog::MatterDialog(Key matterid, QWidget *parent)
 
 void MatterDialog::setupDisplay(void)
 {
-    setWindowTitle("Matter " + matter.AttorneyDocketNumber);
+    setWindowTitle("Matter " + matter->AttorneyDocketNumber);
 }
 
 void MatterDialog::connectSignalsAndSlots(void)

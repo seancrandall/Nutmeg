@@ -3,7 +3,7 @@
 namespace Nutmeg
 {
 
-DeadlinesPanel::DeadlinesPanel(Deadline *deadline, QWidget *parent)
+DeadlinesPanel::DeadlinesPanel(std::shared_ptr<Deadline> deadline, QWidget *parent)
     : Frame(parent)
     , mDeadline(deadline)
 {

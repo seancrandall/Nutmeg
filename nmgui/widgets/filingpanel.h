@@ -40,10 +40,9 @@ class FilingPanel : public QWidget
     void signalSomethingChanged(void);
 
   protected:
-    std::unique_ptr<Deadline> deadline;
-    Filing filing;
-    Task task;
-    Matter matter;
+    std::shared_ptr<Deadline> deadline;
+    std::shared_ptr<Filing> filing;
+    std::shared_ptr<Matter> matter;
 
     DoneButton *doneButton;
 

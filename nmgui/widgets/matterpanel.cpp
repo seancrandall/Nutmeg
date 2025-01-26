@@ -2,10 +2,11 @@
 
 namespace Nutmeg {
 
-MatterPanel::MatterPanel(Matter *matterin, QWidget *parent)
-    : Frame(parent)
+MatterPanel::MatterPanel(std::shared_ptr<Matter> matterin, QWidget *parent)
+    : GroupBox(parent)
+    , matter(std::move(matterin))
 {
-    matter = matterin;
+    setTitle("Matter Data");
     ConnectSignalsAndSlots();
     initializeObjects();
     setupLayouts();
@@ -13,9 +14,10 @@ MatterPanel::MatterPanel(Matter *matterin, QWidget *parent)
 }
 
 MatterPanel::MatterPanel(Key matterid, QWidget *parent)
-    : Frame(parent)
+    : GroupBox(parent)
+    , matter(std::make_shared<Matter>(matterid))
 {
-    matter = new Matter(matterid);
+    setTitle("Matter Data");
     ConnectSignalsAndSlots();
     initializeObjects();
     setupLayouts();
@@ -59,9 +61,6 @@ void MatterPanel::slotGather()
 
 void MatterPanel::initializeObjects()
 {
-    groupGeneralMatter = new GroupBox(this);
-    groupGeneralMatter->setTitle("General Matter Info");
-
     grid = new QGridLayout();
     fullLayout = new QGridLayout();
 
@@ -118,16 +117,7 @@ void MatterPanel::setupLayouts()
     grid->addLayout(lDefaultParalegal, 4, 1);
     grid->addLayout(lJurisdiction, 5, 0);
 
-    // groupGeneralMatter->setParent(workspace);
-    groupGeneralMatter->setLayout(grid);
-    //grid->setParent(this);
-
-    fullLayout->addWidget(groupGeneralMatter, 0, 0, -1, -1);
-    this->setLayout(fullLayout);
-    //setLayout(fullLayout);
-
-    setMinimumWidth(680);
-    setMinimumHeight(450);
+    setLayout(grid);
 }
 
 } // namespace Nutmeg

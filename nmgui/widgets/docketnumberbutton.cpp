@@ -3,7 +3,9 @@
 namespace Nutmeg
 {
 
-DocketNumberButton::DocketNumberButton(Matter *matter, QWidget *parent) : Nutmeg::PushButton(parent), mMatter(matter)
+DocketNumberButton::DocketNumberButton(std::shared_ptr<Matter> matter, QWidget *parent)
+    : Nutmeg::PushButton(parent)
+    , mMatter(matter)
 {
     setText(matter->AttorneyDocketNumber);
     // setFixedWidth(200);
