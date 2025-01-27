@@ -45,6 +45,7 @@ SOURCES += \
     panels/taskpanel.cpp \
     widgets/abstractremovablebutton.cpp \
     widgets/comboeditadd.cpp \
+    widgets/datetimeedit.cpp \
     widgets/editbutton.cpp \
     widgets/emailinventorsbutton.cpp \
     widgets/examinereditadd.cpp \
@@ -178,6 +179,7 @@ HEADERS += \
     panels/taskpanel.h \
     widgets/abstractremovablebutton.h \
     widgets/comboeditadd.h \
+    widgets/datetimeedit.h \
     widgets/editbutton.h \
     widgets/emailinventorsbutton.h \
     widgets/examinereditadd.h \
