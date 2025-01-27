@@ -25,6 +25,19 @@ SOURCES += \
     ../nmbroker/dbaccess/viewtrademarkfilingtypesmodel.cpp \
     ../nmbroker/logger.cpp \
     ../nmbroker/nutmeg.cpp \
+    panels/appointmentpanel.cpp \
+    panels/deadlinespanel.cpp \
+    panels/entitiespanel.cpp \
+    panels/filingpanel.cpp \
+    panels/filingtaskpanel.cpp \
+    panels/flagspanel.cpp \
+    panels/insertenterprisepanel.cpp \
+    panels/insertpersonpanel.cpp \
+    panels/matterpanel.cpp \
+    panels/patentmatterpanel.cpp \
+    panels/responsepanel.cpp \
+    panels/responsetaskpanel.cpp \
+    panels/taskpanel.cpp \
     widgets/abstractremovablebutton.cpp \
     widgets/comboeditadd.cpp \
     widgets/editbutton.cpp \
@@ -157,6 +170,19 @@ HEADERS += \
     ../nmbroker/dbaccess/viewresponsetasktypesmodel.h \
     ../nmbroker/dbaccess/viewtrademarkfilingtypesmodel.h \
     ../nmbroker/logger.h \
+    panels/appointmentpanel.h \
+    panels/deadlinespanel.h \
+    panels/entitiespanel.h \
+    panels/filingpanel.h \
+    panels/filingtaskpanel.h \
+    panels/flagspanel.h \
+    panels/insertenterprisepanel.h \
+    panels/insertpersonpanel.h \
+    panels/matterpanel.h \
+    panels/patentmatterpanel.h \
+    panels/responsepanel.h \
+    panels/responsetaskpanel.h \
+    panels/taskpanel.h \
     widgets/abstractremovablebutton.h \
     widgets/comboeditadd.h \
     widgets/editbutton.h \
