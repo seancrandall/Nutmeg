@@ -16,7 +16,7 @@ class Appointment : public Nutmeg::Object
     explicit Appointment(Key apptid, QObject *parent = nullptr);
     explicit Appointment(DateTime apptime, Key taskId, QObject *parent = nullptr);
 
-    Property(getAppointmentId, slotSetId) Key AppointmentId;
+    Property(getId, slotSetId) Key AppointmentId;
     Property(getAppointmentTime, slotSetAppointmentTime) DateTime AppointmentTime;
     Property(getfkAppointmentType, slotSetfkAppointmentType) Key fkAppointmentType;
 

@@ -130,7 +130,9 @@ class Nutdb
     static Key ClearFlag(Key associatedObjectId, String camelCase);
     static Key ClearTag(Key objectId, String tagText);
     static Key InsertAppointment(DateTime appointmentTime, Key taskId);
+    static Key InsertAppointment(DateTime appointmentTime);
     static Key InsertAppointmentWithZone(DateTime appointmentTime, int utcOffset, Key taskId);
+    static Key InsertAppointmentWithZone(DateTime appointmentTime, int utcOffset);
     static Key InsertCaseInventor(String firstName, String lastName, Key patentCaseId);
     static Key InsertClientEnterprise(String enterpriseName);
     static Key InsertClientNatural(String firstName, String lastName);

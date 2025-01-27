@@ -1861,6 +1861,41 @@ Key Nutdb::InsertAppointment(DateTime appointmentTime, Key taskId)
     return CallStoredKeyProcedure("InsertAppointment", params);
 }
 
+Key Nutdb::InsertAppointment(DateTime appointmentTime)
+{
+    QSqlDatabase db = QSqlDatabase::database();
+    QSqlQuery query;
+
+    QVariantList params;
+    params.append("appointment");
+    Key newobj = CallStoredKeyProcedure("InsertObject", params);
+
+    // If call was successful and returned a new key, populate the new appointment
+    if(newobj)
+    {
+        query.prepare("INSERT INTO appointment (AppointmentId, AppointmentTime) VALUES (:id, :time)");
+        query.bindValue(":id", QVariant::fromValue(newobj));
+        query.bindValue(":time", appointmentTime);
+
+        if (query.exec()) {
+            // Check if the insert was successful by checking affected rows
+            if (query.numRowsAffected() > 0) {
+                return newobj; // Return the new key as it was the last inserted id
+            } else {
+                return 0; // Insert failed but no specific error handling here
+            }
+        } else {
+            // Log or handle the error from the query
+            qDebug() << "Error inserting appointment:" << query.lastError().text();
+            return 0;
+        }
+    }
+    else {
+        // If CallStoredKeyProcedure failed or returned an invalid Key
+        return 0;
+    }
+}
+
 Key Nutdb::InsertAppointmentWithZone(DateTime appointmentTime, int utcOffset, Key taskId)
 {
     QVariantList params;
@@ -1870,6 +1905,44 @@ Key Nutdb::InsertAppointmentWithZone(DateTime appointmentTime, int utcOffset, Ke
     params.append(QVariant::fromValue(utcOffset));
 
     return CallStoredKeyProcedure("InsertAppointmentWithZone", params);
+}
+
+Key Nutdb::InsertAppointmentWithZone(DateTime appointmentTime, int utcOffset)
+{
+    QSqlDatabase db = QSqlDatabase::database();
+    QSqlQuery query;
+
+    QVariantList params;
+    params.append("appointment");
+    Key newobj = CallStoredKeyProcedure("InsertObject", params);
+
+    // If call was successful and returned a new key, populate the new appointment
+    if(newobj)
+    {
+        // Convert local time to UTC using utcOffset
+        QDateTime utcTime = appointmentTime.addSecs(-utcOffset * 3600); // Convert to UTC by subtracting the offset in seconds
+
+        query.prepare("INSERT INTO appointment (AppointmentId, AppointmentTime) VALUES (:id, :time)");
+        query.bindValue(":id", QVariant::fromValue(newobj));
+        query.bindValue(":time", utcTime); // Now binding UTC time
+
+        if (query.exec()) {
+            // Check if the insert was successful by checking affected rows
+            if (query.numRowsAffected() > 0) {
+                return newobj; // Return the new key as it was the last inserted id
+            } else {
+                return 0; // Insert failed but no specific error handling here
+            }
+        } else {
+            // Log or handle the error from the query
+            qDebug() << "Error inserting appointment:" << query.lastError().text();
+            return 0;
+        }
+    }
+    else {
+        // If CallStoredKeyProcedure failed or returned an invalid Key
+        return 0;
+    }
 }
 
 Key Nutdb::InsertCaseInventor(String firstName, String lastName, Key patentCaseId)

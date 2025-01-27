@@ -3,7 +3,8 @@
 namespace Nutmeg
 {
 
-PlusButton::PlusButton()
+PlusButton::PlusButton(QWidget *parent)
+    : PushButton(parent)
 {
     QPalette pal;
     setText("+");

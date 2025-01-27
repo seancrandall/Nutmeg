@@ -15,6 +15,7 @@ CONFIG(release):DEFINES += QT_NO_DEBUG_OUTPUT
 RC_ICONS += nutmeg.ico
 
 SOURCES += \
+    ../nmbroker/dbaccess/appointmenttypemodel.cpp \
     ../nmbroker/dbaccess/exception.cpp \
     ../nmbroker/dbaccess/viewcopyrightfilingtypesmodel.cpp \
     ../nmbroker/dbaccess/viewfilingsincompletemodel.cpp \
@@ -150,6 +151,7 @@ SOURCES += \
     windows/patentmatterdialog.cpp
 
 HEADERS += \
+    ../nmbroker/dbaccess/appointmenttypemodel.h \
     ../nmbroker/dbaccess/exception.h \
     ../nmbroker/dbaccess/viewcopyrightfilingtypesmodel.h \
     ../nmbroker/dbaccess/viewfilingsincompletemodel.h \

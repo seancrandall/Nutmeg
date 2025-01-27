@@ -12,7 +12,7 @@ class PlusButton : public Nutmeg::PushButton
 {
     Q_OBJECT
   public:
-    PlusButton();
+    PlusButton(QWidget *parent = nullptr);
 };
 
 } // namespace Nutmeg
