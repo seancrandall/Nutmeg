@@ -11,12 +11,12 @@
 #include "objects/task.h"
 
 #include "widgets/combobox.h"
-#include "widgets/deadlinespanel.h"
 #include "widgets/donebutton.h"
-#include "widgets/filingtaskpanel.h"
 #include "widgets/filingtypelabel.h"
-#include "widgets/entitiespanel.h"
-#include "widgets/flagspanel.h"
+#include "panels/deadlinespanel.h"
+#include "panels/filingtaskpanel.h"
+#include "panels/entitiespanel.h"
+#include "panels/flagspanel.h"
 
 #include "dbaccess/viewclientsmodel.h"
 #include "dbaccess/viewparalegalsmodel.h"
