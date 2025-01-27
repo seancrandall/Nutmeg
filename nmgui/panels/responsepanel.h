@@ -12,13 +12,14 @@
 #include "objects/response.h"
 #include "objects/task.h"
 
+#include "panels/flagspanel.h"
+#include "panels/entitiespanel.h"
+#include "panels/responsetaskpanel.h"
+#include "panels/deadlinespanel.h"
+
 #include "widgets/combobox.h"
-#include "widgets/deadlinespanel.h"
 #include "widgets/donebutton.h"
-#include "widgets/responsetaskpanel.h"
 #include "widgets/responsetypelabel.h"
-#include "widgets/entitiespanel.h"
-#include "widgets/flagspanel.h"
 
 namespace Nutmeg
 {

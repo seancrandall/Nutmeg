@@ -7,7 +7,7 @@
 #include "dialog.h"
 #include "windows/insertdialog.h"
 
-#include "widgets/insertpersonpanel.h"
+#include "panels/insertpersonpanel.h"
 
 namespace Nutmeg
 {

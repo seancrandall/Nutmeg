@@ -1,5 +1,6 @@
 #include "taskpanel.h"
 #include "widgets/arrowbutton.h"
+#include "windows/patentmatterdialog.h"
 
 namespace Nutmeg
 {

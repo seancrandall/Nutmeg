@@ -7,9 +7,10 @@
 
 #include "dialog.h"
 #include "settings.h"
-#include "windows/optionsdatabasepanel.h"
-#include "windows/optionsdisplaypanel.h"
-#include "windows/optionsdocumentpanel.h"
+
+#include "panels/optionsdatabasepanel.h"
+#include "panels/optionsdisplaypanel.h"
+#include "panels/optionsdocumentpanel.h"
 
 namespace Nutmeg
 {

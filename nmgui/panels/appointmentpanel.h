@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QWidget>
 
-#include "widgets/frame.h"
+#include "frame.h"
 
 namespace Nutmeg {
 

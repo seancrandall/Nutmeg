@@ -8,8 +8,9 @@
 #include <QWidget>
 
 #include "objects/patentmatter.h"
-#include "widgets/patentmatterpanel.h"
-#include "widgets/matterpanel.h"
+
+#include "panels/patentmatterpanel.h"
+#include "panels/matterpanel.h"
 
 
 namespace Nutmeg

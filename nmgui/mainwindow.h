@@ -9,15 +9,18 @@
 #include <QSplashScreen>
 #include <QPixmap>
 
+#include "nutmeg.h"
+#include "settings.h"
+
 #include "dbaccess/nutdb.h"
 #include "dbaccess/viewfilingsincompletemodel.h"
 #include "dbaccess/viewresponsesincompletemodel.h"
-#include "nutmeg.h"
-#include "settings.h"
+
+#include "panels/filingpanel.h"
+#include "panels/responsepanel.h"
+
 #include "widgets/addnewbutton.h"
-#include "widgets/filingpanel.h"
 #include "widgets/mattersearchbox.h"
-#include "widgets/responsepanel.h"
 #include "widgets/tableview.h"
 #include "windows/newfilingdialog.h"
 #include "windows/newresponsedialog.h"

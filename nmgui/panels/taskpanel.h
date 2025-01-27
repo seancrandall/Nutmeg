@@ -13,15 +13,14 @@
 #include "objects/person.h"
 #include "objects/response.h"
 
+#include "frame.h"
+
 #include "widgets/docketnumberbutton.h"
 #include "widgets/pushbutton.h"
 #include "widgets/tasktypecombo.h"
 #include "widgets/titleedit.h"
-#include "widgets/frame.h"
-
-#include "windows/matterdialog.h"
-#include "windows/patentmatterdialog.h"
 #include "widgets/informationbox.h"
+#include "widgets/arrowbutton.h"
 
 namespace Nutmeg
 {

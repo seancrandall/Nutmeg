@@ -31,6 +31,7 @@ SOURCES += \
     panels/filingpanel.cpp \
     panels/filingtaskpanel.cpp \
     panels/flagspanel.cpp \
+    panels/frame.cpp \
     panels/insertenterprisepanel.cpp \
     panels/insertpersonpanel.cpp \
     panels/matterpanel.cpp \
@@ -40,6 +41,7 @@ SOURCES += \
     panels/patentmatterpanel.cpp \
     panels/responsepanel.cpp \
     panels/responsetaskpanel.cpp \
+    panels/taskgroup.cpp \
     panels/taskpanel.cpp \
     widgets/abstractremovablebutton.cpp \
     widgets/comboeditadd.cpp \
@@ -49,13 +51,10 @@ SOURCES += \
     widgets/examinerinterviewinformation.cpp \
     widgets/filingtypelabel.cpp \
     widgets/flagcheckbox.cpp \
-    widgets/flagspanel.cpp \
-    widgets/frame.cpp \
     widgets/inventorbutton.cpp \
     widgets/inventoreditadd.cpp \
     widgets/peoplecompleter.cpp \
     widgets/personsearchbox.cpp \
-    widgets/taskgroup.cpp \
     widgets/workattorneysearchbox.cpp \
     widgets/xbutton.cpp \
     ../nmbroker/dbaccess/nutdb.cpp \
@@ -165,6 +164,7 @@ HEADERS += \
     panels/filingpanel.h \
     panels/filingtaskpanel.h \
     panels/flagspanel.h \
+    panels/frame.h \
     panels/insertenterprisepanel.h \
     panels/insertpersonpanel.h \
     panels/matterpanel.h \
@@ -174,6 +174,7 @@ HEADERS += \
     panels/patentmatterpanel.h \
     panels/responsepanel.h \
     panels/responsetaskpanel.h \
+    panels/taskgroup.h \
     panels/taskpanel.h \
     widgets/abstractremovablebutton.h \
     widgets/comboeditadd.h \
@@ -183,12 +184,10 @@ HEADERS += \
     widgets/examinerinterviewinformation.h \
     widgets/filingtypelabel.h \
     widgets/flagcheckbox.h \
-    widgets/frame.h \
     widgets/inventorbutton.h \
     widgets/inventoreditadd.h \
     widgets/peoplecompleter.h \
     widgets/personsearchbox.h \
-    widgets/taskgroup.h \
     widgets/workattorneysearchbox.h \
     widgets/xbutton.h \
     ../nmbroker/dbaccess/viewcontractingfirmsmodel.h \

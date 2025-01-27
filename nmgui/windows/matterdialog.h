@@ -5,7 +5,7 @@
 #include <QWidget>
 
 #include "windows/dialog.h"
-#include "widgets/matterpanel.h"
+#include "panels/matterpanel.h"
 
 namespace Nutmeg
 {

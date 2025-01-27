@@ -5,8 +5,8 @@
 #include <QObject>
 #include <QWidget>
 
-#include "widgets/insertenterprisepanel.h"
-#include "widgets/insertpersonpanel.h"
+#include "panels/insertenterprisepanel.h"
+#include "panels/insertpersonpanel.h"
 
 // #include "widgets/combobox.h"
 

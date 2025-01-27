@@ -10,7 +10,7 @@
 
 #include "objects/deadline.h"
 #include "widgets/dateedit.h"
-#include "widgets/frame.h"
+#include "frame.h"
 
 namespace Nutmeg
 {
