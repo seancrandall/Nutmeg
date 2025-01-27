@@ -34,6 +34,9 @@ SOURCES += \
     panels/insertenterprisepanel.cpp \
     panels/insertpersonpanel.cpp \
     panels/matterpanel.cpp \
+    panels/optionsdatabasepanel.cpp \
+    panels/optionsdisplaypanel.cpp \
+    panels/optionsdocumentpanel.cpp \
     panels/patentmatterpanel.cpp \
     panels/responsepanel.cpp \
     panels/responsetaskpanel.cpp \
@@ -42,19 +45,14 @@ SOURCES += \
     widgets/comboeditadd.cpp \
     widgets/editbutton.cpp \
     widgets/emailinventorsbutton.cpp \
-    widgets/entitiespanel.cpp \
     widgets/examinereditadd.cpp \
     widgets/examinerinterviewinformation.cpp \
-    widgets/filingpanel.cpp \
-    widgets/filingtaskpanel.cpp \
     widgets/filingtypelabel.cpp \
     widgets/flagcheckbox.cpp \
     widgets/flagspanel.cpp \
     widgets/frame.cpp \
     widgets/inventorbutton.cpp \
     widgets/inventoreditadd.cpp \
-    widgets/matterpanel.cpp \
-    widgets/patentmatterpanel.cpp \
     widgets/peoplecompleter.cpp \
     widgets/personsearchbox.cpp \
     widgets/taskgroup.cpp \
@@ -108,7 +106,6 @@ SOURCES += \
     widgets/combobox.cpp \
     widgets/criticalbox.cpp \
     widgets/dateedit.cpp \
-    widgets/deadlinespanel.cpp \
     widgets/docketnumberbutton.cpp \
     widgets/donebutton.cpp \
     widgets/eibutton.cpp \
@@ -118,7 +115,6 @@ SOURCES += \
     widgets/examinersearchbox.cpp \
     widgets/filingsview.cpp \
     widgets/informationbox.cpp \
-    widgets/insertenterprisepanel.cpp \
     widgets/inventorcompleter.cpp \
     widgets/inventorssearchbox.cpp \
     widgets/label.cpp \
@@ -130,11 +126,8 @@ SOURCES += \
     widgets/plusbutton.cpp \
     widgets/pushbutton.cpp \
     widgets/questionbox.cpp \
-    widgets/responsepanel.cpp \
-    widgets/responsetaskpanel.cpp \
     widgets/responsetypelabel.cpp \
     widgets/tableview.cpp \
-    widgets/taskpanel.cpp \
     widgets/tasktypecombo.cpp \
     widgets/textedit.cpp \
     widgets/titleedit.cpp \
@@ -145,7 +138,6 @@ SOURCES += \
     widgets/lineedit.cpp \
     widgets/groupbox.cpp \
     windows/insertdialog.cpp \
-    widgets/insertpersonpanel.cpp \
     windows/insertentitydialog.cpp \
     windows/insertinventordialog.cpp \
     windows/insertpatentexaminerdialog.cpp \
@@ -154,9 +146,6 @@ SOURCES += \
     windows/matterdialog.cpp \
     windows/newfilingdialog.cpp \
     windows/newresponsedialog.cpp \
-    windows/optionsdatabasepanel.cpp \
-    windows/optionsdisplaypanel.cpp \
-    windows/optionsdocumentpanel.cpp \
     windows/optionswindow.cpp \
     windows/patentmatterdialog.cpp
 
@@ -179,6 +168,9 @@ HEADERS += \
     panels/insertenterprisepanel.h \
     panels/insertpersonpanel.h \
     panels/matterpanel.h \
+    panels/optionsdatabasepanel.h \
+    panels/optionsdisplaypanel.h \
+    panels/optionsdocumentpanel.h \
     panels/patentmatterpanel.h \
     panels/responsepanel.h \
     panels/responsetaskpanel.h \
@@ -187,19 +179,13 @@ HEADERS += \
     widgets/comboeditadd.h \
     widgets/editbutton.h \
     widgets/emailinventorsbutton.h \
-    widgets/entitiespanel.h \
     widgets/examinereditadd.h \
     widgets/examinerinterviewinformation.h \
-    widgets/filingpanel.h \
-    widgets/filingtaskpanel.h \
     widgets/filingtypelabel.h \
     widgets/flagcheckbox.h \
-    widgets/flagspanel.h \
     widgets/frame.h \
     widgets/inventorbutton.h \
     widgets/inventoreditadd.h \
-    widgets/matterpanel.h \
-    widgets/patentmatterpanel.h \
     widgets/peoplecompleter.h \
     widgets/personsearchbox.h \
     widgets/taskgroup.h \
@@ -256,7 +242,6 @@ HEADERS += \
     widgets/combobox.h \
     widgets/criticalbox.h \
     widgets/dateedit.h \
-    widgets/deadlinespanel.h \
     widgets/docketnumberbutton.h \
     widgets/donebutton.h \
     widgets/eibutton.h \
@@ -266,7 +251,6 @@ HEADERS += \
     widgets/examinersearchbox.h \
     widgets/filingsview.h \
     widgets/informationbox.h \
-    widgets/insertenterprisepanel.h \
     widgets/inventorcompleter.h \
     widgets/inventorssearchbox.h \
     widgets/label.h \
@@ -278,11 +262,8 @@ HEADERS += \
     widgets/plusbutton.h \
     widgets/pushbutton.h \
     widgets/questionbox.h \
-    widgets/responsepanel.h \
-    widgets/responsetaskpanel.h \
     widgets/responsetypelabel.h \
     widgets/tableview.h \
-    widgets/taskpanel.h \
     widgets/tasktypecombo.h \
     widgets/textedit.h \
     widgets/titleedit.h \
@@ -293,7 +274,6 @@ HEADERS += \
     widgets/lineedit.h \
     widgets/groupbox.h \
     windows/insertdialog.h \
-    widgets/insertpersonpanel.h \
     windows/insertentitydialog.h \
     windows/insertinventordialog.h \
     windows/insertpatentexaminerdialog.h \
@@ -302,9 +282,6 @@ HEADERS += \
     windows/matterdialog.h \
     windows/newfilingdialog.h \
     windows/newresponsedialog.h \
-    windows/optionsdatabasepanel.h \
-    windows/optionsdisplaypanel.h \
-    windows/optionsdocumentpanel.h \
     windows/optionswindow.h \
     windows/patentmatterdialog.h
 
