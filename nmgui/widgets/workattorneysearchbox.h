@@ -1,9 +1,11 @@
 #ifndef NUTMEG_WORKATTORNEYSEARCHBOX_H
 #define NUTMEG_WORKATTORNEYSEARCHBOX_H
 
-#include "personsearchbox.h"
 #include <QObject>
 #include <QWidget>
+
+#include "personsearchbox.h"
+#include "dbaccess/viewworkattorneysmodel.h"
 
 namespace Nutmeg
 {
@@ -14,6 +16,11 @@ class WorkAttorneySearchBox : public Nutmeg::PersonSearchBox
   public:
     WorkAttorneySearchBox(QWidget *parent = nullptr);
     WorkAttorneySearchBox(Key initkey, QWidget *parent = nullptr);
+
+private:
+    viewWorkAttorneysModel *attyModel = new viewWorkAttorneysModel(this);
+
+    void Initialize(void);
 };
 
 } // namespace Nutmeg

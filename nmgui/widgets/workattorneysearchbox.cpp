@@ -3,8 +3,22 @@
 namespace Nutmeg
 {
 
-WorkAttorneySearchBox::WorkAttorneySearchBox(QWidget *parent) : Nutmeg::PersonSearchBox(parent) {}
+WorkAttorneySearchBox::WorkAttorneySearchBox(QWidget *parent)
+    : Nutmeg::PersonSearchBox(parent)
+{
+    model = attyModel;
+}
 
-WorkAttorneySearchBox::WorkAttorneySearchBox(Key initkey, QWidget *parent) : Nutmeg::PersonSearchBox(initkey, parent) {}
+WorkAttorneySearchBox::WorkAttorneySearchBox(Key initkey, QWidget *parent)
+    : Nutmeg::PersonSearchBox(parent)
+{
+    model = attyModel;
+    key = initkey;
+}
+
+void WorkAttorneySearchBox::Initialize()
+{
+    column = 3;
+}
 
 } // namespace Nutmeg

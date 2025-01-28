@@ -21,7 +21,7 @@ void NewFilingDialog::slotCreateMatter()
     Nutmeg::Key newMatterKey = 0;
     QString docket = ui->comboMatter->AttorneyDocketNumber;
 
-  TRY(switch (classSelection) {
+  switch (classSelection) {
         case 1:
             newMatterKey = Nutmeg::Nutdb::InsertPatentMatter(docket);
             break;
@@ -38,7 +38,7 @@ void NewFilingDialog::slotCreateMatter()
   }
 
 	  delete ui->comboMatter;
-	  ui->comboMatter = new Nutmeg::MatterSearchBox(this); ui->comboMatter->key = newMatterKey;)
+      ui->comboMatter = new Nutmeg::MatterSearchBox(this); ui->comboMatter->key = newMatterKey;
 }
 
 void NewFilingDialog::slotCreateTask()

@@ -20,12 +20,14 @@ TaskDialog::TaskDialog(Key taskid, QWidget *parent)
 
 void TaskDialog::slotScatter()
 {
-
+    taskPanel->Scatter();
+    matterPanel->slotScatter();
 }
 
 void TaskDialog::slotGather()
 {
-
+    taskPanel->Gather();
+    matterPanel->slotGather();
 }
 
 void TaskDialog::slotHandleRejected()
@@ -48,10 +50,10 @@ void TaskDialog::setupDisplay()
     updateLayout();
 }
 
-void TaskDialog::connectSignalsAndSlots()
-{
-    Dialog::connectSignalsAndSlots();
-}
+// void TaskDialog::connectSignalsAndSlots()
+// {
+//     Dialog::connectSignalsAndSlots();
+// }
 
 void TaskDialog::Initialize()
 {
@@ -59,6 +61,8 @@ void TaskDialog::Initialize()
     matterPanel = new MatterPanel(mMatter, this);
 
     setupDisplay();
+    connectSignalsAndSlots();
+    slotScatter();
 }
 
 } // namespace Nutmeg

@@ -16,6 +16,7 @@
 #include "widgets/dateedit.h"
 #include "widgets/checkbox.h"
 #include "widgets/labeledwidgetleft.h"
+#include "widgets/paralegalsearchbox.h"
 #include "widgets/spinbox.h"
 #include "widgets/doublespinbox.h"
 #include "widgets/workattorneysearchbox.h"
@@ -38,6 +39,7 @@ public:
 
 protected:
     Task* mTask;
+    Matter *mMatter;
 
     //Controls
     QGridLayout *grid;
@@ -46,7 +48,7 @@ protected:
     DoubleSpinBox *cExpectedFee = new DoubleSpinBox();
     DoubleSpinBox *cFeePercent = new DoubleSpinBox();
     WorkAttorneySearchBox *cWorkAttorney = new WorkAttorneySearchBox();
-    ComboBox *cParalegal = new ComboBox();
+    ParalegalSearchBox *cParalegal = new ParalegalSearchBox();
     DeadlinesPanel *cDeadlines;
     TaskTypeCombo *cTaskType;
 
@@ -63,6 +65,7 @@ protected:
 
 private:
     void Initialize(void);
+    viewParalegalsModel *mParalegalsModel = new viewParalegalsModel(this);
 };
 
 } // namespace Nutmeg

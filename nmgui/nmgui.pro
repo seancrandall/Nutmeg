@@ -58,6 +58,7 @@ SOURCES += \
     widgets/flagcheckbox.cpp \
     widgets/inventorbutton.cpp \
     widgets/inventoreditadd.cpp \
+    widgets/paralegalsearchbox.cpp \
     widgets/peoplecompleter.cpp \
     widgets/personsearchbox.cpp \
     widgets/spinbox.cpp \
@@ -198,6 +199,7 @@ HEADERS += \
     widgets/flagcheckbox.h \
     widgets/inventorbutton.h \
     widgets/inventoreditadd.h \
+    widgets/paralegalsearchbox.h \
     widgets/peoplecompleter.h \
     widgets/personsearchbox.h \
     widgets/spinbox.h \

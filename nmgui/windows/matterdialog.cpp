@@ -5,20 +5,24 @@ namespace Nutmeg
 
 MatterDialog::MatterDialog(Key matterid, QWidget *parent)
     : Nutmeg::Dialog(parent)
-    , matter(new Matter(matterid, this))
-    , panel(new MatterPanel(matter, this))
+    , mMatter(new Matter(matterid, this))
+    , mPanel(new MatterPanel(mMatter, this))
 {
-    MatterDialog::setupDisplay();
-    MatterDialog::connectSignalsAndSlots();
-    MatterDialog::slotScatter();
-    layoutWorkspace();
-    connectSignalsAndSlots();
+    Initialize();
+}
+
+MatterDialog::MatterDialog(Matter *matter, QWidget *parent)
+    : Nutmeg::Dialog(parent)
+    , mMatter(matter)
+    , mPanel(new MatterPanel(mMatter, this))
+{
+    Initialize();
 }
 
 
 void MatterDialog::setupDisplay(void)
 {
-    setWindowTitle("Matter " + matter->AttorneyDocketNumber);
+    setWindowTitle("Matter " + mMatter->AttorneyDocketNumber);
 }
 
 void MatterDialog::connectSignalsAndSlots(void)
@@ -28,17 +32,26 @@ void MatterDialog::connectSignalsAndSlots(void)
 
 void MatterDialog::slotScatter(void)
 {
-    panel->slotScatter();
+    mPanel->slotScatter();
 }
 
 void MatterDialog::slotGather(void)
 {
-    panel->slotGather();
+    mPanel->slotGather();
 }
 
 void MatterDialog::layoutWorkspace()
 {
-    workLayout->addWidget(panel, 0, 0);
+    workLayout->addWidget(mPanel, 0, 0);
+}
+
+void MatterDialog::Initialize()
+{
+    setupDisplay();
+    connectSignalsAndSlots();
+    slotScatter();
+    layoutWorkspace();
+    connectSignalsAndSlots();
 }
 
 } // namespace Nutmeg

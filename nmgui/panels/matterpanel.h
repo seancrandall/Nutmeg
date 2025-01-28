@@ -23,7 +23,9 @@
 #include "widgets/inventoreditadd.h"
 #include "widgets/labeledwidgetleft.h"
 #include "widgets/linedisplayid.h"
+#include "widgets/paralegalsearchbox.h"
 #include "widgets/titleedit.h"
+#include "widgets/workattorneysearchbox.h"
 
 namespace Nutmeg {
 
@@ -67,8 +69,8 @@ protected:
     ComboBox *cClient;
     TitleEdit *cTitle;
     ComboBox *cAssigningFirm;
-    ComboBox *cDefaultWorkAttorney;
-    ComboBox *cDefaultParalegal;
+    WorkAttorneySearchBox *cDefaultWorkAttorney;
+    ParalegalSearchBox *cDefaultParalegal;
     ComboBox *cJurisdiction;
 
     //Matter *matter;

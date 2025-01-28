@@ -31,7 +31,7 @@ protected:
     Matter *mMatter;
 
     virtual void setupDisplay(void) override;
-    virtual void connectSignalsAndSlots(void) override;
+    //virtual void connectSignalsAndSlots(void) override;
 
     TaskPanelFull *taskPanel;
     MatterPanel *matterPanel;

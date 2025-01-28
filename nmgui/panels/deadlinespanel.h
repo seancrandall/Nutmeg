@@ -22,7 +22,14 @@ class DeadlinesPanel : public Frame
 {
     Q_OBJECT
   public:
-    explicit DeadlinesPanel(std::shared_ptr<Deadline> deadline, QWidget *parent = nullptr);
+    explicit DeadlinesPanel(std::shared_ptr<Deadline> deadline, QWidget *parent);
+    explicit DeadlinesPanel(std::shared_ptr<Deadline> deadline, bool updateInstantly = true, QWidget *parent = nullptr);
+
+      bool instantUpdate = true; /*! True = write to db instantly. False = wait until Gather() called.*/
+
+  public slots:
+    void Scatter(void);
+    void Gather(void);
 
   signals:
 
@@ -37,8 +44,10 @@ class DeadlinesPanel : public Frame
     void slotUpdateSoftDeadline(void);
     void slotUpdateHardDeadline(void);
 
+
   private:
     void ConnectSignalsAndSlots(void);
+      void Initialize(void);
 };
 
 } // namespace Nutmeg

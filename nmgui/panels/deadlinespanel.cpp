@@ -7,6 +7,68 @@ DeadlinesPanel::DeadlinesPanel(std::shared_ptr<Deadline> deadline, QWidget *pare
     : Frame(parent)
     , mDeadline(deadline)
 {
+    Initialize();
+}
+
+DeadlinesPanel::DeadlinesPanel(std::shared_ptr<Deadline> deadline, bool updateInstantly, QWidget *parent)
+    : Frame(parent)
+    , instantUpdate(updateInstantly)
+    , mDeadline(deadline)
+{
+    Initialize();
+}
+
+void DeadlinesPanel::Scatter()
+{
+    triggerEdit->date = mDeadline->TriggerDate;
+    softEdit->date = mDeadline->SoftDeadline;
+    hardEdit->date = mDeadline->HardDeadline;
+    nextEdit->date = mDeadline->NextDeadline;
+}
+
+void DeadlinesPanel::Gather()
+{
+    mDeadline->holdTriggerDate(triggerEdit->date);
+    mDeadline->holdSoftDeadline(softEdit->date);
+    mDeadline->holdHardDeadline(hardEdit->date);
+    mDeadline->holdNextDeadline(nextEdit->date);
+    mDeadline->slotCommit();
+}
+
+void DeadlinesPanel::slotUpdateTriggerDate() {
+    if(instantUpdate) mDeadline->TriggerDate = triggerEdit->date;
+}
+
+void DeadlinesPanel::slotUpdateNextDeadline()
+{
+    if(instantUpdate){
+    QDate tempDate = nextEdit->date;
+    mDeadline->NextDeadline = tempDate;
+    }
+}
+
+void DeadlinesPanel::slotUpdateSoftDeadline()
+{
+    if(instantUpdate) mDeadline->SoftDeadline = softEdit->date;
+}
+
+void DeadlinesPanel::slotUpdateHardDeadline()
+{
+    if(instantUpdate) mDeadline->HardDeadline = hardEdit->date;
+}
+
+void DeadlinesPanel::ConnectSignalsAndSlots()
+{
+    QObject::connect(triggerEdit, &QDateEdit::editingFinished, this, &Nutmeg::DeadlinesPanel::slotUpdateTriggerDate);
+
+    QObject::connect(nextEdit, &QDateEdit::editingFinished, this, &Nutmeg::DeadlinesPanel::slotUpdateNextDeadline);
+
+    QObject::connect(softEdit, &QDateEdit::editingFinished, this, &Nutmeg::DeadlinesPanel::slotUpdateSoftDeadline);
+    QObject::connect(hardEdit, &QDateEdit::editingFinished, this, &Nutmeg::DeadlinesPanel::slotUpdateHardDeadline);
+}
+
+void DeadlinesPanel::Initialize()
+{
     //QVBoxLayout *layout = new QVBoxLayout(this);
     QGridLayout *layout = new QGridLayout(this);
 
@@ -19,10 +81,10 @@ DeadlinesPanel::DeadlinesPanel(std::shared_ptr<Deadline> deadline, QWidget *pare
     QVBoxLayout *hardLayout = new QVBoxLayout();
     hardLayout->setSpacing(1);
 
-    triggerEdit = new Nutmeg::DateEdit(mDeadline->TriggerDate, this);
-    nextEdit = new Nutmeg::DateEdit(mDeadline->NextDeadline, this);
-    softEdit = new Nutmeg::DateEdit(mDeadline->SoftDeadline, this);
-    hardEdit = new Nutmeg::DateEdit(mDeadline->HardDeadline, this);
+    triggerEdit = new Nutmeg::DateEdit(mDeadline->TriggerDate);
+    nextEdit = new Nutmeg::DateEdit(mDeadline->NextDeadline);
+    softEdit = new Nutmeg::DateEdit(mDeadline->SoftDeadline);
+    hardEdit = new Nutmeg::DateEdit(mDeadline->HardDeadline);
 
     QLabel *triggerLabel = new QLabel("Trigger Date");
     QLabel *nextLabel = new QLabel("Next Deadline");
@@ -51,36 +113,6 @@ DeadlinesPanel::DeadlinesPanel(std::shared_ptr<Deadline> deadline, QWidget *pare
     layout->addLayout(hardLayout, 1, 1);
 
     ConnectSignalsAndSlots();
-}
-
-void DeadlinesPanel::slotUpdateTriggerDate() {
-    mDeadline->TriggerDate = triggerEdit->date;
-}
-
-void DeadlinesPanel::slotUpdateNextDeadline()
-{
-    QDate tempDate = nextEdit->date;
-    mDeadline->NextDeadline = tempDate;
-}
-
-void DeadlinesPanel::slotUpdateSoftDeadline()
-{
-    mDeadline->SoftDeadline = softEdit->date;
-}
-
-void DeadlinesPanel::slotUpdateHardDeadline()
-{
-    mDeadline->HardDeadline = hardEdit->date;
-}
-
-void DeadlinesPanel::ConnectSignalsAndSlots()
-{
-    QObject::connect(triggerEdit, &QDateEdit::editingFinished, this, &Nutmeg::DeadlinesPanel::slotUpdateTriggerDate);
-
-    QObject::connect(nextEdit, &QDateEdit::editingFinished, this, &Nutmeg::DeadlinesPanel::slotUpdateNextDeadline);
-
-    QObject::connect(softEdit, &QDateEdit::editingFinished, this, &Nutmeg::DeadlinesPanel::slotUpdateSoftDeadline);
-    QObject::connect(hardEdit, &QDateEdit::editingFinished, this, &Nutmeg::DeadlinesPanel::slotUpdateHardDeadline);
 }
 
 } // namespace Nutmeg

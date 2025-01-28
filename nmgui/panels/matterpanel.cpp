@@ -77,16 +77,12 @@ void MatterPanel::initializeObjects()
     cTitle = new TitleEdit(matter);
 
     cAssigningFirm = new ComboBox();
-    cAssigningFirm->model = new viewContractingFirmsModel(this);
+    cAssigningFirm->model = new viewContractingFirmsModel();
     cAssigningFirm->column = 1;
 
-    cDefaultWorkAttorney = new ComboBox();
-    cDefaultWorkAttorney->model = new viewWorkAttorneysModel();
-    cDefaultWorkAttorney->column = 3;
+    cDefaultWorkAttorney = new WorkAttorneySearchBox();
 
-    cDefaultParalegal = new ComboBox();
-    cDefaultParalegal->model = new viewParalegalsModel();
-    cDefaultParalegal->column = 9;
+    cDefaultParalegal = new ParalegalSearchBox();
 
     cJurisdiction = new ComboBox();
     cJurisdiction->model = new viewJurisdictionsModel();
