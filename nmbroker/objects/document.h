@@ -37,9 +37,9 @@ class Document : public Nutmeg::Object
     String getTitle(void) { return mDat.Title; }
 
   public slots:
-    virtual bool slotSetId(Key newval) override;
+    virtual bool SetId(Key newval) override;
     bool slotUpdate(DocumentData dat);
-    virtual bool slotCommit(void) override;
+    virtual bool Commit(void) override;
     bool slotSetFullyQualifiedPath(String newval);
     bool slotSetURL(String newval);
 

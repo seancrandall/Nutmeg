@@ -45,9 +45,9 @@ class Matter : public Nutmeg::Object
     Key getOldMatterId(void) { return mDat.OldMatterId; }
 
   public slots:
-    virtual bool slotSetId(Key id) override;
+    virtual bool SetId(Key id) override;
     bool slotUpdate(MatterData dat);
-    virtual bool slotCommit(void) override;
+    virtual bool Commit(void) override;
 
     bool slotSetfkParent(Key newfk);
     bool slotSetAttorneyDocketNumber(QString newnum);

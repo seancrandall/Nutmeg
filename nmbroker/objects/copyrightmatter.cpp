@@ -31,7 +31,7 @@ bool CopyrightMatter::getIsRegistered()
     return mIsRegistered;
 }
 
-bool CopyrightMatter::slotSetId(Key newval)
+bool CopyrightMatter::SetId(Key newval)
 {
     return InitializeCopyrightMatter(newval);
 }
@@ -42,13 +42,13 @@ bool CopyrightMatter::slotUpdate(CopyrightMatterData dat)
     bool result = Nutdb::UpdateCopyrightMatter(dat);
     if(!result) return false;
 
-    result = Matter::slotCommit();
+    result = Matter::Commit();
     if(!result) return false;
 
     return InitializeCopyrightMatter(dat.CopyrightMatterId);
 }
 
-bool CopyrightMatter::slotCommit()
+bool CopyrightMatter::Commit()
 {
     return slotUpdate(mDat);
 }

@@ -27,8 +27,8 @@ class Filing : public Nutmeg::Task
   public slots:
 
     bool slotUpdate(FilingData dat);
-    virtual bool slotSetId(Key newval) override;
-    virtual bool slotCommit(void) override;
+    virtual bool SetId(Key newval) override;
+    virtual bool Commit(void) override;
 
     bool setfkFilingStatus(Key newval);
     bool setfkAsFiledDocument(Key newval);

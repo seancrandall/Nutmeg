@@ -40,18 +40,18 @@ bool Task::slotUpdate(TaskData dat)
     bool result = Nutdb::UpdateTask(dat);
     if(!result) return false;
 
-    result = Object::slotCommit();
+    result = Object::Commit();
     if(!result) return false;
 
     return InitializeTask(dat.TaskId);
 }
 
-bool Task::slotSetId(Key newid)
+bool Task::SetId(Key newid)
 {
     return InitializeTask(newid);
 }
 
-bool Task::slotCommit()
+bool Task::Commit()
 {
     return slotUpdate(mDat);
 }

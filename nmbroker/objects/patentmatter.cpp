@@ -154,18 +154,18 @@ bool PatentMatter::slotUpdate(PatentMatterData dat)
     bool result = Nutdb::UpdatePatentMatter(dat);
     if(!result) return false;
 
-    result = Matter::slotCommit();
+    result = Matter::Commit();
     if(!result) return false;
 
     return InitializePatentMatter(dat.PatentMatterId);
 }
 
-bool PatentMatter::slotSetId(Key newval)
+bool PatentMatter::SetId(Key newval)
 {
     return InitializePatentMatter(newval);
 }
 
-bool PatentMatter::slotCommit(void)
+bool PatentMatter::Commit(void)
 {
     return slotUpdate(mDat);
 }

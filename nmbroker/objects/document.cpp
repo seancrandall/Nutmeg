@@ -17,7 +17,7 @@ Document::Document(String Title, QObject *parent) : Object(parent) // Call the b
     InitializeDocument(newid);
 }
 
-bool Document::slotSetId(Key newval)
+bool Document::SetId(Key newval)
 {
     return InitializeDocument(newval);
 }
@@ -27,13 +27,13 @@ bool Document::slotUpdate(DocumentData dat)
     bool result = Nutdb::UpdateDocument(dat);
     if(!result) return false;
 
-    result = Object::slotCommit();
+    result = Object::Commit();
     if(!result) return false;
 
     return InitializeDocument(dat.DocumentId);
 }
 
-bool Document::slotCommit()
+bool Document::Commit()
 {
     return slotUpdate(mDat);
 }

@@ -21,18 +21,18 @@ bool Appointment::slotUpdate(AppointmentData dat)
     bool result = Nutdb::UpdateAppointment(dat);
     if(!result) return false;
 
-    result = Object::slotCommit();
+    result = Object::Commit();
     if(!result) return false;
 
     return InitializeAppointment(dat.AppointmentId);
 }
 
-bool Appointment::slotSetId(Key newid)
+bool Appointment::SetId(Key newid)
 {
     return InitializeAppointment(newid);
 }
 
-bool Appointment::slotCommit()
+bool Appointment::Commit()
 {
     return slotUpdate(mDat);
 }
@@ -58,7 +58,7 @@ bool Appointment::InitializeAppointment(Key id)
     {
         return false;
     }
-    return Object::slotSetId(id);
+    return Object::SetId(id);
 }
 
 } // namespace Nutmeg

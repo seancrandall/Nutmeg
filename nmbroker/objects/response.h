@@ -43,8 +43,8 @@ class Response : public Nutmeg::Task
 
   public slots:
     bool slotUpdate(ResponseData dat);
-    virtual bool slotSetId(Key id) override;
-    virtual bool slotCommit(void) override;
+    virtual bool SetId(Key id) override;
+    virtual bool Commit(void) override;
 
     bool slotSetfkClientOfficeHours(Key newval);
     bool slotSetfkExaminerInterview(Key newval);

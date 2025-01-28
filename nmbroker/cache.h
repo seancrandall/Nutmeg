@@ -2,13 +2,17 @@
 #define NUTMEG_CACHE_H
 
 #include <QCache>
-#include <functional>
-
 #include "nutmeg.h"
 
 namespace Nutmeg
 {
 class Object;
+
+// Forward declaration of the cache to allow dbcache to be declared first
+template<typename T> class cache;
+
+// Declare dbcache here before defining the cache class
+extern cache<Object> dbcache;
 
 template<typename T>
 class cache : public QCache<Key, T*>
@@ -16,26 +20,19 @@ class cache : public QCache<Key, T*>
 public:
     cache(int capacity = 100) : QCache<Key, T*>(capacity) {}
 
-    template<typename U>
-    /**
-     * @brief getObjectFromCache
-     * @param id Primary key of the object to fetch from cache
-     * @param fetchMethod is a pointer to the function that <T> uses to get a record from the DB
-     * @param obj The object actually calling the function. If calling from inside class, pass "this"
-     * @return Rerturns a pointer to
-     */
-    static T* getObjectFromCache(Key id, T* (U::*fetchMethod)(Key), U* obj)
+    static T* getObjectFromCache(Key id, T* (*fetchMethod)(Key))
     {
-        if(cache<T>::contains(id))
+        // Use the global instance of cache (dbcache) to call member functions
+        if(dbcache.contains(id))
         {
-            return *cache<T>::object(id);
+            return *dbcache.object(id);
         }
         else
         {
-            T* result = (obj->*fetchMethod)(id);
+            T* result = fetchMethod(id);
             if(result)
             {
-                cache<T>::insert(id, result);
+                dbcache.insert(id, &result);
             }
             return result;
         }
@@ -43,14 +40,11 @@ public:
 
     static void invalidateObjectCache(Key id)
     {
-        cache<T>::remove(id);
+        dbcache.remove(id);
     }
 };
 
-// Global cache instances for each type if needed
-extern cache<Object> dbcache;
-
-// Initialize caches
+// Function to initialize caches if needed
 void initCaches();
 }
 

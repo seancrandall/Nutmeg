@@ -77,8 +77,8 @@ class Task : public Nutmeg::Object
     bool slotInsertWithMatter(Key matterid, Date triggerDate);
 
     bool slotUpdate(TaskData dat);
-    virtual bool slotSetId(Key newid) override;
-    virtual bool slotCommit(void) override;
+    virtual bool SetId(Key newid) override;
+    virtual bool Commit(void) override;
 
     bool slotSetfkMatter(Key newfk);
     bool slotSetDateAssigned(Date newdate);

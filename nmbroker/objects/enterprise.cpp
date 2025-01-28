@@ -16,7 +16,7 @@ Enterprise::Enterprise(String enterpriseName, QObject *parent) : Nutmeg::Entity{
     InitializeEnterprise(newid);
 }
 
-bool Enterprise::slotSetId(Key newval)
+bool Enterprise::SetId(Key newval)
 {
     return InitializeEnterprise(newval);
 }
@@ -26,13 +26,13 @@ bool Enterprise::slotUpdate(EnterpriseData dat)
     bool result = Nutdb::UpdateEnterprise(dat);
     if(!result) return false;
 
-    result = Entity::slotCommit();
+    result = Entity::Commit();
     if(!result) return false;
 
     return InitializeEnterprise(dat.EnterpriseId);
 }
 
-bool Enterprise::slotCommit()
+bool Enterprise::Commit()
 {
     return slotUpdate(mDat);
 }

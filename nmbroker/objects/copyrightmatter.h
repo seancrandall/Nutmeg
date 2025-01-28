@@ -44,9 +44,9 @@ class CopyrightMatter : public Nutmeg::Matter
     bool getIsRegistered(void);
 
   public slots:
-    virtual bool slotSetId(Key newval) override;
+    virtual bool SetId(Key newval) override;
     bool slotUpdate(CopyrightMatterData dat);
-    virtual bool slotCommit(void) override;
+    virtual bool Commit(void) override;
 
     bool slotSetfkAuthor(Key newval);
     bool slotSetCreated(Date newval);

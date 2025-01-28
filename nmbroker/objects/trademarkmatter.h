@@ -55,8 +55,8 @@ class TrademarkMatter : public Nutmeg::Matter
 
   public slots:
     bool slotUpdate(TrademarkMatterData dat);
-    virtual bool slotSetId(Key newval) override;;
-    virtual bool slotCommit(void) override;
+    virtual bool SetId(Key newval) override;;
+    virtual bool Commit(void) override;
 
     bool slotSetFirstUseInCommerce(Date newval);
     bool slotSetInternationalClass(int newval);

@@ -22,7 +22,7 @@ Matter::Matter(QString docketNumber, QObject *parent) : Nutmeg::Object(parent)
     InitializeMatter(newid);
 }
 
-bool Matter::slotSetId(Key newid)
+bool Matter::SetId(Key newid)
 {
     return InitializeMatter(newid);
 }
@@ -34,7 +34,7 @@ bool Matter::slotUpdate(MatterData dat)
     if(!result) return false;
 
     //Also commit object data
-    result = Object::slotCommit();
+    result = Object::Commit();
     if(!result) return false;
 
     //Read back from DB
@@ -42,7 +42,7 @@ bool Matter::slotUpdate(MatterData dat)
     return result;
 }
 
-bool Matter::slotCommit()
+bool Matter::Commit()
 {
     return slotUpdate(mDat);
 }

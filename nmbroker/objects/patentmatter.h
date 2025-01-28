@@ -58,8 +58,8 @@ class PatentMatter : public Nutmeg::Matter
     bool slotAddSupervisoryExaminer(String first, String last);
 
     bool slotUpdate(PatentMatterData dat);
-    virtual bool slotSetId(Key newval) override;
-    virtual bool slotCommit(void) override;
+    virtual bool SetId(Key newval) override;
+    virtual bool Commit(void) override;
 
     bool slotSetFilingDate(Date newval);
     bool slotSetApplicationSerialNumber(String newval);

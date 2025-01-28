@@ -21,18 +21,18 @@ bool Entity::slotUpdate(EntityData dat)
     bool result = Nutdb::UpdateEntity(dat);
     if(!result) return false;
 
-    result = Object::slotCommit();
+    result = Object::Commit();
     if(!result) return false;
 
     return InitializeEntity(dat.EntityId);
 }
 
-bool Entity::slotSetId(Key newval)
+bool Entity::SetId(Key newval)
 {
     return InitializeEntity(newval);
 }
 
-bool Entity::slotCommit()
+bool Entity::Commit()
 {
     return slotUpdate(mDat);
 }

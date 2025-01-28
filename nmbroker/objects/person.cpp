@@ -22,7 +22,7 @@ Person::Person(String first, String last, QObject *parent)
     InitializePerson(id);
 }
 
-bool Person::slotSetId(Key newval)
+bool Person::SetId(Key newval)
 {
     return InitializePerson(newval);
 }
@@ -32,13 +32,13 @@ bool Person::slotUpdate(PersonData dat)
     bool result = Nutdb::UpdatePerson(dat);
     if(!result) return false;
 
-    result = Entity::slotCommit();
+    result = Entity::Commit();
     if(!result) return false;
 
     return InitializePerson(dat.PersonId);
 }
 
-bool Person::slotCommit()
+bool Person::Commit()
 {
     return slotUpdate(mDat);
 }

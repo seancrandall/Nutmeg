@@ -32,18 +32,18 @@ bool Response::slotUpdate(ResponseData dat)
     bool result = Nutdb::UpdateResponse(dat);
     if(!result) return false;
 
-    result = Task::slotCommit();
+    result = Task::Commit();
     if(!result) return false;
 
     return InitializeResponse(dat.ResponseId);
 }
 
-bool Response::slotSetId(Key id)
+bool Response::SetId(Key id)
 {
     return InitializeResponse(id);
 }
 
-bool Response::slotCommit()
+bool Response::Commit()
 {
     return slotUpdate(mDat);
 }

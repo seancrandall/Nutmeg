@@ -3,19 +3,39 @@
 namespace Nutmeg
 {
 
-Object::Object(Key id, QObject *parent) : QObject(parent)
+Object::Object(Key id, QObject *parent) //: QObject(parent)
 {
-    InitializeObject(id);
-    mObjectIsNull = false;
+    Q_UNUSED(parent);
+    Object* cachedObject = cache<Object>::getObjectFromCache(id, &Object::GetObject);
+    if (cachedObject) {
+        // If we find the object in cache, copy its state
+        *this = *cachedObject;
+        mObjectIsNull = false;
+    } else {
+        // If not in cache, initialize normally
+        InitializeObject(id);
+    }
 }
 
-Object::Object(QObject *parent) : QObject(parent)
+// You'll need this static method in your Object class:
+Object* Object::GetObject(Key id) {
+    Object* obj = new Object(id, nullptr); // Create a new object to fetch from DB
+    if (obj->mObjectIsNull) {
+        delete obj; // Clean up if initialization failed
+        return nullptr;
+    }
+    return obj;
+}
+
+Object::Object(QObject *parent) //: QObject(parent)
 {
+    Q_UNUSED(parent);
     InitializeObject(0);
 }
 
-Object::Object(QString objectType, QObject *parent) : QObject(parent)
+Object::Object(QString objectType, QObject *parent) //: QObject(parent)
 {
+    Q_UNUSED(parent);
     Key newkey = Nutdb::InsertObject(objectType);
     if(newkey == 0)
     {
@@ -29,9 +49,10 @@ Object::Object(QString objectType, QObject *parent) : QObject(parent)
     }
 }
 
+
 bool Object::setfkObjectType(Key newfk)
 {
-    bool result = WriteKey(objectTableName, "objectType", newfk);
+    bool result = WriteKey("object", "objectType", newfk);
     if(result) mDat.fkObjectType = newfk;
     return result;
 }
@@ -148,8 +169,7 @@ bool Object::anyDirtyValues() const
     });
 }
 
-
-bool Object::slotUpdate(ObjectData dat) {
+bool Object::Update(ObjectData dat) {
     bool result = Nutdb::UpdateObject(dat);
     if(!result) return false;
 
@@ -158,24 +178,23 @@ bool Object::slotUpdate(ObjectData dat) {
     return result;
 }
 
-bool Object::slotSetId(Key newid)
+bool Object::SetId(Key newid)
 {
     return InitializeObject(newid);
     dirty = QHash<QString, bool>();
 }
 
-void Object::slotChangeObjectType(QString newObjectType)
+void Object::ChangeObjectType(QString newObjectType)
 {
     mObjectType = newObjectType;
     mDat.fkObjectType = Nutdb::GetObjectTypeId(newObjectType);
     commit();
 }
 
-bool Object::slotCommit() { return slotUpdate(mDat); }
+bool Object::Commit() { return Update(mDat); }
 
 bool Object::InitializeObject(Key newid)
 {
-
     if(newid <= 0)
     {
         mObjectIsNull = true;

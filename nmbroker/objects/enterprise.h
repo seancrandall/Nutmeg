@@ -32,9 +32,9 @@ class Enterprise : public Nutmeg::Entity
     Key getOldOrganizationId(void) { return mDat.OldOrganizationId; }
 
   public slots:
-    virtual bool slotSetId(Key newval) override;
+    virtual bool SetId(Key newval) override;
     bool slotUpdate(EnterpriseData dat);
-    virtual bool slotCommit(void) override;
+    virtual bool Commit(void) override;
 
     bool slotSetEnterpriseName(String newval);
     bool slotSetfkBusinessJurisdiction(Key newval);

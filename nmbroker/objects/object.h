@@ -32,15 +32,16 @@ namespace Nutmeg
  *  last write to the db was successful. If there are errors, you can check the dbErrors
  *  property, which is a vector or time-stampd error messages.
  */
-class Object : public QObject
+class Object //: public QObject
 {
-    Q_OBJECT
+    //Q_OBJECT
   public:
     explicit Object(Key object_id, QObject *parent = nullptr);
     explicit Object(QObject *parent = nullptr);
     explicit Object(QString objectType,
                     QObject *parent = nullptr); /// Should almost(?) never be called. Instead,
                                                 /// insert the correct higher-level object
+    virtual ~Object() = default;
 
     Property(getId, slotSetId) Key ObjectId;
     Property(getfkObjectType, setfkObjectType) Key fkObjectType;
@@ -81,20 +82,20 @@ class Object : public QObject
     bool getObjectIsNull(void) {return mObjectIsNull;}
     bool anyDirtyValues(void) const;
 
-    void commit(void) { slotCommit(); }
+    void commit(void) { Commit(); }
 
-  public slots:
-    bool slotUpdate(ObjectData dat);
-    virtual bool slotSetId(Key newid);
-    void slotChangeObjectType(QString newObjectType);
-    virtual bool slotCommit(void);
+    //Object& operator=(Object&& other) noexcept;
 
-    void slotSetFlag(QString camelCase) { SetFlag(camelCase); }
-    void slotClearFlag(QString camelCase) { ClearFlag(camelCase); }
-    void slotTagObject(QString tagText) { TagObject(tagText); }
-    void slotClearTag(QString tagText) { ClearTag(tagText); }
+    bool Update(ObjectData dat);
+    virtual bool SetId(Key newid);
+    void ChangeObjectType(QString newObjectType);
+    virtual bool Commit(void);
 
-  signals:
+    //void SetFlag(QString camelCase) { SetFlag(camelCase); }
+    //void slotClearFlag(QString camelCase) { ClearFlag(camelCase); }
+    //void slotTagObject(QString tagText) { TagObject(tagText); }
+    //void slotClearTag(QString tagText) { ClearTag(tagText); }
+
 
   protected:
     ObjectData mDat;
@@ -120,8 +121,10 @@ class Object : public QObject
 
     QHash<QString, bool> dirty;
     QVector<QString> mErrors;
-    const QString objectTableName = "object";
     Key primaryKey = 0;
+
+private:
+    static Object* GetObject(Key id);
 };
 
 } // namespace Nutmeg

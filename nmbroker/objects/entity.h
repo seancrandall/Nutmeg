@@ -59,8 +59,8 @@ class Entity : public Nutmeg::Object
 
   public slots:
     bool slotUpdate(EntityData dat);
-    virtual bool slotSetId(Key newval) override;
-    virtual bool slotCommit(void) override;
+    virtual bool SetId(Key newval) override;
+    virtual bool Commit(void) override;
 
     bool slotSetEntityName(String newval);
     bool slotSetFullLegalName(String newval);

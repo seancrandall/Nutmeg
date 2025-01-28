@@ -41,9 +41,9 @@ class Person : public Nutmeg::Entity
     Key getNewRole(void) { return 0; } // This is a write-only property
 
   public slots:
-    virtual bool slotSetId(Key newval) override;
+    virtual bool SetId(Key newval) override;
     bool slotUpdate(PersonData dat);
-    virtual bool slotCommit(void) override;
+    virtual bool Commit(void) override;
 
     bool slotSetFirstName(String newval);
     bool slotSetLastName(String newval);

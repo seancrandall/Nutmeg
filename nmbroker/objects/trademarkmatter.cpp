@@ -135,18 +135,18 @@ bool TrademarkMatter::slotUpdate(TrademarkMatterData dat)
 {
     bool result = Nutdb::UpdateTrademarkMatter(dat);
     if(!result) return false;
-    result = Matter::slotCommit();
+    result = Matter::Commit();
     if(!result) return false;
 
     return InitializeTrademarkMatter(dat.TrademarkMatterId);
 }
 
-bool TrademarkMatter::slotSetId(Key newval)
+bool TrademarkMatter::SetId(Key newval)
 {
     return InitializeTrademarkMatter(newval);
 }
 
-bool TrademarkMatter::slotCommit()
+bool TrademarkMatter::Commit()
 {
    return slotUpdate(mDat);
 }

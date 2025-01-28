@@ -15,18 +15,18 @@ bool Filing::slotUpdate(FilingData dat)
     bool result = Nutdb::UpdateFiling(dat);
     if(!result) return false;
 
-    result = Task::slotCommit();
+    result = Task::Commit();
     if(!result) return false;
 
     return InitializeFiling(dat.FilingId);
 }
 
-bool Filing::slotSetId(Key newval)
+bool Filing::SetId(Key newval)
 {
     return InitializeFiling(newval);
 }
 
-bool Filing::slotCommit()
+bool Filing::Commit()
 {
     return slotUpdate(mDat);
 }
