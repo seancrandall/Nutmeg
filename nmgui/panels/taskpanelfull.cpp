@@ -31,6 +31,7 @@ void TaskPanelFull::Initialize()
     cTaskType = new TaskTypeCombo(mTask);
     lTaskType = new LabeledWidgetLeft("Task Type", cTaskType);
     mDeadline = std::make_shared<Deadline>(mTask->fkDeadline);
+    cDeadlines = new DeadlinesPanel(mDeadline, this);
 
     grid = new QGridLayout(this);
     grid->addLayout(lDateAssigned, 0, 0);
