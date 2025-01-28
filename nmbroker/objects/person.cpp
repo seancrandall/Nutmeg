@@ -3,20 +3,38 @@
 namespace Nutmeg
 {
 
-Person::Person(QObject *parent)
-    : Nutmeg::Entity(parent)
+Person::Person()
+    : Nutmeg::Entity()
 {
     InitializePerson(0);
 }
 
-Person::Person(Key id, QObject *parent)
-    : Nutmeg::Entity(id, parent)
+Person::Person(Key id)
+    : Nutmeg::Entity(id)
 {
-    InitializePerson(id);
+    Person* cachedPerson = cache<Person>::getObjectFromCache(id, &Person::GetPerson);
+    if (cachedPerson) {
+        // If we find the Person in cache, copy its state
+        *this = *cachedPerson;
+        mObjectIsNull = false; // Assuming this is inherited from Object via Entity
+    } else {
+        // If not in cache, proceed with initialization
+        InitializePerson(id);
+    }
 }
 
-Person::Person(String first, String last, QObject *parent)
-    : Nutmeg::Entity(parent)
+// Static method to fetch a Person from the database if not in cache
+Person* Person::GetPerson(Key id) {
+    Person* person = new Person(id); // This will call the constructor again, but now with cache check
+    if (person->mObjectIsNull) { // Assuming this is inherited from Object via Entity
+        delete person; // Clean up if initialization failed
+        return nullptr;
+    }
+    return person;
+}
+
+Person::Person(String first, String last)
+    : Nutmeg::Entity()
 {
     Key id = Nutdb::InsertPerson(first, last);
     InitializePerson(id);

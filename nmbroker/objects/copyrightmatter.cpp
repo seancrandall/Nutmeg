@@ -3,14 +3,32 @@
 namespace Nutmeg
 {
 
-CopyrightMatter::CopyrightMatter(QObject *parent) : Nutmeg::Matter{parent} {}
+CopyrightMatter::CopyrightMatter() : Nutmeg::Matter{} {}
 
-CopyrightMatter::CopyrightMatter(Key newid, QObject *parent) : Matter(newid, parent)
+CopyrightMatter::CopyrightMatter(Key newid) : Matter(newid)
 {
-    InitializeCopyrightMatter(newid);
+    CopyrightMatter* cachedCopyrightMatter = cache<CopyrightMatter>::getObjectFromCache(newid, &CopyrightMatter::GetCopyrightMatter);
+    if (cachedCopyrightMatter) {
+        // If we find the CopyrightMatter in cache, copy its state
+        *this = *cachedCopyrightMatter;
+        mObjectIsNull = false; // Assuming this is inherited from Object/Matter
+    } else {
+        // If not in cache, proceed with initialization
+        InitializeCopyrightMatter(newid);
+    }
 }
 
-CopyrightMatter::CopyrightMatter(String docketNumber, QObject *parent) : Matter(parent)
+// Static method to fetch a CopyrightMatter from the database if not in cache
+CopyrightMatter* CopyrightMatter::GetCopyrightMatter(Key id) {
+    CopyrightMatter* copyrightMatter = new CopyrightMatter(id); // This will call the constructor again, but now with cache check
+    if (copyrightMatter->mObjectIsNull) { // Assuming this is inherited from Object/Matter
+        delete copyrightMatter; // Clean up if initialization failed
+        return nullptr;
+    }
+    return copyrightMatter;
+}
+
+CopyrightMatter::CopyrightMatter(String docketNumber) : Matter()
 {
     Key newid = Nutdb::InsertCopyrightMatter(docketNumber);
     InitializeCopyrightMatter(newid);

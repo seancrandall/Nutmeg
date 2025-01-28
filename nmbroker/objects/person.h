@@ -2,18 +2,17 @@
 #define NUTMEG_PERSON_H
 
 #include "entity.h"
-#include <QObject>
 
+#define personTableName "person"
 namespace Nutmeg
 {
 
 class Person : public Nutmeg::Entity
 {
-    Q_OBJECT
   public:
-    explicit Person(QObject *parent = nullptr);
-    explicit Person(Key id, QObject *parent = nullptr);
-    explicit Person(String first, String last, QObject *parent = nullptr);
+    explicit Person();
+      explicit Person(Key id);
+    explicit Person(String first, String last);
 
     // Properties
     Property(getId, slotSetId) Key PersonId;
@@ -40,7 +39,6 @@ class Person : public Nutmeg::Entity
 
     Key getNewRole(void) { return 0; } // This is a write-only property
 
-  public slots:
     virtual bool SetId(Key newval) override;
     bool slotUpdate(PersonData dat);
     virtual bool Commit(void) override;
@@ -62,7 +60,8 @@ class Person : public Nutmeg::Entity
     bool InitializePerson(Key newid);
 
     PersonData mDat;
-    const QString personTableName = "person";
+private:
+    static Person* GetPerson(Key id);
 };
 
 } // namespace Nutmeg

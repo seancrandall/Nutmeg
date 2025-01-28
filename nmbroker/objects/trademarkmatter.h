@@ -2,18 +2,18 @@
 #define NUTMEG_TRADEMARKMATTER_H
 
 #include "matter.h"
-#include <QObject>
+
+#define trademarkMatterTableName "trademarkMatter"
 
 namespace Nutmeg
 {
 
 class TrademarkMatter : public Nutmeg::Matter
 {
-    Q_OBJECT
   public:
-    explicit TrademarkMatter(QObject *parent = nullptr);
-    explicit TrademarkMatter(Key id, QObject *parent = nullptr);
-    explicit TrademarkMatter(QString docketNumber, QObject *parent = nullptr);
+    explicit TrademarkMatter();
+      explicit TrademarkMatter(Key id);
+    explicit TrademarkMatter(QString docketNumber);
 
     // Properties
     Property(getId, slotSetId) Key TrademarkMatterId;
@@ -53,7 +53,6 @@ class TrademarkMatter : public Nutmeg::Matter
     String getMark(void) { return mDat.Mark; }
     String getGoodsServices(void) { return mDat.GoodsServices; }
 
-  public slots:
     bool slotUpdate(TrademarkMatterData dat);
     virtual bool SetId(Key newval) override;;
     virtual bool Commit(void) override;
@@ -96,7 +95,9 @@ class TrademarkMatter : public Nutmeg::Matter
     bool InitializeTrademarkMatter(Key id);
 
     TrademarkMatterData mDat;
-    const QString trademarkMatterTableName = "trademarkMatter";
+
+private:
+    static TrademarkMatter* GetTrademarkMatter(Key id);
 };
 
 } // namespace Nutmeg

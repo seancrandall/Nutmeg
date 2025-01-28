@@ -2,18 +2,17 @@
 #define NUTMEG_ENTITY_H
 
 #include "object.h"
-#include <QObject>
 
+#define entityTableName "entity"
 namespace Nutmeg
 {
 
 class Entity : public Nutmeg::Object
 {
-    Q_OBJECT
   public:
-    explicit Entity(QObject *parent = nullptr);
-    explicit Entity(Key id, QObject *parent = nullptr);
-    explicit Entity(String entityName, QObject *parent = nullptr);
+    explicit Entity();
+      explicit Entity(Key id);
+    explicit Entity(String entityName);
 
     // Properties
     Property(getId, slotSetId) Key EntityId;
@@ -32,32 +31,19 @@ class Entity : public Nutmeg::Object
 
     // Getters
     virtual Key getId(void) override { return mDat.EntityId; }
-
     String getEntityName(void) { return mDat.EntityName; }
-
     String getFullLegalName(void) { return mDat.FullLegalName; }
-
     String getPrimaryAddress(void) { return mDat.PrimaryAddress; }
-
     String getSecondaryAddress(void) { return mDat.SecondaryAddress; }
-
     String getWebsite(void) { return mDat.Website; }
-
     String getPrimaryPhone(void) { return mDat.PrimaryPhone; }
-
     String getSecondaryPhone(void) { return mDat.SecondaryPhone; }
-
     String getFaxNumber(void) { return mDat.FaxNumber; }
-
     String getPrimaryEmail(void) { return mDat.PrimaryEmail; }
-
     String getSecondaryEmail(void) { return mDat.SecondaryEmail; }
-
     Key getfkJurisdiction(void) { return mDat.fkJurisdiction; }
-
     String getDocketPrefix(void) { return mDat.DocketPrefix; }
 
-  public slots:
     bool slotUpdate(EntityData dat);
     virtual bool SetId(Key newval) override;
     virtual bool Commit(void) override;
@@ -94,7 +80,8 @@ class Entity : public Nutmeg::Object
     bool InitializeEntity(Key id);
 
     EntityData mDat;
-    const QString entityTableName = "entity";
+private:
+    static Entity* GetEntity(Key id);
 };
 
 } // namespace Nutmeg

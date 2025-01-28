@@ -3,14 +3,33 @@
 namespace Nutmeg
 {
 
-Appointment::Appointment(QObject *parent) : Nutmeg::Object{parent} {}
+Appointment::Appointment()
+    : Nutmeg::Object{} {}
 
-Appointment::Appointment(Key apptid, QObject *parent) : Nutmeg::Object{apptid, parent}
+Appointment::Appointment(Key apptid)
+    : Nutmeg::Object{apptid}
 {
-    InitializeAppointment(apptid);
+    Appointment* cachedAppointment = cache<Appointment>::getObjectFromCache(apptid, &Appointment::GetAppointment);
+    if (cachedAppointment) {
+        // If we find the Appointment in cache, copy its state
+        *this = *cachedAppointment;
+        mObjectIsNull = false; // Assuming this is inherited from Object
+    } else {
+        // If not in cache, proceed with initialization
+        InitializeAppointment(apptid);
+    }
 }
 
-Appointment::Appointment(DateTime apptime, Key taskId, QObject *parent) : Nutmeg::Object{parent}
+// Static method to fetch an Appointment from the database if not in cache
+Appointment* Appointment::GetAppointment(Key id) {
+    Appointment* appointment = new Appointment(id); // This will call the constructor again, but now with cache check
+    if (appointment->mObjectIsNull) { // Assuming this is inherited from Object
+        delete appointment; // Clean up if initialization failed
+        return nullptr;
+    }
+    return appointment;
+}
+Appointment::Appointment(DateTime apptime, Key taskId) : Nutmeg::Object{}
 {
     mDat.AppointmentId = Nutdb::InsertAppointment(apptime, taskId);
     InitializeAppointment(mDat.AppointmentId);

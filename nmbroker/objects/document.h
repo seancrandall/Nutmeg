@@ -5,15 +5,17 @@
 
 #include "object.h"
 
+#define documentTableName "document"
+
 namespace Nutmeg
 {
 
 class Document : public Nutmeg::Object
 {
   public:
-    explicit Document(QObject *parent = nullptr);
-    explicit Document(Key id, QObject *parent = nullptr);
-    explicit Document(String Title, QObject *parent = nullptr);
+    explicit Document();
+      explicit Document(Key id);
+    explicit Document(String Title);
 
     // Properties
     Property(getId, slotSetId) Key DocumentId;
@@ -36,7 +38,6 @@ class Document : public Nutmeg::Object
 
     String getTitle(void) { return mDat.Title; }
 
-  public slots:
     virtual bool SetId(Key newval) override;
     bool slotUpdate(DocumentData dat);
     virtual bool Commit(void) override;
@@ -67,8 +68,8 @@ class Document : public Nutmeg::Object
     void slotSetFilename(String newval);
     void slotSetExtension(String newval);
     void slotSetTitle(String newval);
-
-    const QString documentTableName = "document";
+private:
+    static Document* GetDocument(Key id);
 };
 
 } // namespace Nutmeg

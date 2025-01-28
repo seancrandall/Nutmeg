@@ -2,18 +2,17 @@
 #define NUTMEG_RESPONSE_H
 
 #include "task.h"
-#include <QObject>
 
+#define responseTableName "response"
 namespace Nutmeg
 {
 
 class Response : public Nutmeg::Task
 {
-    Q_OBJECT
   public:
-    explicit Response(QObject *parent = nullptr);
-    explicit Response(Key id, QObject *parent = nullptr);
-    explicit Response(Key matterId, Date triggerDate, QObject *parent = nullptr);
+    explicit Response();
+      explicit Response(Key id);
+    explicit Response(Key matterId, Date triggerDate);
 
     // Properties
     Property(getId, slotSetId) Key ResponseId;
@@ -41,7 +40,6 @@ class Response : public Nutmeg::Task
     void holdfkREsponseAsFiled(Key newval) {mDat.fkResponseAsFiled = newval; dirty["fkResponseAsFiled"] = true;}
     void holdfkActionDocument(Key newval) {mDat.fkActionDocument = newval; dirty["fkActionDocument"] = true;}
 
-  public slots:
     bool slotUpdate(ResponseData dat);
     virtual bool SetId(Key id) override;
     virtual bool Commit(void) override;
@@ -57,7 +55,8 @@ class Response : public Nutmeg::Task
     ResponseData mDat;
 
     bool InitializeResponse(Key id);
-    const QString responseTableName = "response";
+private:
+    static Response* GetResponse(Key id);
 };
 
 } // namespace Nutmeg

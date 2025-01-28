@@ -2,17 +2,16 @@
 #define NUTMEG_TASK_H
 
 #include "object.h"
-#include <QObject>
 
+#define taskTableName "task"
 namespace Nutmeg
 {
 
 class Task : public Nutmeg::Object
 {
-    Q_OBJECT
   public:
-    explicit Task(QObject *parent = nullptr);
-    explicit Task(Key id, QObject *parent = nullptr);
+    explicit Task();
+      explicit Task(Key id);
 
     Property(getId, slotSetId) Key TaskId;
     Property(getfkMatter, slotSetfkMatter) Key fkMatter;
@@ -72,7 +71,6 @@ class Task : public Nutmeg::Object
     void holdExaminerInterviewScheduled(bool newval) {bExaminerInterviewScheduled = newval; dirty["bWithParalegal"] = true;}
     void holdWithParalegal(bool newval) {bWithParalegal = newval;}
 
-  public slots:
     bool slotInsertWithMatter(Key matterid);
     bool slotInsertWithMatter(Key matterid, Date triggerDate);
 
@@ -106,7 +104,8 @@ class Task : public Nutmeg::Object
     bool bWithParalegal;
 
     void FindNeedsExaminerInterview(void);
-    const QString taskTableName = "task";
+private:
+    static Task* GetTask(Key id);
 };
 
 } // namespace Nutmeg

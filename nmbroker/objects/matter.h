@@ -2,19 +2,17 @@
 #define NUTMEG_MATTER_H
 
 #include "object.h"
-#include <QObject>
 
+#define matterTableName "matter"
 namespace Nutmeg
 {
 
 class Matter : public Nutmeg::Object
 {
-    Q_OBJECT
   public:
-    explicit Matter(QObject *parent = nullptr);
-    explicit Matter(Key id, QObject *parent = nullptr);
-    //explicit Matter(const QSqlRecord matterRecord, QObject *parent=nullptr);
-    explicit Matter(QString docketNumber, QObject *parent = nullptr);
+    explicit Matter();
+    explicit Matter(Key id);
+    explicit Matter(QString docketNumber);
 
     Property(getId, slotSetId) Key MatterId;
     Property(getfkParent, slotSetfkParent) Key fkParent;
@@ -44,22 +42,21 @@ class Matter : public Nutmeg::Object
     Key getfkMatterJurisdiction(void) { return mDat.fkMatterJurisdiction; }
     Key getOldMatterId(void) { return mDat.OldMatterId; }
 
-  public slots:
     virtual bool SetId(Key id) override;
-    bool slotUpdate(MatterData dat);
+    bool Update(MatterData dat);
     virtual bool Commit(void) override;
 
-    bool slotSetfkParent(Key newfk);
-    bool slotSetAttorneyDocketNumber(QString newnum);
-    bool slotSetClientDocketNumber(QString newnum);
-    bool slotSetTitle(QString newtitle);
-    bool slotSetfkClient(Key newfk);
-    bool slotSetfkAssigningFirm(Key newfk);
-    bool slotSetfkDefaultWorkAttorney(Key newfk);
-    bool slotSetfkDefaultParalegal(Key newfk);
-    bool slotSetfkKeyDocument(Key newfk);
-    bool slotSetfkMatterJurisdiction(Key newfk);
-    bool slotSetOldId(Key newold); /// Seriously, why are you trying to do this? This value is
+    bool SetfkParent(Key newfk);
+    bool SetAttorneyDocketNumber(QString newnum);
+    bool SetClientDocketNumber(QString newnum);
+    bool SetTitle(QString newtitle);
+    bool SetfkClient(Key newfk);
+    bool SetfkAssigningFirm(Key newfk);
+    bool SetfkDefaultWorkAttorney(Key newfk);
+    bool SetfkDefaultParalegal(Key newfk);
+    bool SetfkKeyDocument(Key newfk);
+    bool SetfkMatterJurisdiction(Key newfk);
+    bool SetOldId(Key newold); /// Seriously, why are you trying to do this? This value is
                                    /// only useful for imports from the old database
 
     void holdfkParent(Key newval) {mDat.fkParent = newval; dirty["fkParent"] = true;}
@@ -77,10 +74,9 @@ class Matter : public Nutmeg::Object
   protected:
     MatterData mDat;
     bool InitializeMatter(Key id);
-    const QString matterTableName = "matter";
+private:
+    static Matter* GetMatter(Key id);
 };
-
-inline Key Matter::getfkParent() { return mDat.fkParent; }
 
 } // namespace Nutmeg
 

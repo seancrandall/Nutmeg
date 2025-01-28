@@ -3,14 +3,32 @@
 namespace Nutmeg
 {
 
-Enterprise::Enterprise(QObject *parent) : Nutmeg::Entity{parent} {}
+Enterprise::Enterprise() : Nutmeg::Entity{} {}
 
-Enterprise::Enterprise(Key id, QObject *parent) : Nutmeg::Entity{id, parent}
+Enterprise::Enterprise(Key id)
+    : Nutmeg::Entity{id}
 {
-    InitializeEnterprise(id);
+    Enterprise* cachedEnterprise = cache<Enterprise>::getObjectFromCache(id, &Enterprise::GetEnterprise);
+    if (cachedEnterprise) {
+        // If we find the Enterprise in cache, copy its state
+        *this = *cachedEnterprise;
+        mObjectIsNull = false; // Assuming this is inherited from Object via Entity
+    } else {
+        // If not in cache, proceed with initialization
+        InitializeEnterprise(id);
+    }
 }
 
-Enterprise::Enterprise(String enterpriseName, QObject *parent) : Nutmeg::Entity{parent}
+// Static method to fetch an Enterprise from the database if not in cache
+Enterprise* Enterprise::GetEnterprise(Key id) {
+    Enterprise* enterprise = new Enterprise(id); // This will call the constructor again, but now with cache check
+    if (enterprise->mObjectIsNull) { // Assuming this is inherited from Object via Entity
+        delete enterprise; // Clean up if initialization failed
+        return nullptr;
+    }
+    return enterprise;
+}
+Enterprise::Enterprise(String enterpriseName) : Nutmeg::Entity{}
 {
     Key newid = Nutdb::InsertEnterprise(enterpriseName);
     InitializeEnterprise(newid);

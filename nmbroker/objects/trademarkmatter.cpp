@@ -3,14 +3,32 @@
 namespace Nutmeg
 {
 
-TrademarkMatter::TrademarkMatter(QObject *parent) : Nutmeg::Matter{parent} {}
+TrademarkMatter::TrademarkMatter() : Nutmeg::Matter{} {}
 
-TrademarkMatter::TrademarkMatter(Key id, QObject *parent) : Nutmeg::Matter(id, parent)
+TrademarkMatter::TrademarkMatter(Key id) : Nutmeg::Matter(id)
 {
-    InitializeTrademarkMatter(id);
+    TrademarkMatter* cachedTrademarkMatter = cache<TrademarkMatter>::getObjectFromCache(id, &TrademarkMatter::GetTrademarkMatter);
+    if (cachedTrademarkMatter) {
+        // If we find the TrademarkMatter in cache, copy its state
+        *this = *cachedTrademarkMatter;
+        mObjectIsNull = false; // Assuming this is inherited from Object/Matter
+    } else {
+        // If not in cache, proceed with initialization
+        InitializeTrademarkMatter(id);
+    }
 }
 
-TrademarkMatter::TrademarkMatter(QString docketNumber, QObject *parent) : Nutmeg::Matter(parent)
+// Static method to fetch a TrademarkMatter from the database if not in cache
+TrademarkMatter* TrademarkMatter::GetTrademarkMatter(Key id) {
+    TrademarkMatter* trademarkMatter = new TrademarkMatter(id); // This will call the constructor again, but now with cache check
+    if (trademarkMatter->mObjectIsNull) { // Assuming this is inherited from Object/Matter
+        delete trademarkMatter; // Clean up if initialization failed
+        return nullptr;
+    }
+    return trademarkMatter;
+}
+
+TrademarkMatter::TrademarkMatter(QString docketNumber) : Nutmeg::Matter()
 {
     Key id = Nutdb::InsertTrademarkMatter(docketNumber);
     if(id != 0)

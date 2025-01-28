@@ -3,15 +3,32 @@
 namespace Nutmeg
 {
 
-Document::Document(QObject *parent) : Nutmeg::Object(parent) {}
+Document::Document() : Object() {}
 
-Document::Document(Key id, QObject *parent) : Object(id, parent) // Call the Object constructor
-
+Document::Document(Key id)
+    : Object(id)
 {
-    InitializeDocument(id);
+    Document* cachedDocument = cache<Document>::getObjectFromCache(id, &Document::GetDocument);
+    if (cachedDocument) {
+        // If we find the Document in cache, copy its state
+        *this = *cachedDocument;
+        mObjectIsNull = false; // Assuming this is inherited from Object
+    } else {
+        // If not in cache, proceed with initialization
+        InitializeDocument(id);
+    }
 }
 
-Document::Document(String Title, QObject *parent) : Object(parent) // Call the base class constructor
+// Static method to fetch a Document from the database if not in cache
+Document* Document::GetDocument(Key id) {
+    Document* document = new Document(id); // This will call the constructor again, but now with cache check
+    if (document->mObjectIsNull) { // Assuming this is inherited from Object
+        delete document; // Clean up if initialization failed
+        return nullptr;
+    }
+    return document;
+}
+Document::Document(String Title) : Object()
 {
     Key newid = Nutdb::InsertDocument(Title);
     InitializeDocument(newid);

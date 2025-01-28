@@ -4,6 +4,8 @@
 #include "matter.h"
 #include <QObject>
 
+#define patentMatterTableName "patentMatter"
+
 namespace Nutmeg
 {
 
@@ -11,9 +13,9 @@ class PatentMatter : public Nutmeg::Matter
 {
     Q_OBJECT
   public:
-    explicit PatentMatter(QObject *parent = nullptr);
-    explicit PatentMatter(Key id, QObject *parent = nullptr);
-    explicit PatentMatter(String docketNumber, QObject *parent = nullptr);
+    explicit PatentMatter();
+      explicit PatentMatter(Key id);
+    explicit PatentMatter(String docketNumber);
 
     Property(getId, slotSetId) Key PatentMatterId;
     Property(getFilingDate, slotSetFilingDate) Date FilingDate;
@@ -51,30 +53,29 @@ class PatentMatter : public Nutmeg::Matter
 
     QList<Key> getInventors(void);
 
-  public slots:
-    bool slotAddInventor(QString first, QString last);
-    bool slotAddInventors(QList<PersonData> inventors);
-    bool slotAddExaminer(String first, String last);
-    bool slotAddSupervisoryExaminer(String first, String last);
+    bool AddInventor(QString first, QString last);
+    bool AddInventors(QList<PersonData> inventors);
+    bool AddExaminer(String first, String last);
+    bool AddSupervisoryExaminer(String first, String last);
 
-    bool slotUpdate(PatentMatterData dat);
+    bool Update(PatentMatterData dat);
     virtual bool SetId(Key newval) override;
     virtual bool Commit(void) override;
 
-    bool slotSetFilingDate(Date newval);
-    bool slotSetApplicationSerialNumber(String newval);
-    bool slotSetConfirmationNumber(String newval);
-    bool slotSetArtUnit(String newval);
+    bool SetFilingDate(Date newval);
+    bool SetApplicationSerialNumber(String newval);
+    bool SetConfirmationNumber(String newval);
+    bool SetArtUnit(String newval);
     bool slotSetPatentNumber(String newval);
-    bool slotSetfkExaminer(Key newval);
-    bool slotSetfkFirstInventor(Key newval);
-    bool slotSetfkSupervisoryExaminer(Key newval);
-    bool slotSetfkApplicant(Key newval);
-    bool slotSetBarDate(Date newval);
-    bool slotSetCriticalDate(Date newval);
-    bool slotSetfkSpecification(Key newval);
-    bool slotSetfkDrawings(Key newval);
-    bool slotSetfkAsFiledClaims(Key newval);
+    bool SetfkExaminer(Key newval);
+    bool SetfkFirstInventor(Key newval);
+    bool SetfkSupervisoryExaminer(Key newval);
+    bool SetfkApplicant(Key newval);
+    bool SetBarDate(Date newval);
+    bool SetCriticalDate(Date newval);
+    bool SetfkSpecification(Key newval);
+    bool SetfkDrawings(Key newval);
+    bool SetfkAsFiledClaims(Key newval);
 
     void holdFilingDate(Date newval) {mDat.FilingDate = newval;}
     void holdApplicationSerialNumber(String newval) {mDat.ApplicationSerialNumber = newval;}
@@ -97,7 +98,9 @@ class PatentMatter : public Nutmeg::Matter
 
     PatentMatterData mDat;
     QList<Key> mInventors;
-    const QString patentMatterTableName = "patentMatter";
+
+private:
+    static PatentMatter* GetPatentMatter(Key id);
 };
 
 } // namespace Nutmeg

@@ -2,18 +2,17 @@
 #define NUTMEG_ENTERPRISE_H
 
 #include "entity.h"
-#include <QObject>
 
+#define enterpriseTableName "enterprise"
 namespace Nutmeg
 {
 
 class Enterprise : public Nutmeg::Entity
 {
-    Q_OBJECT
   public:
-    explicit Enterprise(QObject *parent = nullptr);
-    explicit Enterprise(Key id, QObject *parent = nullptr);
-    explicit Enterprise(String enterpriseName, QObject *parent = nullptr);
+    explicit Enterprise();
+      explicit Enterprise(Key id);
+    explicit Enterprise(String enterpriseName);
 
     // Properties
     Property(getId, slotSetId) Key EnterpriseId;
@@ -31,7 +30,6 @@ class Enterprise : public Nutmeg::Entity
     Key getfkMainContact(void) { return mDat.fkMainContact; }
     Key getOldOrganizationId(void) { return mDat.OldOrganizationId; }
 
-  public slots:
     virtual bool SetId(Key newval) override;
     bool slotUpdate(EnterpriseData dat);
     virtual bool Commit(void) override;
@@ -52,7 +50,8 @@ class Enterprise : public Nutmeg::Entity
     bool InitializeEnterprise(Key id);
 
     EnterpriseData mDat;
-    const QString enterpriseTableName = "enterprise";
+private:
+    static Enterprise* GetEnterprise(Key id);
 };
 
 } // namespace Nutmeg

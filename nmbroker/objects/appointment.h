@@ -3,18 +3,17 @@
 
 #include "object.h"
 #include "structures.h"
-#include <QObject>
 
+#define appointmentTableName "appointment"
 namespace Nutmeg
 {
 
 class Appointment : public Nutmeg::Object
 {
-    Q_OBJECT
   public:
-    explicit Appointment(QObject *parent = nullptr);
-    explicit Appointment(Key apptid, QObject *parent = nullptr);
-    explicit Appointment(DateTime apptime, Key taskId, QObject *parent = nullptr);
+    explicit Appointment();
+      explicit Appointment(Key apptid);
+    explicit Appointment(DateTime apptime, Key taskId);
 
     Property(getId, slotSetId) Key AppointmentId;
     Property(getAppointmentTime, slotSetAppointmentTime) DateTime AppointmentTime;
@@ -30,7 +29,6 @@ class Appointment : public Nutmeg::Object
     DateTime getAppointmentTime(void) { return mDat.AppointmentTime; }
     Key getfkAppointmentType(void) { return mDat.fkAppointmentType; }
 
-  public slots:
     bool slotSetAppointmentTime(DateTime newappt);
     bool slotSetfkAppointmentType(Key newfk);
 
@@ -41,7 +39,8 @@ class Appointment : public Nutmeg::Object
     bool InitializeAppointment(Key id);
 
     AppointmentData mDat;
-    const QString appointmentTableName = "appointment";
+private:
+    static Appointment* GetAppointment(Key id);
 };
 
 } // namespace Nutmeg

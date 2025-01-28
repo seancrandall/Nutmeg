@@ -3,14 +3,32 @@
 namespace Nutmeg
 {
 
-Entity::Entity(QObject *parent) : Nutmeg::Object{parent} {}
+Entity::Entity() : Nutmeg::Object{} {}
 
-Entity::Entity(Key id, QObject *parent) : Nutmeg::Object(id, parent)
+Entity::Entity(Key id)
+    : Nutmeg::Object(id)
 {
-  InitializeEntity(id);
+    Entity* cachedEntity = cache<Entity>::getObjectFromCache(id, &Entity::GetEntity);
+    if (cachedEntity) {
+        // If we find the Entity in cache, copy its state
+        *this = *cachedEntity;
+        mObjectIsNull = false; // Assuming this is inherited from Object
+    } else {
+        // If not in cache, proceed with initialization
+        InitializeEntity(id);
+    }
 }
 
-Entity::Entity(String entityName, QObject *parent) : Nutmeg::Object(parent)
+// Static method to fetch an Entity from the database if not in cache
+Entity* Entity::GetEntity(Key id) {
+    Entity* entity = new Entity(id); // This will call the constructor again, but now with cache check
+    if (entity->mObjectIsNull) { // Assuming this is inherited from Object
+        delete entity; // Clean up if initialization failed
+        return nullptr;
+    }
+    return entity;
+}
+Entity::Entity(String entityName) : Nutmeg::Object()
 {
     Key id = Nutdb::InsertEntity(entityName);
     InitializeEntity(id);

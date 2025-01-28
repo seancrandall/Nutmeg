@@ -2,18 +2,18 @@
 #define NUTMEG_COPYRIGHTMATTER_H
 
 #include "matter.h"
-#include <QObject>
+
+#define copyrightMatterTableName "copyrightMatter"
 
 namespace Nutmeg
 {
 
 class CopyrightMatter : public Nutmeg::Matter
 {
-    Q_OBJECT
   public:
-    explicit CopyrightMatter(QObject *parent = nullptr);
-    explicit CopyrightMatter(Key id, QObject *parent = nullptr);
-    explicit CopyrightMatter(String docketNumber, QObject *parent = nullptr);
+    explicit CopyrightMatter();
+      explicit CopyrightMatter(Key id);
+    explicit CopyrightMatter(String docketNumber);
 
     // Properties
     Property(getId, slotSetId) Key CopyrightMatterId;
@@ -43,7 +43,6 @@ class CopyrightMatter : public Nutmeg::Matter
 
     bool getIsRegistered(void);
 
-  public slots:
     virtual bool SetId(Key newval) override;
     bool slotUpdate(CopyrightMatterData dat);
     virtual bool Commit(void) override;
@@ -73,7 +72,8 @@ class CopyrightMatter : public Nutmeg::Matter
 
     CopyrightMatterData mDat;
     bool mIsRegistered = false;
-    const QString copyrightMatterTableName = "copyrightMatter";
+private:
+    static CopyrightMatter* GetCopyrightMatter(Key id);
 };
 
 } // namespace Nutmeg

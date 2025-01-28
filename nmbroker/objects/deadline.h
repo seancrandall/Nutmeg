@@ -9,6 +9,8 @@
 #include "property.h"
 #include "structures.h"
 
+#define deadlineTableName  "deadline"
+
 namespace Nutmeg
 {
 
@@ -70,7 +72,6 @@ class Deadline
     UpdatePolicy mUpdatePolicy = Instant;
 
     bool InitializeDeadline(Key id);
-    const QString deadlineTableName = "deadline";
 };
 
 } // namespace Nutmeg

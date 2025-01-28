@@ -4,11 +4,29 @@
 namespace Nutmeg
 {
 
-Task::Task(QObject *parent) : Object(parent) {}
+Task::Task() : Object() {}
 
-Task::Task(Key newid, QObject *parent) : Object(parent)
+Task::Task(Key newid) : Object()
 {
-    InitializeTask(newid);
+    Task* cachedTask = cache<Task>::getObjectFromCache(newid, &Task::GetTask);
+    if (cachedTask) {
+        // If we find the Task in cache, copy its state
+        *this = *cachedTask;
+        mObjectIsNull = false; // Assuming this is inherited from Object
+    } else {
+        // If not in cache, proceed with initialization
+        InitializeTask(newid);
+    }
+}
+
+// Static method to fetch a Task from the database if not in cache
+Task* Task::GetTask(Key id) {
+    Task* task = new Task(id); // This will call the constructor again, but now with cache check
+    if (task->mObjectIsNull) { // Assuming this is inherited from Object
+        delete task; // Clean up if initialization failed
+        return nullptr;
+    }
+    return task;
 }
 
 bool Task::slotInsertWithMatter(Key matterid)

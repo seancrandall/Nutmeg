@@ -3,17 +3,34 @@
 namespace Nutmeg
 {
 
-Response::Response(QObject *parent) : Nutmeg::Task{parent}
+Response::Response() : Nutmeg::Task{}
 {
     mObjectIsNull = true;
 }
 
-Response::Response(Key newid, QObject *parent) : Nutmeg::Task(newid, parent)
+Response::Response(Key newid) : Nutmeg::Task(newid)
 {
-    InitializeResponse(newid);
+    Response* cachedResponse = cache<Response>::getObjectFromCache(newid, &Response::GetResponse);
+    if (cachedResponse) {
+        // If we find the Response in cache, copy its state
+        *this = *cachedResponse;
+        mObjectIsNull = false; // Assuming this is inherited from Object via Task
+    } else {
+        // If not in cache, proceed with initialization
+        InitializeResponse(newid);
+    }
 }
 
-Response::Response(Key matterid, Date triggerDate, QObject *parent) : Nutmeg::Task(parent)
+// Static method to fetch a Response from the database if not in cache
+Response* Response::GetResponse(Key id) {
+    Response* response = new Response(id); // This will call the constructor again, but now with cache check
+    if (response->mObjectIsNull) { // Assuming this is inherited from Object via Task
+        delete response; // Clean up if initialization failed
+        return nullptr;
+    }
+    return response;
+}
+Response::Response(Key matterid, Date triggerDate) : Nutmeg::Task()
 {
     Key newid = Nutdb::InsertResponse(matterid, triggerDate);
     if(newid == 0)

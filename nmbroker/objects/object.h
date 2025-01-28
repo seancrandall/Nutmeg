@@ -1,8 +1,6 @@
 #ifndef NUTMEG_OBJECT_H
 #define NUTMEG_OBJECT_H
 
-#include <QObject>
-
 #include "dbaccess/nutdb.h"
 #include "flag.h"
 #include "nutmeg.h"
@@ -32,14 +30,12 @@ namespace Nutmeg
  *  last write to the db was successful. If there are errors, you can check the dbErrors
  *  property, which is a vector or time-stampd error messages.
  */
-class Object //: public QObject
+class Object
 {
-    //Q_OBJECT
   public:
-    explicit Object(Key object_id, QObject *parent = nullptr);
-    explicit Object(QObject *parent = nullptr);
-    explicit Object(QString objectType,
-                    QObject *parent = nullptr); /// Should almost(?) never be called. Instead,
+    explicit Object(Key object_id);
+    explicit Object();
+    explicit Object(QString objectType);        /// Should almost(?) never be called. Instead,
                                                 /// insert the correct higher-level object
     virtual ~Object() = default;
 

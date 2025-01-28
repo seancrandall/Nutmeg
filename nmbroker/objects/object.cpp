@@ -3,9 +3,8 @@
 namespace Nutmeg
 {
 
-Object::Object(Key id, QObject *parent) //: QObject(parent)
+Object::Object(Key id) //: QObject(parent)
 {
-    Q_UNUSED(parent);
     Object* cachedObject = cache<Object>::getObjectFromCache(id, &Object::GetObject);
     if (cachedObject) {
         // If we find the object in cache, copy its state
@@ -17,9 +16,9 @@ Object::Object(Key id, QObject *parent) //: QObject(parent)
     }
 }
 
-// You'll need this static method in your Object class:
+// Static method
 Object* Object::GetObject(Key id) {
-    Object* obj = new Object(id, nullptr); // Create a new object to fetch from DB
+    Object* obj = new Object(id); // Create a new object to fetch from DB
     if (obj->mObjectIsNull) {
         delete obj; // Clean up if initialization failed
         return nullptr;
@@ -27,15 +26,13 @@ Object* Object::GetObject(Key id) {
     return obj;
 }
 
-Object::Object(QObject *parent) //: QObject(parent)
+Object::Object() //: QObject(parent)
 {
-    Q_UNUSED(parent);
     InitializeObject(0);
 }
 
-Object::Object(QString objectType, QObject *parent) //: QObject(parent)
+Object::Object(QString objectType)
 {
-    Q_UNUSED(parent);
     Key newkey = Nutdb::InsertObject(objectType);
     if(newkey == 0)
     {

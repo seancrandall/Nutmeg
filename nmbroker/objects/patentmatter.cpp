@@ -3,14 +3,32 @@
 namespace Nutmeg
 {
 
-PatentMatter::PatentMatter(QObject *parent) : Nutmeg::Matter{parent} {}
+PatentMatter::PatentMatter() : Nutmeg::Matter{} {}
 
-PatentMatter::PatentMatter(Key id, QObject *parent) : Nutmeg::Matter(id, parent)
+PatentMatter::PatentMatter(Key id) : Nutmeg::Matter(id)
 {
-    InitializePatentMatter(id);
+    PatentMatter* cachedPatentMatter = cache<PatentMatter>::getObjectFromCache(id, &PatentMatter::GetPatentMatter);
+    if (cachedPatentMatter) {
+        // If we find the PatentMatter in cache, copy its state
+        *this = *cachedPatentMatter;
+        mObjectIsNull = false; // Assuming this is inherited from Object/Matter
+    } else {
+        // If not in cache, proceed with initialization
+        InitializePatentMatter(id);
+    }
 }
 
-PatentMatter::PatentMatter(String docketNumber, QObject *parent) : Nutmeg::Matter(parent)
+// Static method to fetch a PatentMatter from the database if not in cache
+PatentMatter* PatentMatter::GetPatentMatter(Key id) {
+    PatentMatter* patentMatter = new PatentMatter(id); // This will call the constructor again, but now with cache check
+    if (patentMatter->mObjectIsNull) { // Assuming this is inherited from Object/Matter
+        delete patentMatter; // Clean up if initialization failed
+        return nullptr;
+    }
+    return patentMatter;
+}
+
+PatentMatter::PatentMatter(String docketNumber) : Nutmeg::Matter()
 {
     Nutdb::InsertPatentMatter(docketNumber);
 }
@@ -22,28 +40,28 @@ QList<Key> PatentMatter::getInventors()
     return mInventors;
 }
 
-bool PatentMatter::slotSetFilingDate(Date newval)
+bool PatentMatter::SetFilingDate(Date newval)
 {
     bool result = WriteDate(patentMatterTableName, "FilingDate", newval);
     if(result) mDat.FilingDate = newval;
     return result;
 }
 
-bool PatentMatter::slotSetApplicationSerialNumber(String newval)
+bool PatentMatter::SetApplicationSerialNumber(String newval)
 {
     bool result = WriteString(patentMatterTableName, "ApplicationSerialNumber", newval);
     if(result) mDat.ApplicationSerialNumber = newval;
     return result;
 }
 
-bool PatentMatter::slotSetConfirmationNumber(String newval)
+bool PatentMatter::SetConfirmationNumber(String newval)
 {
     bool result = WriteString(patentMatterTableName, "ConfirmationNumber", newval);
     if(result) mDat.ConfirmationNumber = newval;
     return result;
 }
 
-bool PatentMatter::slotSetArtUnit(String newval)
+bool PatentMatter::SetArtUnit(String newval)
 {
     bool result = WriteValue(patentMatterTableName, "ArtUnit", newval);
     if(result) mDat.ArtUnit = newval;
@@ -57,99 +75,99 @@ bool PatentMatter::slotSetPatentNumber(String newval)
     return result;
 }
 
-bool PatentMatter::slotSetfkExaminer(Key newval)
+bool PatentMatter::SetfkExaminer(Key newval)
 {
     bool result = WriteKey(patentMatterTableName, "fkExaminer", newval);
     if(result) mDat.fkExaminer = newval;
     return result;
 }
 
-bool PatentMatter::slotSetfkFirstInventor(Key newval)
+bool PatentMatter::SetfkFirstInventor(Key newval)
 {
     bool result = WriteKey(patentMatterTableName, "fkFirstInventor", newval);
     if(result) mDat.fkFirstInventor = newval;
     return result;
 }
 
-bool PatentMatter::slotSetfkSupervisoryExaminer(Key newval)
+bool PatentMatter::SetfkSupervisoryExaminer(Key newval)
 {
     bool result = WriteKey(patentMatterTableName, "fkSupervisoryExaminer", newval);
     if(result) mDat.fkSupervisoryExaminer = newval;
     return result;
 }
 
-bool PatentMatter::slotSetfkApplicant(Key newval)
+bool PatentMatter::SetfkApplicant(Key newval)
 {
     bool result = WriteKey(patentMatterTableName, "fkApplicant", newval);
     if(result) mDat.fkApplicant = newval;
     return result;
 }
 
-bool PatentMatter::slotSetBarDate(Date newval)
+bool PatentMatter::SetBarDate(Date newval)
 {
     bool result = WriteDate(patentMatterTableName, "BarDate", newval);
     if(result) mDat.BarDate = newval;
     return result;
 }
 
-bool PatentMatter::slotSetCriticalDate(Date newval)
+bool PatentMatter::SetCriticalDate(Date newval)
 {
     bool result = WriteDate(patentMatterTableName, "CriticalDate", newval);
     if(result) mDat.CriticalDate = newval;
     return result;
 }
 
-bool PatentMatter::slotSetfkSpecification(Key newval)
+bool PatentMatter::SetfkSpecification(Key newval)
 {
     bool result = WriteKey(patentMatterTableName, "fkSpecification", newval);
     if(result) mDat.fkSpecification = newval;
     return result;
 }
 
-bool PatentMatter::slotSetfkDrawings(Key newval)
+bool PatentMatter::SetfkDrawings(Key newval)
 {
     bool result = WriteKey(patentMatterTableName, "fkDrawings", newval);
     if(result) mDat.fkDrawings = newval;
     return result;
 }
 
-bool PatentMatter::slotSetfkAsFiledClaims(Key newval)
+bool PatentMatter::SetfkAsFiledClaims(Key newval)
 {
     bool result = WriteKey(patentMatterTableName, "fkAsFiledClaims", newval);
     if(result) mDat.fkAsFiledClaims = newval;
     return result;
 }
 
-bool PatentMatter::slotAddInventor(QString first, QString last)
+bool PatentMatter::AddInventor(QString first, QString last)
 {
     return Nutdb::InsertCaseInventor(first, last, mDat.PatentMatterId);
 }
 
-bool PatentMatter::slotAddInventors(QList<PersonData> inventors)
+bool PatentMatter::AddInventors(QList<PersonData> inventors)
 {
     for (auto i = 0; i < inventors.length(); i++)
     {
-        if(!slotAddInventor(inventors[i].FirstName, inventors[i].LastName))
+        if(!AddInventor(inventors[i].FirstName, inventors[i].LastName))
             return false;
     }
     return true;
 }
 
-bool PatentMatter::slotAddExaminer(String first, QString last)
+bool PatentMatter::AddExaminer(String first, QString last)
 {
     Key personid = Nutdb::InsertExaminer(first, last);
     if(personid == 0) return false;
-    return slotSetfkExaminer(personid);
+    return SetfkExaminer(personid);
 }
 
-bool PatentMatter::slotAddSupervisoryExaminer(String first, String last)
+bool PatentMatter::AddSupervisoryExaminer(String first, String last)
 {
     Key personid = Nutdb::InsertExaminer(first, last);
     if(personid == 0) return false;
-    return slotSetfkSupervisoryExaminer(personid);
+    return SetfkSupervisoryExaminer(personid);
 }
 
-bool PatentMatter::slotUpdate(PatentMatterData dat)
+bool PatentMatter::Update(PatentMatterData dat)
 {
     bool result = Nutdb::UpdatePatentMatter(dat);
     if(!result) return false;
@@ -167,7 +185,7 @@ bool PatentMatter::SetId(Key newval)
 
 bool PatentMatter::Commit(void)
 {
-    return slotUpdate(mDat);
+    return Update(mDat);
 }
 
 bool PatentMatter::InitializePatentMatter(Key id)
