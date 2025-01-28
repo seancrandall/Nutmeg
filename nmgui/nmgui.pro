@@ -152,7 +152,8 @@ SOURCES += \
     windows/newfilingdialog.cpp \
     windows/newresponsedialog.cpp \
     windows/optionswindow.cpp \
-    windows/patentmatterdialog.cpp
+    windows/patentmatterdialog.cpp \
+    windows/taskdialog.cpp
 
 HEADERS += \
     ../nmbroker/dbaccess/appointmenttypemodel.h \
@@ -294,7 +295,8 @@ HEADERS += \
     windows/newfilingdialog.h \
     windows/newresponsedialog.h \
     windows/optionswindow.h \
-    windows/patentmatterdialog.h
+    windows/patentmatterdialog.h \
+    windows/taskdialog.h
 
 FORMS += \
     mainwindow.ui \

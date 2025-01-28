@@ -22,6 +22,8 @@
 #include "widgets/informationbox.h"
 #include "widgets/arrowbutton.h"
 
+#include "windows/taskdialog.h"
+
 namespace Nutmeg
 {
 

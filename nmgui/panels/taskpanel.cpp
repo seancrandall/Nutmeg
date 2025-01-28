@@ -49,9 +49,9 @@ void Nutmeg::TaskPanel::slotUpdateTaskType(Key newval) { task->fkTaskType = newv
 
 void TaskPanel::slotOpenTaskWindow()
 {
-    InformationBox info(this);
-    info.text = "Open Task Window";
-    info.exec();
+    TaskDialog diag(task, this);
+    diag.setModal(true);
+    diag.exec();
 }
 
 void Nutmeg::TaskPanel::slotOpenMatterWindow()
