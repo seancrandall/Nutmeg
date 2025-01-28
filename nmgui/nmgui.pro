@@ -15,6 +15,7 @@ CONFIG(release):DEFINES += QT_NO_DEBUG_OUTPUT
 RC_ICONS += nutmeg.ico
 
 SOURCES += \
+    ../nmbroker/cache.cpp \
     ../nmbroker/dbaccess/appointmenttypemodel.cpp \
     ../nmbroker/dbaccess/exception.cpp \
     ../nmbroker/dbaccess/viewcopyrightfilingtypesmodel.cpp \
@@ -157,6 +158,7 @@ SOURCES += \
     windows/taskdialog.cpp
 
 HEADERS += \
+    ../nmbroker/cache.h \
     ../nmbroker/dbaccess/appointmenttypemodel.h \
     ../nmbroker/dbaccess/exception.h \
     ../nmbroker/dbaccess/viewcopyrightfilingtypesmodel.h \

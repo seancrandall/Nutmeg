@@ -8,6 +8,7 @@
 #include "nutmeg.h"
 #include "property.h"
 #include "tag.h"
+#include "cache.h"
 
 namespace Nutmeg
 {

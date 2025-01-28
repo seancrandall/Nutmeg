@@ -8,10 +8,14 @@
 
 #include "logger.h"
 #include "settings.h"
+#include "cache.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    //Initialize the object cache
+    Nutmeg::initCaches();
 
     //Logo is included in the resource file
     QPixmap nutmegSplashScreen(":images/Logo.png");
