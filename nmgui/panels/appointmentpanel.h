@@ -17,28 +17,28 @@
 #include "widgets/labeledwidgetleft.h"
 #include "widgets/plusbutton.h"
 
-#include "frame.h"
+#include "panels/frame.h"
 
 namespace Nutmeg {
 
-class AppointmentPanel : public Nutmeg::Frame
+class AppointmentPanel : public Frame
 {
     Q_OBJECT
 public:
-    AppointmentPanel(std::shared_ptr<Appointment> appt, QWidget *parent = nullptr);
+    AppointmentPanel(Appointment* appt, QWidget *parent = nullptr);
     AppointmentPanel(Key apptid, QWidget *parent = nullptr);
     AppointmentPanel(QWidget *parent = nullptr);
 
-    Property(getAppointment, setAppointment) QDateTime appointment;
+    Property(getAppointmentTime, setAppointmentTime) QDateTime appointmentTime;
     Property(getValid, setValid) bool valid;
-    Property(getAppointmentObject, setAppointmentObject) std::shared_ptr<Appointment> appointmentObject;
+    Property(getAppointmentObject, setAppointmentObject) Appointment* appointmentObject;
 
     QDateTime getAppointment(void);
     void setAppointment(QDateTime newAppointment);
     bool getValid(void);
     void setValid(bool newval);
-    void setAppointmentObject(std::shared_ptr<Appointment> newobject);
-    std::shared_ptr<Appointment> getAppointmentObject(void);
+    void setAppointmentObject(Appointment* newobject);
+    Appointment* getAppointmentObject(void);
 
     void validate(void);
     void invalidate(void);
@@ -62,7 +62,7 @@ protected:
     LabeledWidgetLeft *lAppointmentType;
 
 private:
-    std::shared_ptr<Appointment> mAppointment;
+    Appointment *mAppointment;
     appointmentTypeModel *typeModel;
 
     void Initialize(void);

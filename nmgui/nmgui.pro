@@ -2,7 +2,7 @@ QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++17
+CONFIG += c++20
 
 # Suppress debug output for release builds
 # CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
@@ -27,6 +27,7 @@ SOURCES += \
     ../nmbroker/logger.cpp \
     ../nmbroker/nutmeg.cpp \
     panels/appointmentpanel.cpp \
+    panels/appointmentpanelfull.cpp \
     panels/deadlinespanel.cpp \
     panels/entitiespanel.cpp \
     panels/filingpanel.cpp \
@@ -162,6 +163,7 @@ HEADERS += \
     ../nmbroker/dbaccess/viewtrademarkfilingtypesmodel.h \
     ../nmbroker/logger.h \
     panels/appointmentpanel.h \
+    panels/appointmentpanelfull.h \
     panels/deadlinespanel.h \
     panels/entitiespanel.h \
     panels/filingpanel.h \
@@ -295,7 +297,7 @@ FORMS += \
 
 INCLUDEPATH += ../nmbroker
 
-INCLUDEPATH += /usr/local/src/boost
+#INCLUDEPATH += /usr/local/src/boost
 
 TRANSLATIONS += \
     nmgui_en_US.ts

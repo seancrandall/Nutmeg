@@ -1,0 +1,5 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="i18n">
+<file alias="nmgui_en_US.qm">/home/sean/Dev/Nutmeg/nmgui/.qm/nmgui_en_US.qm</file>
+</qresource>
+</RCC>

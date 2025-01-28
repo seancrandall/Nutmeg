@@ -27,7 +27,7 @@ class Appointment : public Nutmeg::Object
     virtual bool slotSetId(Key newid) override;
     virtual bool slotCommit(void) override;
 
-    DateTime getAppointmentTime(void) { return mDat.AppointmentTime; };
+    DateTime getAppointmentTime(void) { return mDat.AppointmentTime; }
     Key getfkAppointmentType(void) { return mDat.fkAppointmentType; }
 
   public slots:

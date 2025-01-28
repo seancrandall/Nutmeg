@@ -2,14 +2,14 @@
 
 namespace Nutmeg {
 
-TaskGroup::TaskGroup(std::shared_ptr<Task> task, QWidget *parent)
+TaskGroup::TaskGroup(Task* task, QWidget *parent)
     : Frame(parent)
     , mTask(task)
 {}
 
 TaskGroup::TaskGroup(Key taskid, QWidget *parent)
     : Frame(parent)
-    , mTask(std::make_shared<Task>(taskid))
+    , mTask(new Task(taskid, this))
 {
 }
 

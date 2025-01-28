@@ -1,9 +1,8 @@
 #include "appointmentpanel.h"
 
-namespace Nutmeg {
+namespace Nutmeg{
 
-
-AppointmentPanel::AppointmentPanel(std::shared_ptr<Appointment> appt, QWidget *parent)
+Nutmeg::AppointmentPanel::AppointmentPanel(Appointment *appt, QWidget *parent)
     : Frame(parent)
     , mAppointment(appt)
 {
@@ -13,7 +12,7 @@ AppointmentPanel::AppointmentPanel(std::shared_ptr<Appointment> appt, QWidget *p
 
 AppointmentPanel::AppointmentPanel(Key apptid, QWidget *parent)
     : Frame(parent)
-    , mAppointment(std::make_shared<Appointment>(apptid))
+    , mAppointment(new Appointment(apptid, this))
 {
     mIsValid = true;
     Initialize();
@@ -22,8 +21,6 @@ AppointmentPanel::AppointmentPanel(Key apptid, QWidget *parent)
 AppointmentPanel::AppointmentPanel(QWidget *parent)
     : Frame(parent)
 {
-    //appointment = QDateTime::fromString("1999-01-01 00:00:00", Qt::ISODate);
-    appointment = QDateTime::currentDateTime();
     mIsValid = false;
     Initialize();
 }
@@ -50,13 +47,12 @@ void AppointmentPanel::setValid(bool newval)
     mIsValid = newval;
 }
 
-void AppointmentPanel::setAppointmentObject(std::shared_ptr<Appointment> newobject)
+void AppointmentPanel::setAppointmentObject(Appointment *newobject)
 {
     mAppointment = newobject;
-
 }
 
-std::shared_ptr<Appointment> AppointmentPanel::getAppointmentObject()
+Appointment *AppointmentPanel::getAppointmentObject()
 {
     if(mIsValid)
         return mAppointment;
@@ -66,11 +62,12 @@ std::shared_ptr<Appointment> AppointmentPanel::getAppointmentObject()
 
 void AppointmentPanel::validate()
 {
-    valid = true;
+    mIsValid = true;
     cId->setEnabled(true);
     cDateTime->setEnabled(true);
     cAppointmentType->setEnabled(true);
-    plus->show();
+    plus->hide();
+    Scatter();
 }
 
 void AppointmentPanel::invalidate()
@@ -110,7 +107,7 @@ void AppointmentPanel::Initialize()
     cId = new LineDisplayId();
     cDateTime = new DateTimeEdit(mAppointment->AppointmentTime);
     cAppointmentType = new ComboBox();
-    cAppointmentType->model = typeModel;
+    cAppointmentType->setModel(typeModel);
     plus = new PlusButton();
 
     lId = new LabeledWidgetLeft("Appointment ID", cId);
@@ -143,10 +140,14 @@ void AppointmentPanel::ConnectSignalsAndSlots()
 void AppointmentPanel::slotCreateNewAppointment()
 {
     Key newapp;
-    newapp = Nutdb::InsertAppointment(appointment);
+    newapp = Nutdb::InsertAppointment(QDateTime::currentDateTime());
 
     if(newapp)
+    {
+        validate();
         emit signalAppointmentCreated(newapp);
+    }
 }
 
-} // namespace Nutmeg
+
+} //namespace Nutmeg

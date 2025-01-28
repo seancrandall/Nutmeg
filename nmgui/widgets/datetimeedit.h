@@ -18,9 +18,16 @@ public:
     DateTimeEdit(QWidget *parent = nullptr);
     DateTimeEdit(QDateTime iniTime, QWidget *parent = nullptr);
 
-    Property(date, setDate) QDate date;
-    Property(time, setTime) QTime time;
-    Property(dateTime, setDateTime) QDateTime dateTime;
+    Property(getDate, setDate) QDate date;
+    Property(getTime, setTime) QTime time;
+    Property(getDateTime, setDateTime) QDateTime dateTime;
+
+    QDate getDate(void) {return QDateTimeEdit::date();}
+    void setDate(QDate newdate) {QDateTimeEdit::setDate(newdate);}
+    QTime getTime(void){return QDateTimeEdit::time();}
+    void setTime(QTime newtime) {QDateTimeEdit::setTime(newtime);}
+    QDateTime getDateTime(void) {return QDateTimeEdit::dateTime();}
+    void setDateTime(QDateTime newdatetime) {QDateTimeEdit::setDateTime(newdatetime);}
 
 private:
     QDateTime mDateTime;
