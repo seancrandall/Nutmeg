@@ -5,8 +5,8 @@ namespace Nutmeg
 
 FilingPanel::FilingPanel(Key id, QWidget *parent)
     : QWidget(parent)
-    , filing(new Filing(id, this))
-    , matter(new Matter(filing->fkMatter, this))
+    , filing(std::make_shared<Filing>(id))
+    , matter(std::make_shared<Matter>(filing->fkMatter))
 {
     LoadData();
 }

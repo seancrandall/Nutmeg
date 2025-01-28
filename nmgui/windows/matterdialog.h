@@ -15,7 +15,7 @@ class MatterDialog : public Nutmeg::Dialog
     Q_OBJECT
   public:
     MatterDialog(Key matterid, QWidget *parent = nullptr);
-    MatterDialog(Matter *matter, QWidget *parent = nullptr);
+    MatterDialog(std::shared_ptr<Matter> matter, QWidget *parent = nullptr);
 
 
   protected:
@@ -27,7 +27,7 @@ class MatterDialog : public Nutmeg::Dialog
     void layoutWorkspace(void);
 
     //Matter matter;
-    Matter* mMatter;
+    std::shared_ptr<Matter> mMatter;
     MatterPanel *mPanel;
 
 private:

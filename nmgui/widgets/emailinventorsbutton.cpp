@@ -3,7 +3,7 @@
 namespace Nutmeg
 {
 
-EmailInventorsButton::EmailInventorsButton(Filing* fil, QWidget *parent)
+EmailInventorsButton::EmailInventorsButton(std::shared_ptr<Filing> fil, QWidget *parent)
     : PushButton(parent)
     , mFiling(fil)
 {

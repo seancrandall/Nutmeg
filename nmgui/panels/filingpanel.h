@@ -41,8 +41,8 @@ class FilingPanel : public QWidget
 
   protected:
     std::shared_ptr<Deadline> deadline;
-    Filing* filing;
-    Matter* matter;
+    std::shared_ptr<Filing> filing;
+    std::shared_ptr<Matter> matter;
 
     DoneButton *doneButton;
 
