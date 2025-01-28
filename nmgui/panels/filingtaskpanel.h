@@ -14,7 +14,7 @@ class FilingTaskPanel : public Nutmeg::TaskPanel
 {
     Q_OBJECT
   public:
-    FilingTaskPanel(std::shared_ptr<Filing> fil, QWidget *parent = nullptr);
+    FilingTaskPanel(Filing* fil, QWidget *parent = nullptr);
 
   signals:
     void signalSomethingChanged(void);

@@ -2,7 +2,7 @@
 
 namespace Nutmeg {
 
-PatentMatterPanel::PatentMatterPanel(std::shared_ptr<PatentMatter> patMatterIn, QWidget *parent)
+PatentMatterPanel::PatentMatterPanel(PatentMatter* patMatterIn, QWidget *parent)
     : GroupBox("Patent Matter Data", parent)
     , patMatter(patMatterIn)
 {
@@ -13,7 +13,7 @@ PatentMatterPanel::PatentMatterPanel(std::shared_ptr<PatentMatter> patMatterIn, 
 
 PatentMatterPanel::PatentMatterPanel(Key patentMatterId, QWidget *parent)
     : GroupBox("Patent Matter Data", parent)
-    , patMatter(std::make_shared<PatentMatter>(patentMatterId))
+    , patMatter(new PatentMatter(patentMatterId, this))
 {
     LayoutWidgets();
     slotScatter();

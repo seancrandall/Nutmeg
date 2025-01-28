@@ -26,7 +26,7 @@ class MatterDialog : public Nutmeg::Dialog
     void layoutWorkspace(void);
 
     //Matter matter;
-    std::shared_ptr<Matter> matter;
+    Matter* matter;
     MatterPanel *panel;
 };
 

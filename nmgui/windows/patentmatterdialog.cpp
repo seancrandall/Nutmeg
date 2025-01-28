@@ -10,16 +10,16 @@ namespace Nutmeg
 
 PatentMatterDialog::PatentMatterDialog(Key pmkey, QWidget *parent)
     : Dialog(parent)
-    , pmatter(std::make_shared<PatentMatter>(pmkey))
+    , pmatter(new PatentMatter(pmkey, this))
 {
     setupDisplay();
     slotScatter();
     connectSignalsAndSlots();
 }
 
-PatentMatterDialog::PatentMatterDialog(std::shared_ptr<PatentMatter> matterin, QWidget *parent)
+PatentMatterDialog::PatentMatterDialog(PatentMatter* matterin, QWidget *parent)
     : Dialog(parent)
-    , pmatter(std::move(matterin))
+    , pmatter(matterin)
 {
     setupDisplay();
     slotScatter();

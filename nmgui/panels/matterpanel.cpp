@@ -2,7 +2,7 @@
 
 namespace Nutmeg {
 
-MatterPanel::MatterPanel(std::shared_ptr<Matter> matterin, QWidget *parent)
+MatterPanel::MatterPanel(Matter* matterin, QWidget *parent)
     : GroupBox("Matter Data", parent)
     , matter(matterin)
 {
@@ -14,7 +14,7 @@ MatterPanel::MatterPanel(std::shared_ptr<Matter> matterin, QWidget *parent)
 
 MatterPanel::MatterPanel(Key matterid, QWidget *parent)
     : GroupBox("Matter Data", parent)
-    , matter(std::make_shared<Matter>(matterid))
+    , matter(new Matter(matterid, this))
 {
     initializeObjects();
     setupLayouts();

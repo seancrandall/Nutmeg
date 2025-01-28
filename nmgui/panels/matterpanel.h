@@ -33,7 +33,7 @@ class MatterPanel : public Nutmeg::GroupBox
     Q_OBJECT
 
 public:
-    MatterPanel(std::shared_ptr<Matter> matterin, QWidget *parent = nullptr);
+    MatterPanel(Matter* matterin, QWidget *parent = nullptr);
     MatterPanel(Key matterid, QWidget *parent = nullptr);
 
 public slots:
@@ -72,7 +72,7 @@ protected:
     ComboBox *cJurisdiction;
 
     //Matter *matter;
-    std::shared_ptr<Matter> matter;
+    Matter* matter;
 
 private:
     //void SetupDisplay(void);

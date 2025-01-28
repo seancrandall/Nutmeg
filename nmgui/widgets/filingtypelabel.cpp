@@ -3,7 +3,7 @@
 namespace Nutmeg
 {
 
-FilingTypeLabel::FilingTypeLabel(std::shared_ptr<Filing> filing, QWidget *parent)
+FilingTypeLabel::FilingTypeLabel(Filing* filing, QWidget *parent)
     : QLabel(parent)
 {
     NUTMEGFONT;

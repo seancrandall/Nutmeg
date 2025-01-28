@@ -22,7 +22,7 @@ class PatentMatterDialog : public Nutmeg::Dialog
     Q_OBJECT
 public:
     PatentMatterDialog(Key pmkey, QWidget *parent = nullptr);
-    PatentMatterDialog(std::shared_ptr<PatentMatter>matterin, QWidget *parent = nullptr);
+    PatentMatterDialog(PatentMatter* matterin, QWidget *parent = nullptr);
 
 public slots:
     virtual void slotScatter(void) override;
@@ -31,7 +31,7 @@ public slots:
     virtual void slotHandleAccepted(void) override;
 
 protected:
-    std::shared_ptr<PatentMatter> pmatter;
+    PatentMatter* pmatter;
     PatentMatterPanel *pmPanel;
     MatterPanel *mPanel;
     QVBoxLayout *vlayout;

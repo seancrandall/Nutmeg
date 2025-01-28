@@ -5,7 +5,7 @@ namespace Nutmeg
 
 MatterDialog::MatterDialog(Key matterid, QWidget *parent)
     : Nutmeg::Dialog(parent)
-    , matter(std::make_shared<Matter>(matterid))
+    , matter(new Matter(matterid, this))
     , panel(new MatterPanel(matter, this))
 {
     MatterDialog::setupDisplay();
