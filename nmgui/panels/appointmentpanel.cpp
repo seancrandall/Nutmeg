@@ -2,7 +2,7 @@
 
 namespace Nutmeg{
 
-Nutmeg::AppointmentPanel::AppointmentPanel(Appointment *appt, QWidget *parent)
+Nutmeg::AppointmentPanel::AppointmentPanel(std::shared_ptr<Appointment> appt, QWidget *parent)
     : Frame(parent)
     , mAppointment(appt)
 {
@@ -12,7 +12,7 @@ Nutmeg::AppointmentPanel::AppointmentPanel(Appointment *appt, QWidget *parent)
 
 AppointmentPanel::AppointmentPanel(Key apptid, QWidget *parent)
     : Frame(parent)
-    , mAppointment(new Appointment(apptid, this))
+    , mAppointment(std::make_shared<Appointment>(apptid))
 {
     mIsValid = true;
     Initialize();
@@ -47,12 +47,12 @@ void AppointmentPanel::setValid(bool newval)
     mIsValid = newval;
 }
 
-void AppointmentPanel::setAppointmentObject(Appointment *newobject)
+void AppointmentPanel::setAppointmentObject(std::shared_ptr<Appointment> newobject)
 {
     mAppointment = newobject;
 }
 
-Appointment *AppointmentPanel::getAppointmentObject()
+std::shared_ptr<Appointment> AppointmentPanel::getAppointmentObject()
 {
     if(mIsValid)
         return mAppointment;

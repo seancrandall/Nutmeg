@@ -17,7 +17,7 @@ class TaskDialog : public Nutmeg::Dialog
 {
     Q_OBJECT
 public:
-    TaskDialog(Task *task, QWidget *parent = nullptr);
+    TaskDialog(std::shared_ptr<Task> task, QWidget *parent = nullptr);
     TaskDialog(Key taskid, QWidget *parent = nullptr);
 
 public slots:
@@ -27,8 +27,8 @@ public slots:
     virtual void slotHandleAccepted(void) override;
 
 protected:
-    Task *mTask;
-    Matter *mMatter;
+    std::shared_ptr<Task> mTask;
+    std::shared_ptr<Matter> mMatter;
 
     virtual void setupDisplay(void) override;
     //virtual void connectSignalsAndSlots(void) override;

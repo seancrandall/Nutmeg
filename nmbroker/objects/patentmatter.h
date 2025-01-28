@@ -17,21 +17,21 @@ class PatentMatter : public Nutmeg::Matter
       explicit PatentMatter(Key id);
     explicit PatentMatter(String docketNumber);
 
-    Property(getId, slotSetId) Key PatentMatterId;
-    Property(getFilingDate, slotSetFilingDate) Date FilingDate;
-    Property(getApplicationSerialNumber, slotSetApplicationSerialNumber) String ApplicationSerialNumber;
-    Property(getConfirmationNumber, slotSetConfirmationNumber) String ConfirmationNumber;
-    Property(getArtUnit, slotSetArtUnit) String ArtUnit;
-    Property(getPatentNumber, slotSetPatentNumber) String PatentNumber;
-    Property(getfkExaminer, slotSetfkExaminer) Key fkExaminer;
-    Property(getfkFirstInventor, slotSetfkFirstInventor) Key fkFirstInventor;
-    Property(getfkSupervisoryExaminer, slotSetfkSupervisoryExaminer) Key fkSupervisoryExaminer;
-    Property(getfkApplicant, slotSetfkApplicant) Key fkApplicant;
-    Property(getBarDate, slotSetBarDate) Date BarDate;
-    Property(getCriticalDate, slotSetCriticalDate) Date CriticalDate;
-    Property(getfkSpecification, slotSetfkSpecification) Key fkSpecification;
-    Property(getfkDrawings, slotSetfkDrawings) Key fkDrawings;
-    Property(getfkAsFiledClaims, slotSetfkAsFiledClaims) Key fkAsFiledClaims;
+    Property(getId, SetId) Key PatentMatterId;
+    Property(getFilingDate, SetFilingDate) Date FilingDate;
+    Property(getApplicationSerialNumber, SetApplicationSerialNumber) String ApplicationSerialNumber;
+    Property(getConfirmationNumber, SetConfirmationNumber) String ConfirmationNumber;
+    Property(getArtUnit, SetArtUnit) String ArtUnit;
+    Property(getPatentNumber, SetPatentNumber) String PatentNumber;
+    Property(getfkExaminer, SetfkExaminer) Key fkExaminer;
+    Property(getfkFirstInventor, SetfkFirstInventor) Key fkFirstInventor;
+    Property(getfkSupervisoryExaminer, SetfkSupervisoryExaminer) Key fkSupervisoryExaminer;
+    Property(getfkApplicant, SetfkApplicant) Key fkApplicant;
+    Property(getBarDate, SetBarDate) Date BarDate;
+    Property(getCriticalDate, SetCriticalDate) Date CriticalDate;
+    Property(getfkSpecification, SetfkSpecification) Key fkSpecification;
+    Property(getfkDrawings, SetfkDrawings) Key fkDrawings;
+    Property(getfkAsFiledClaims, SetfkAsFiledClaims) Key fkAsFiledClaims;
     ReadOnlyProperty(getInventors) QList<Key> inventors;
 
     // Getters
@@ -66,7 +66,7 @@ class PatentMatter : public Nutmeg::Matter
     bool SetApplicationSerialNumber(String newval);
     bool SetConfirmationNumber(String newval);
     bool SetArtUnit(String newval);
-    bool slotSetPatentNumber(String newval);
+    bool SetPatentNumber(String newval);
     bool SetfkExaminer(Key newval);
     bool SetfkFirstInventor(Key newval);
     bool SetfkSupervisoryExaminer(Key newval);

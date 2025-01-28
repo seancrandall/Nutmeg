@@ -14,18 +14,18 @@ class Matter : public Nutmeg::Object
     explicit Matter(Key id);
     explicit Matter(QString docketNumber);
 
-    Property(getId, slotSetId) Key MatterId;
-    Property(getfkParent, slotSetfkParent) Key fkParent;
-    Property(getAttorneyDocketNumber, slotSetAttorneyDocketNumber) QString AttorneyDocketNumber;
-    Property(getClientDocketNumber, slotSetClientDocketNumber) QString ClientDocketNumber;
-    Property(getTitle, slotSetTitle) QString Title;
-    Property(getfkClient, slotSetfkClient) Key fkClient;
-    Property(getfkAssigningFirm, slotSetfkAssigningFirm) Key fkAssigningFirm;
-    Property(getfkDefaultWorkAttorney, slotSetfkDefaultWorkAttorney) Key fkDefaultWorkAttorney;
-    Property(getfkDefaultParalegal, slotSetfkDefaultParalegal) Key fkDefaultParalegal;
-    Property(getfkKeyDocument, slotSetfkKeyDocument) Key fkKeyDocument;
-    Property(getfkMatterJurisdiction, slotSetfkMatterJurisdiction) Key fkMatterJurisdiction;
-    Property(getOldMatterId, slotSetOldMatterId) Key OldMatterId;
+    Property(getId, SetId) Key MatterId;
+    Property(getfkParent, SetfkParent) Key fkParent;
+    Property(getAttorneyDocketNumber, SetAttorneyDocketNumber) QString AttorneyDocketNumber;
+    Property(getClientDocketNumber, SetClientDocketNumber) QString ClientDocketNumber;
+    Property(getTitle, SetTitle) QString Title;
+    Property(getfkClient, SetfkClient) Key fkClient;
+    Property(getfkAssigningFirm, SetfkAssigningFirm) Key fkAssigningFirm;
+    Property(getfkDefaultWorkAttorney, SetfkDefaultWorkAttorney) Key fkDefaultWorkAttorney;
+    Property(getfkDefaultParalegal, SetfkDefaultParalegal) Key fkDefaultParalegal;
+    Property(getfkKeyDocument, SetfkKeyDocument) Key fkKeyDocument;
+    Property(getfkMatterJurisdiction, SetfkMatterJurisdiction) Key fkMatterJurisdiction;
+    Property(getOldMatterId, SetOldMatterId) Key OldMatterId;
 
     // Getters
     virtual Key getId(void) override { return mDat.MatterId; }

@@ -13,13 +13,13 @@ class DoneButton : public Nutmeg::PushButton
 {
     Q_OBJECT
   public:
-    DoneButton(Task* task, QWidget *parent = nullptr);
+    DoneButton(std::shared_ptr<Task> task, QWidget *parent = nullptr);
 
   public slots:
     void slotHandleClicked(void);
 
   protected:
-    Task* mTask;
+    std::shared_ptr<Task> mTask;
 };
 
 } // namespace Nutmeg

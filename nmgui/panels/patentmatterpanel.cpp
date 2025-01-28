@@ -13,7 +13,7 @@ PatentMatterPanel::PatentMatterPanel(PatentMatter* patMatterIn, QWidget *parent)
 
 PatentMatterPanel::PatentMatterPanel(Key patentMatterId, QWidget *parent)
     : GroupBox("Patent Matter Data", parent)
-    , patMatter(new PatentMatter(patentMatterId, this))
+    , patMatter(std::make_shared<PatentMatter>(patentMatterId))
 {
     LayoutWidgets();
     slotScatter();

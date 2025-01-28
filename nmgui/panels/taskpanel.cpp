@@ -5,18 +5,18 @@
 namespace Nutmeg
 {
 
-TaskPanel::TaskPanel(Task* tsk, QWidget *parent)
+TaskPanel::TaskPanel(std::shared_ptr<Task> task, QWidget *parent)
     : Frame(parent)
-      , matter(new Matter(tsk->fkMatter, this))
-      , task(tsk)
+      , mMatter(std::make_shared<Matter>(task->fkMatter, this))
+      , mTask(task)
 {
     SetupDisplay();
 }
 
-Nutmeg::TaskPanel::TaskPanel(PushButton *xtra, Task* tsk, QWidget *parent)
+Nutmeg::TaskPanel::TaskPanel(PushButton *xtra, std::shared_ptr<Task>task, QWidget *parent)
     : Frame(parent)
-      , matter(new Matter(tsk->fkMatter, this))
-      , task(tsk)
+      , mMatter(std::make_shared<Matter>(task->fkMatter))
+      , mTask(task)
       , extraButton(xtra)
 {
     SetupDisplay();
@@ -43,38 +43,38 @@ void Nutmeg::TaskPanel::ConnectSigalsAndSlots()
 
 }
 
-void Nutmeg::TaskPanel::slotUpdateTitle() { matter->Title = titleEdit->toPlainText(); }
+void Nutmeg::TaskPanel::slotUpdateTitle() { mMatter->Title = titleEdit->toPlainText(); }
 
-void Nutmeg::TaskPanel::slotUpdateTaskType(Key newval) { task->fkTaskType = newval; }
+void Nutmeg::TaskPanel::slotUpdateTaskType(Key newval) { mTask->fkTaskType = newval; }
 
 void TaskPanel::slotOpenTaskWindow()
 {
-    TaskDialog diag(task, this);
+    TaskDialog diag(mTask, this);
     diag.setModal(true);
     diag.exec();
 }
 
 void Nutmeg::TaskPanel::slotOpenMatterWindow()
 {
-    PatentMatterDialog mdiag(matter->MatterId, this);
+    PatentMatterDialog mdiag(mMatter->MatterId, this);
     mdiag.exec();
     return;
 }
 
 void Nutmeg::TaskPanel::SetupDisplay()
 {
-    docketNumberButton = new DocketNumberButton(matter, this);
+    docketNumberButton = new DocketNumberButton(mMatter, this);
     docketNumberButton->setFlat(true);
 
     QHBoxLayout *tasklayout = new QHBoxLayout();
-    taskTypeCombo = new TaskTypeCombo(task, this);
+    taskTypeCombo = new TaskTypeCombo(mTask, this);
     taskTypeCombo->setMaximumWidth(220);
     tasklayout->addWidget(taskTypeCombo);
     openTaskButton = new ArrowButton(this);
     tasklayout->addWidget(openTaskButton);
     tasklayout->setAlignment(Qt::AlignHCenter);
 
-    titleEdit = new TitleEdit(matter, this);
+    titleEdit = new TitleEdit(mMatter, this);
 
     QVBoxLayout *vLayout = new QVBoxLayout(this);
     vLayout->setContentsMargins(10, 10, 10, 10); // Comfortable margin

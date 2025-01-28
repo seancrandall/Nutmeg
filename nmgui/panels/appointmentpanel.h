@@ -25,7 +25,7 @@ class AppointmentPanel : public Frame
 {
     Q_OBJECT
 public:
-    AppointmentPanel(Appointment* appt, QWidget *parent = nullptr);
+    AppointmentPanel(std::shared_ptr<Appointment> appt, QWidget *parent = nullptr);
     AppointmentPanel(Key apptid, QWidget *parent = nullptr);
     AppointmentPanel(QWidget *parent = nullptr);
 
@@ -37,8 +37,8 @@ public:
     void setAppointment(QDateTime newAppointment);
     bool getValid(void);
     void setValid(bool newval);
-    void setAppointmentObject(Appointment* newobject);
-    Appointment* getAppointmentObject(void);
+    void setAppointmentObject(std::shared_ptr<Appointment> newobject);
+    std::shared_ptr<Appointment> getAppointmentObject(void);
 
     void validate(void);
     void invalidate(void);
@@ -62,7 +62,7 @@ protected:
     LabeledWidgetLeft *lAppointmentType;
 
 private:
-    Appointment *mAppointment;
+    std::shared_ptr<Appointment> mAppointment;
     appointmentTypeModel *typeModel;
 
     void Initialize(void);

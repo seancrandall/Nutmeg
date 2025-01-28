@@ -3,9 +3,9 @@
 namespace Nutmeg
 {
 
-EIButton::EIButton(Response* resp, QWidget *parent)
+EIButton::EIButton(std::shared_ptr<Response> response, QWidget *parent)
     : PushButton(parent)
-    , mResponse(resp)
+    , mResponse(response)
 {
     QPushButton::setText("Schedule EI");
 

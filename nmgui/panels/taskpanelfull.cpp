@@ -2,18 +2,18 @@
 
 namespace Nutmeg {
 
-TaskPanelFull::TaskPanelFull(Task* task, QWidget *parent)
+TaskPanelFull::TaskPanelFull(std::shared_ptr<Task> task, QWidget *parent)
     : Frame(parent)
     , mTask(task)
-    , mMatter(new Matter(mTask->fkMatter, this))
+    , mMatter(std::make_shared<Matter>(mTask->fkMatter))
 {
     Initialize();
 }
 
 TaskPanelFull::TaskPanelFull(Key taskid, QWidget *parent)
     : Frame(parent)
-    , mTask(new Task(taskid, this))
-    , mMatter(new Matter(mTask->fkMatter, this))
+    , mTask(std::make_shared<Task>(taskid))
+    , mMatter(std::make_shared<Matter>(mTask->fkMatter))
 {
     Initialize();
 }

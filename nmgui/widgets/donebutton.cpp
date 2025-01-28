@@ -3,7 +3,7 @@
 namespace Nutmeg
 {
 
-DoneButton::DoneButton(Task *task, QWidget *parent)
+DoneButton::DoneButton(std::shared_ptr<Task> task, QWidget *parent)
     : Nutmeg::PushButton(parent)
     , mTask(task)
 {

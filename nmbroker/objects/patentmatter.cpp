@@ -68,7 +68,7 @@ bool PatentMatter::SetArtUnit(String newval)
     return result;
 }
 
-bool PatentMatter::slotSetPatentNumber(String newval)
+bool PatentMatter::SetPatentNumber(String newval)
 {
     bool result = WriteString(patentMatterTableName, "PatentNumber", newval);
     if(result) mDat.PatentNumber = newval;

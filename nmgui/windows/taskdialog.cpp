@@ -2,18 +2,18 @@
 
 namespace Nutmeg {
 
-TaskDialog::TaskDialog(Task *task, QWidget *parent)
+TaskDialog::TaskDialog(std::shared_ptr<Task> task, QWidget *parent)
     : Dialog(parent)
     , mTask(task)
-    , mMatter(new Matter(task->fkMatter, this))
+    , mMatter(std::make_shared<Matter>(task->fkMatter))
 {
     Initialize();
 }
 
 TaskDialog::TaskDialog(Key taskid, QWidget *parent)
     : Dialog(parent)
-    , mTask(new Task(taskid, this))
-    , mMatter(new Matter(mTask->fkMatter, this))
+    , mTask(std::make_shared<Task>(taskid))
+    , mMatter(std::make_shared<Matter>(mTask->fkMatter))
 {
     Initialize();
 }

@@ -6,8 +6,8 @@ namespace Nutmeg
 
 ResponsePanel::ResponsePanel(Key responseId, QWidget *parent)
     : QWidget{parent}
-    , response(new Response(responseId, this))
-    , matter(new Matter(response->fkMatter, this))
+    , mResponse(std::make_shared<Response>(responseId))
+    , mMatter(std::make_shared<Matter>(mResponse->fkMatter))
 {
     LoadData();
 }
@@ -15,22 +15,22 @@ ResponsePanel::ResponsePanel(Key responseId, QWidget *parent)
 void ResponsePanel::LoadData(void)
 {
     // Objects
-    deadline = std::make_shared<Deadline>(response->fkDeadline);
+    mDeadline = std::make_shared<Deadline>(mResponse->fkDeadline);
 
     // Set Color
     QPalette pal;
-    QColor background = Deadline(response->fkDeadline).color;
+    QColor background = Deadline(mResponse->fkDeadline).color;
     pal.setColor(QPalette::Window, background);
     setPalette(pal);
     setAutoFillBackground(true);
 
     // Change window color according to deadline
-    QLabel *label = new ResponseTypeLabel(response);
-    doneButton = new DoneButton(response);
-    ResponseTaskPanel *taskPanel = new ResponseTaskPanel(response);
-    DeadlinesPanel *deadlinePanel = new DeadlinesPanel(deadline);
-    EntitiesPanel *epanel = new EntitiesPanel(response->TaskId);
-    FlagsPanel *fpanel = new FlagsPanel(response->ResponseId);
+    QLabel *label = new ResponseTypeLabel(mResponse);
+    doneButton = new DoneButton(mResponse);
+    ResponseTaskPanel *taskPanel = new ResponseTaskPanel(mResponse);
+    DeadlinesPanel *deadlinePanel = new DeadlinesPanel(mDeadline);
+    EntitiesPanel *epanel = new EntitiesPanel(mResponse->TaskId);
+    FlagsPanel *fpanel = new FlagsPanel(mResponse->ResponseId);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(label);
@@ -45,17 +45,17 @@ void ResponsePanel::LoadData(void)
 
 void ResponsePanel::slotUpdateParalegal(Key newkey)
 {
-    response->fkParalegal = newkey;
+    mResponse->fkParalegal = newkey;
 }
 
 void ResponsePanel::slotUpdateWorkAttorney(Key newkey)
 {
-    response->fkWorkAttorney = newkey;
+    mResponse->fkWorkAttorney = newkey;
 }
 
 void ResponsePanel::slotUpdateClient(Key newkey)
 {
-    matter->fkClient = newkey;
+    mMatter->fkClient = newkey;
 }
 
 void ResponsePanel::slotUpdateCompletion()

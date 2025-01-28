@@ -81,7 +81,7 @@ protected slots:
     void slotInsertApplicant(void);
 
 private:
-    PatentMatter* patMatter;
+    std::shared_ptr<PatentMatter> patMatter;
 };
 
 } // namespace Nutmeg

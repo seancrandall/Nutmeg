@@ -13,13 +13,13 @@ class EIButton : public Nutmeg::PushButton
 {
     Q_OBJECT
   public:
-    EIButton(Response* resp, QWidget *parent = nullptr);
+    EIButton(std::shared_ptr<Response> response, QWidget *parent = nullptr);
 
   public slots:
     void slotHandleClick(void);
 
   protected:
-    Response* mResponse;
+    std::shared_ptr<Response> mResponse;
 };
 
 } // namespace Nutmeg

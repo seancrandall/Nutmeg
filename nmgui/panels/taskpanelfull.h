@@ -31,15 +31,15 @@ class TaskPanelFull : public Nutmeg::Frame
 {
     Q_OBJECT
 public:
-    TaskPanelFull(Task* task, QWidget *parent = nullptr);
+    TaskPanelFull(std::shared_ptr<Task> task, QWidget *parent = nullptr);
     TaskPanelFull(Key taskid, QWidget *parent = nullptr);
 
     void Scatter(void);
     void Gather(void);
 
 protected:
-    Task* mTask;
-    Matter *mMatter;
+    std::shared_ptr<Task> mTask;
+    std::shared_ptr<Matter> mMatter;
 
     //Controls
     QGridLayout *grid;
