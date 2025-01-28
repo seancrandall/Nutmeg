@@ -14,10 +14,10 @@ class DocketNumberButton : public Nutmeg::PushButton
 {
     Q_OBJECT
   public:
-    DocketNumberButton(std::shared_ptr<Matter> matter, QWidget *parent);
+    DocketNumberButton(Matter* matter, QWidget *parent);
 
   protected:
-    std::shared_ptr<Matter> mMatter;
+    Matter* mMatter;
 };
 
 } // namespace Nutmeg

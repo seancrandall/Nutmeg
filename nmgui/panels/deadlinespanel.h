@@ -15,6 +15,9 @@
 namespace Nutmeg
 {
 
+/*******************************************************************
+ *  TODO : Do Scatter and Gather so we don't auto-update everything
+ * *****************************************************************/
 class DeadlinesPanel : public Frame
 {
     Q_OBJECT

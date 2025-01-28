@@ -3,7 +3,7 @@
 namespace Nutmeg
 {
 
-ResponseTypeLabel::ResponseTypeLabel(std::shared_ptr<Response> response, QWidget *parent) : QLabel(parent)
+ResponseTypeLabel::ResponseTypeLabel(Response *response, QWidget *parent) : QLabel(parent)
 {
     NUTMEGFONT;
     setFont(QFont("Arial", 14, QFont::Bold));

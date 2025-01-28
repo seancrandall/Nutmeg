@@ -30,8 +30,8 @@ class TaskPanel : public Frame
     Q_OBJECT
 
   public:
-    TaskPanel(std::shared_ptr<Task> tsk, QWidget *parent = nullptr);
-    TaskPanel(PushButton *xtra, std::shared_ptr<Task>tsk, QWidget *parent = nullptr);
+    TaskPanel(Task* tsk, QWidget *parent = nullptr);
+    TaskPanel(PushButton *xtra, Task *tsk, QWidget *parent = nullptr);
 
   protected slots:
     void slotUpdateTitle(void);
@@ -41,13 +41,9 @@ class TaskPanel : public Frame
     virtual void slotExtraButtonAction(void) = 0;
 
   protected:
-    // Response *response;
-    std::shared_ptr<Matter> matter;
-    std::shared_ptr<Task> task;
+    Matter* matter;
+    Task* task;
 
-    std::shared_ptr<Entity> client;
-    std::shared_ptr<Person> paralegal;
-    std::shared_ptr<Person> workAttorney;
     DocketNumberButton *docketNumberButton;
     ArrowButton *openTaskButton;
     TaskTypeCombo *taskTypeCombo;

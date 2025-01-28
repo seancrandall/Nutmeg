@@ -3,7 +3,7 @@
 namespace Nutmeg
 {
 
-TitleEdit::TitleEdit(std::shared_ptr<Matter>matter, QWidget *parent)
+TitleEdit::TitleEdit(Matter* matter, QWidget *parent)
     : TextEdit(parent)
     , mMatter(matter)
 {

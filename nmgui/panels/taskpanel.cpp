@@ -5,17 +5,17 @@
 namespace Nutmeg
 {
 
-TaskPanel::TaskPanel(std::shared_ptr<Task> tsk, QWidget *parent)
+TaskPanel::TaskPanel(Task* tsk, QWidget *parent)
     : Frame(parent)
-      , matter(std::make_shared<Matter>(tsk->fkMatter))
+      , matter(new Matter(tsk->fkMatter, this))
       , task(tsk)
 {
     SetupDisplay();
 }
 
-Nutmeg::TaskPanel::TaskPanel(PushButton *xtra, std::shared_ptr<Task> tsk, QWidget *parent)
+Nutmeg::TaskPanel::TaskPanel(PushButton *xtra, Task* tsk, QWidget *parent)
     : Frame(parent)
-      , matter(std::make_shared<Matter>(tsk->fkMatter))
+      , matter(new Matter(tsk->fkMatter, this))
       , task(tsk)
       , extraButton(xtra)
 {

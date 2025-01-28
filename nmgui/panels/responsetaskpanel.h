@@ -15,7 +15,7 @@ class ResponseTaskPanel : public Nutmeg::TaskPanel
 {
     Q_OBJECT
   public:
-    ResponseTaskPanel(std::shared_ptr<Response> rsp, QWidget *parent = nullptr);
+    ResponseTaskPanel(Response* rsp, QWidget *parent = nullptr);
 
   signals:
     void signalSomethingChanged(void);
@@ -24,7 +24,7 @@ class ResponseTaskPanel : public Nutmeg::TaskPanel
     virtual void slotExtraButtonAction(void) override;
 
   protected:
-    std::shared_ptr<Response> response;
+    Response* response;
 };
 
 } // namespace Nutmeg

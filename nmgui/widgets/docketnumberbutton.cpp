@@ -3,7 +3,7 @@
 namespace Nutmeg
 {
 
-DocketNumberButton::DocketNumberButton(std::shared_ptr<Matter> matter, QWidget *parent)
+DocketNumberButton::DocketNumberButton(Matter *matter, QWidget *parent)
     : Nutmeg::PushButton(parent)
     , mMatter(matter)
 {

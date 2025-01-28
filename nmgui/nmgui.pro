@@ -43,11 +43,13 @@ SOURCES += \
     panels/patentmatterpanel.cpp \
     panels/responsepanel.cpp \
     panels/responsetaskpanel.cpp \
-    panels/taskgroup.cpp \
     panels/taskpanel.cpp \
+    panels/taskpanelfull.cpp \
     widgets/abstractremovablebutton.cpp \
+    widgets/checkbox.cpp \
     widgets/comboeditadd.cpp \
     widgets/datetimeedit.cpp \
+    widgets/doublespinbox.cpp \
     widgets/editbutton.cpp \
     widgets/emailinventorsbutton.cpp \
     widgets/examinereditadd.cpp \
@@ -58,6 +60,7 @@ SOURCES += \
     widgets/inventoreditadd.cpp \
     widgets/peoplecompleter.cpp \
     widgets/personsearchbox.cpp \
+    widgets/spinbox.cpp \
     widgets/workattorneysearchbox.cpp \
     widgets/xbutton.cpp \
     ../nmbroker/dbaccess/nutdb.cpp \
@@ -179,11 +182,13 @@ HEADERS += \
     panels/patentmatterpanel.h \
     panels/responsepanel.h \
     panels/responsetaskpanel.h \
-    panels/taskgroup.h \
     panels/taskpanel.h \
+    panels/taskpanelfull.h \
     widgets/abstractremovablebutton.h \
+    widgets/checkbox.h \
     widgets/comboeditadd.h \
     widgets/datetimeedit.h \
+    widgets/doublespinbox.h \
     widgets/editbutton.h \
     widgets/emailinventorsbutton.h \
     widgets/examinereditadd.h \
@@ -194,6 +199,7 @@ HEADERS += \
     widgets/inventoreditadd.h \
     widgets/peoplecompleter.h \
     widgets/personsearchbox.h \
+    widgets/spinbox.h \
     widgets/workattorneysearchbox.h \
     widgets/xbutton.h \
     ../nmbroker/dbaccess/viewcontractingfirmsmodel.h \

@@ -14,14 +14,14 @@ class TitleEdit : public Nutmeg::TextEdit
 {
     Q_OBJECT
   public:
-    TitleEdit(std::shared_ptr<Matter> matter, QWidget *parent = nullptr);
+    TitleEdit(Matter* matter, QWidget *parent = nullptr);
 
     Property(getText, setText) QString text;
 
     QString getText(void) { return toPlainText(); }
 
   protected:
-    std::shared_ptr<Matter> mMatter;
+    Matter* mMatter;
 };
 
 } // namespace Nutmeg

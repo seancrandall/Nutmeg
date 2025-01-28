@@ -6,8 +6,8 @@ namespace Nutmeg
 
 ResponsePanel::ResponsePanel(Key responseId, QWidget *parent)
     : QWidget{parent}
-    , response(std::make_shared<Response>(responseId))
-    , matter(std::make_shared<Matter>(response->fkMatter))
+    , response(new Response(responseId, this))
+    , matter(new Matter(response->fkMatter, this))
 {
     LoadData();
 }

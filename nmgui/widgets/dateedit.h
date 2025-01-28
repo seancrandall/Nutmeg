@@ -19,7 +19,7 @@ class DateEdit : public QDateEdit
 {
     Q_OBJECT
   public:
-    DateEdit(QDate date = QDate(QDate::currentDate()), QWidget *parent = nullptr);
+    DateEdit(QDate date, QWidget *parent = nullptr);
     DateEdit(QWidget *parent = nullptr);
 
     Property(getDate, setDate) QDate date;

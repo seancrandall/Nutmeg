@@ -3,7 +3,7 @@
 namespace Nutmeg
 {
 
-EIButton::EIButton(std::shared_ptr<Response> resp, QWidget *parent)
+EIButton::EIButton(Response* resp, QWidget *parent)
     : PushButton(parent)
     , mResponse(resp)
 {
