@@ -11,8 +11,8 @@ class Filing : public Nutmeg::Task
 {
     Q_OBJECT
   public:
-    explicit Filing(QObject *parent = nullptr);
-    explicit Filing(Key id, QObject *parent = nullptr);
+    explicit Filing();
+      explicit Filing(Key id);
 
     // Properties
     Property(getId, slotSetId) Key FilingId;

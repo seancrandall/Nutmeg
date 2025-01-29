@@ -3,9 +3,9 @@
 namespace Nutmeg
 {
 
-Filing::Filing(QObject *parent) : Nutmeg::Task{parent} {}
+Filing::Filing() : Nutmeg::Task{} {}
 
-Filing::Filing(Key id, QObject *parent) : Nutmeg::Task(id, parent)
+Filing::Filing(Key id) : Nutmeg::Task(id)
 {
     InitializeFiling(id);
 }

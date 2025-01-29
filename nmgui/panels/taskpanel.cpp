@@ -7,7 +7,7 @@ namespace Nutmeg
 
 TaskPanel::TaskPanel(std::shared_ptr<Task> task, QWidget *parent)
     : Frame(parent)
-      , mMatter(std::make_shared<Matter>(task->fkMatter, this))
+      , mMatter(std::make_shared<Matter>(task->fkMatter))
       , mTask(task)
 {
     SetupDisplay();
