@@ -13,25 +13,33 @@ Person::Person(Key id)
     : Nutmeg::Entity(id)
 {
     auto& personCache = getCache<Person>();
-    Person* cachedPerson = cache<Person>::getObjectFromCache(id, &Person::GetPerson, personCache);
-    if (cachedPerson) {
-        // If we find the Person in cache, copy its state
-        *this = *cachedPerson;
-        mObjectIsNull = false; // Assuming this is inherited from Object via Entity
-    } else {
-        // If not in cache, proceed with initialization
-        InitializePerson(id);
+    if (personCache.contains(id)) {  // Check if Person is already in cache
+        Person* cachedPerson = *personCache.object(id);
+        if (cachedPerson) {
+            *this = *cachedPerson;  // Copy state if found in cache
+            mObjectIsNull = false;
+            return;  // Exit constructor early if we've copied from cache
+        }
     }
+    // If not in cache, proceed with initialization
+    InitializePerson(id);
 }
 
-// Static method to fetch a Person from the database if not in cache
 Person* Person::GetPerson(Key id) {
-    Person* person = new Person(id); // This will call the constructor again, but now with cache check
-    if (person->mObjectIsNull) { // Assuming this is inherited from Object via Entity
-        delete person; // Clean up if initialization failed
+    auto& personCache = getCache<Person>();
+    if (personCache.contains(id)) {
+        return *personCache.object(id);  // Return from cache if available
+    }
+
+    // If not in cache, create new Person and initialize it
+    Person* newPerson = new Person(id);
+    if (!newPerson->mObjectIsNull) { // Assuming mObjectIsNull becomes false on successful initialization
+        personCache.insert(id, &newPerson);
+        return newPerson;
+    } else {
+        delete newPerson;  // Clean up if initialization failed
         return nullptr;
     }
-    return person;
 }
 
 Person::Person(String first, String last)

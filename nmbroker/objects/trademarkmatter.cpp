@@ -8,25 +8,33 @@ TrademarkMatter::TrademarkMatter() : Nutmeg::Matter{} {}
 TrademarkMatter::TrademarkMatter(Key id) : Nutmeg::Matter(id)
 {
     auto& trademarkMatterCache = getCache<TrademarkMatter>();
-    TrademarkMatter* cachedTrademarkMatter = cache<TrademarkMatter>::getObjectFromCache(id, &TrademarkMatter::GetTrademarkMatter, trademarkMatterCache);
-    if (cachedTrademarkMatter) {
-        // If we find the TrademarkMatter in cache, copy its state
-        *this = *cachedTrademarkMatter;
-        mObjectIsNull = false; // Assuming this is inherited from Object/Matter
-    } else {
-        // If not in cache, proceed with initialization
-        InitializeTrademarkMatter(id);
+    if (trademarkMatterCache.contains(id)) {  // Check if TrademarkMatter is already in cache
+        TrademarkMatter* cachedTrademarkMatter = *trademarkMatterCache.object(id);
+        if (cachedTrademarkMatter) {
+            *this = *cachedTrademarkMatter;  // Copy state if found in cache
+            mObjectIsNull = false;
+            return;  // Exit constructor early if we've copied from cache
+        }
     }
+    // If not in cache, proceed with initialization
+    InitializeTrademarkMatter(id);
 }
 
-// Static method to fetch a TrademarkMatter from the database if not in cache
 TrademarkMatter* TrademarkMatter::GetTrademarkMatter(Key id) {
-    TrademarkMatter* trademarkMatter = new TrademarkMatter(id); // This will call the constructor again, but now with cache check
-    if (trademarkMatter->mObjectIsNull) { // Assuming this is inherited from Object/Matter
-        delete trademarkMatter; // Clean up if initialization failed
+    auto& trademarkMatterCache = getCache<TrademarkMatter>();
+    if (trademarkMatterCache.contains(id)) {
+        return *trademarkMatterCache.object(id);  // Return from cache if available
+    }
+
+    // If not in cache, create new TrademarkMatter and initialize it
+    TrademarkMatter* newTrademarkMatter = new TrademarkMatter(id);
+    if (!newTrademarkMatter->mObjectIsNull) { // Assuming mObjectIsNull becomes false on successful initialization
+        trademarkMatterCache.insert(id, &newTrademarkMatter);
+        return newTrademarkMatter;
+    } else {
+        delete newTrademarkMatter;  // Clean up if initialization failed
         return nullptr;
     }
-    return trademarkMatter;
 }
 
 TrademarkMatter::TrademarkMatter(QString docketNumber) : Nutmeg::Matter()

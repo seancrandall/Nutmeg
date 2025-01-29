@@ -11,27 +11,35 @@ Response::Response() : Nutmeg::Task{}
 Response::Response(Key newid) : Nutmeg::Task(newid)
 {
     auto& responseCache = getCache<Response>();
-    Response* cachedResponse = cache<Response>::getObjectFromCache(newid, &Response::GetResponse, responseCache)
-        ;
-    if (cachedResponse) {
-        // If we find the Response in cache, copy its state
-        *this = *cachedResponse;
-        mObjectIsNull = false; // Assuming this is inherited from Object via Task
+    if (responseCache.contains(newid)) {  // Check if Response is already in cache
+        Response* cachedResponse = *responseCache.object(newid);
+        if (cachedResponse) {
+            *this = *cachedResponse;  // Copy state if found in cache
+            mObjectIsNull = false;
+            return;  // Exit constructor early if we've copied from cache
+        }
+    }
+    // If not in cache, proceed with initialization
+    InitializeResponse(newid);
+}
+
+Response* Response::GetResponse(Key id) {
+    auto& responseCache = getCache<Response>();
+    if (responseCache.contains(id)) {
+        return *responseCache.object(id);  // Return from cache if available
+    }
+
+    // If not in cache, create new Response and initialize it
+    Response* newResponse = new Response(id);
+    if (!newResponse->mObjectIsNull) { // Assuming mObjectIsNull becomes false on successful initialization
+        responseCache.insert(id, &newResponse);
+        return newResponse;
     } else {
-        // If not in cache, proceed with initialization
-        InitializeResponse(newid);
+        delete newResponse;  // Clean up if initialization failed
+        return nullptr;
     }
 }
 
-// Static method to fetch a Response from the database if not in cache
-Response* Response::GetResponse(Key id) {
-    Response* response = new Response(id); // This will call the constructor again, but now with cache check
-    if (response->mObjectIsNull) { // Assuming this is inherited from Object via Task
-        delete response; // Clean up if initialization failed
-        return nullptr;
-    }
-    return response;
-}
 Response::Response(Key matterid, Date triggerDate) : Nutmeg::Task()
 {
     Key newid = Nutdb::InsertResponse(matterid, triggerDate);

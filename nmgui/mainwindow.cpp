@@ -136,9 +136,13 @@ void MainWindow::SetupResponses()
     responsesLayout = new QVBoxLayout(responsesContainer);
 
     // Create the responses model
-    responses = new viewResponsesIncompleteModel();
+    responses = new viewResponsesIncompleteModel(this);
+#ifdef QT_DEBUG
+    qDebug() << "Responses found: " << responses;
+#endif
 
     // Populate the responses container with ResponsePanels
+    auto tmpcount = responses->rowCount();
     for (auto i = 0; i < responses->rowCount(); ++i)
     {
         Key id = responses->record(i).field(0).value().toUInt();

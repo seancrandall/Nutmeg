@@ -7,6 +7,18 @@
 namespace Nutmeg
 {
 class Object;
+class Appointment;
+class CopyrightMatter;
+class Document;
+class Enterprise;
+class Entity;
+class Filing;
+class Matter;
+class PatentMatter;
+class Person;
+class Response;
+class Task;
+class TrademarkMatter;
 
 // Forward declaration for cache
 template<typename T> class cache;
@@ -19,7 +31,7 @@ template<typename T>
 class cache : public QCache<Key, T*>
 {
 public:
-    cache(int capacity = 100) : QCache<Key, T*>(capacity) {}
+    cache(int capacity = 200) : QCache<Key, T*>(capacity) {}
 
     static T* getObjectFromCache(Key id, T* (*fetchMethod)(Key), cache<T>& cacheInstance)
     {
@@ -32,7 +44,10 @@ public:
             T* result = fetchMethod(id);
             if(result)
             {
-                cacheInstance.insert(id, &result); // Directly insert the pointer
+                T** tempPtr = new T*[1];
+                tempPtr[0] = result;
+                cacheInstance.insert(id, tempPtr);
+                delete[] tempPtr; // Clean up the temporary pointer array
             }
             return result;
         }
@@ -43,18 +58,22 @@ public:
         cacheInstance.remove(id);
     }
 };
-// Example of how to define and use specific caches
-//extern cache<Object> dbcache;
-//extern cache<Appointment> appointmentCache;
 
-// Assume these are defined in cache.cpp or similar
-//template<>
-//cache<Object>& getCache<Object>() { return dbcache; }
+extern cache<Appointment> appointmentCache;
+extern cache<CopyrightMatter> copyrightMatterCache;
+extern cache<Document> documentCache;
+extern cache<Enterprise> enterpriseCache;
+extern cache<Entity> entityCache;
+extern cache<Filing> filingCache;
+extern cache<Matter> matterCache;
+extern cache<Object> objectCache;
+extern cache<PatentMatter> patentMatterCache;
+extern cache<Person> personCache;
+extern cache<Response> responseCache;
+extern cache<Task> taskCache;
+extern cache<TrademarkMatter> trademarkMatterCache;
+extern cache<Object> dbcache;
 
-//template<>
-//cache<Appointment>& getCache<Appointment>() { return appointmentCache; }
-
-// Function to initialize caches if needed
 void initCaches();
 }
 

@@ -8,25 +8,33 @@ CopyrightMatter::CopyrightMatter() : Nutmeg::Matter{} {}
 CopyrightMatter::CopyrightMatter(Key newid) : Matter(newid)
 {
     auto& copyrightMatterCache = getCache<CopyrightMatter>();
-    CopyrightMatter* cachedCopyrightMatter = cache<CopyrightMatter>::getObjectFromCache(newid, &CopyrightMatter::GetCopyrightMatter, copyrightMatterCache);
-    if (cachedCopyrightMatter) {
-        // If we find the CopyrightMatter in cache, copy its state
-        *this = *cachedCopyrightMatter;
-        mObjectIsNull = false; // Assuming this is inherited from Object/Matter
-    } else {
-        // If not in cache, proceed with initialization
-        InitializeCopyrightMatter(newid);
+    if (copyrightMatterCache.contains(newid)) {  // Check if CopyrightMatter is already in cache
+        CopyrightMatter* cachedCopyrightMatter = *copyrightMatterCache.object(newid);
+        if (cachedCopyrightMatter) {
+            *this = *cachedCopyrightMatter;  // Copy state if found in cache
+            mObjectIsNull = false;
+            return;  // Exit constructor early if we've copied from cache
+        }
     }
+    // If not in cache, proceed with initialization
+    InitializeCopyrightMatter(newid);
 }
-
 // Static method to fetch a CopyrightMatter from the database if not in cache
 CopyrightMatter* CopyrightMatter::GetCopyrightMatter(Key id) {
-    CopyrightMatter* copyrightMatter = new CopyrightMatter(id); // This will call the constructor again, but now with cache check
-    if (copyrightMatter->mObjectIsNull) { // Assuming this is inherited from Object/Matter
-        delete copyrightMatter; // Clean up if initialization failed
+    auto& copyrightMatterCache = getCache<CopyrightMatter>();
+    if (copyrightMatterCache.contains(id)) {
+        return *copyrightMatterCache.object(id);  // Return from cache if available
+    }
+
+    // If not in cache, create new CopyrightMatter and initialize it
+    CopyrightMatter* newCopyrightMatter = new CopyrightMatter(id);
+    if (!newCopyrightMatter->mObjectIsNull) { // Assuming mObjectIsNull becomes false on successful initialization
+        copyrightMatterCache.insert(id, &newCopyrightMatter);
+        return newCopyrightMatter;
+    } else {
+        delete newCopyrightMatter;  // Clean up if initialization failed
         return nullptr;
     }
-    return copyrightMatter;
 }
 
 CopyrightMatter::CopyrightMatter(String docketNumber) : Matter()

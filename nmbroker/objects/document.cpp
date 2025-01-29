@@ -4,31 +4,39 @@ namespace Nutmeg
 {
 
 Document::Document() : Object() {}
-
 Document::Document(Key id)
     : Object(id)
 {
     auto& documentCache = getCache<Document>();
-    Document* cachedDocument = cache<Document>::getObjectFromCache(id, &Document::GetDocument, documentCache);
-    if (cachedDocument) {
-        // If we find the Document in cache, copy its state
-        *this = *cachedDocument;
-        mObjectIsNull = false; // Assuming this is inherited from Object
+    if (documentCache.contains(id)) {  // Check if Document is already in cache
+        Document* cachedDocument = *documentCache.object(id);
+        if (cachedDocument) {
+            *this = *cachedDocument;  // Copy state if found in cache
+            mObjectIsNull = false;
+            return;  // Exit constructor early if we've copied from cache
+        }
+    }
+    // If not in cache, proceed with initialization
+    InitializeDocument(id);
+}
+
+Document* Document::GetDocument(Key id) {
+    auto& documentCache = getCache<Document>();
+    if (documentCache.contains(id)) {
+        return *documentCache.object(id);  // Return from cache if available
+    }
+
+    // If not in cache, create new Document and initialize it
+    Document* newDocument = new Document(id);
+    if (!newDocument->mObjectIsNull) { // Assuming mObjectIsNull becomes false on successful initialization
+        documentCache.insert(id, &newDocument);
+        return newDocument;
     } else {
-        // If not in cache, proceed with initialization
-        InitializeDocument(id);
+        delete newDocument;  // Clean up if initialization failed
+        return nullptr;
     }
 }
 
-// Static method to fetch a Document from the database if not in cache
-Document* Document::GetDocument(Key id) {
-    Document* document = new Document(id); // This will call the constructor again, but now with cache check
-    if (document->mObjectIsNull) { // Assuming this is inherited from Object
-        delete document; // Clean up if initialization failed
-        return nullptr;
-    }
-    return document;
-}
 Document::Document(String Title) : Object()
 {
     Key newid = Nutdb::InsertDocument(Title);

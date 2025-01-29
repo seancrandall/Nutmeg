@@ -42,7 +42,6 @@ class ResponsePanel : public QWidget
     void signalSomethingChanged(void);
 
   protected:
-    // Deadline *deadline;
     std::shared_ptr<Deadline> mDeadline;
     std::shared_ptr<Response> mResponse;
     std::shared_ptr<Matter> mMatter;

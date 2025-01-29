@@ -8,25 +8,33 @@ PatentMatter::PatentMatter() : Nutmeg::Matter{} {}
 PatentMatter::PatentMatter(Key id) : Nutmeg::Matter(id)
 {
     auto& patentMatterCache = getCache<PatentMatter>();
-    PatentMatter* cachedPatentMatter = cache<PatentMatter>::getObjectFromCache(id, &PatentMatter::GetPatentMatter, patentMatterCache);
-    if (cachedPatentMatter) {
-        // If we find the PatentMatter in cache, copy its state
-        *this = *cachedPatentMatter;
-        mObjectIsNull = false; // Assuming this is inherited from Object/Matter
-    } else {
-        // If not in cache, proceed with initialization
-        InitializePatentMatter(id);
+    if (patentMatterCache.contains(id)) {  // Check if PatentMatter is already in cache
+        PatentMatter* cachedPatentMatter = *patentMatterCache.object(id);
+        if (cachedPatentMatter) {
+            *this = *cachedPatentMatter;  // Copy state if found in cache
+            mObjectIsNull = false;
+            return;  // Exit constructor early if we've copied from cache
+        }
     }
+    // If not in cache, proceed with initialization
+    InitializePatentMatter(id);
 }
 
-// Static method to fetch a PatentMatter from the database if not in cache
 PatentMatter* PatentMatter::GetPatentMatter(Key id) {
-    PatentMatter* patentMatter = new PatentMatter(id); // This will call the constructor again, but now with cache check
-    if (patentMatter->mObjectIsNull) { // Assuming this is inherited from Object/Matter
-        delete patentMatter; // Clean up if initialization failed
+    auto& patentMatterCache = getCache<PatentMatter>();
+    if (patentMatterCache.contains(id)) {
+        return *patentMatterCache.object(id);  // Return from cache if available
+    }
+
+    // If not in cache, create new PatentMatter and initialize it
+    PatentMatter* newPatentMatter = new PatentMatter(id);
+    if (!newPatentMatter->mObjectIsNull) { // Assuming mObjectIsNull becomes false on successful initialization
+        patentMatterCache.insert(id, &newPatentMatter);
+        return newPatentMatter;
+    } else {
+        delete newPatentMatter;  // Clean up if initialization failed
         return nullptr;
     }
-    return patentMatter;
 }
 
 PatentMatter::PatentMatter(String docketNumber) : Nutmeg::Matter()

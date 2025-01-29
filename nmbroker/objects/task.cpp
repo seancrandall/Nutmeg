@@ -6,28 +6,36 @@ namespace Nutmeg
 
 Task::Task() : Object() {}
 
-Task::Task(Key newid) : Object()
+Task::Task(Key newid) : Object(newid)
 {
     auto& taskCache = getCache<Task>();
-    Task* cachedTask = cache<Task>::getObjectFromCache(newid, &Task::GetTask, taskCache);
-    if (cachedTask) {
-        // If we find the Task in cache, copy its state
-        *this = *cachedTask;
-        mObjectIsNull = false; // Assuming this is inherited from Object
-    } else {
-        // If not in cache, proceed with initialization
-        InitializeTask(newid);
+    if (taskCache.contains(newid)) {  // Check if Task is already in cache
+        Task* cachedTask = *taskCache.object(newid);
+        if (cachedTask) {
+            *this = *cachedTask;  // Copy state if found in cache
+            mObjectIsNull = false;
+            return;  // Exit constructor early if we've copied from cache
+        }
     }
+    // If not in cache, proceed with initialization
+    InitializeTask(newid);
 }
 
-// Static method to fetch a Task from the database if not in cache
 Task* Task::GetTask(Key id) {
-    Task* task = new Task(id); // This will call the constructor again, but now with cache check
-    if (task->mObjectIsNull) { // Assuming this is inherited from Object
-        delete task; // Clean up if initialization failed
+    auto& taskCache = getCache<Task>();
+    if (taskCache.contains(id)) {
+        return *taskCache.object(id);  // Return from cache if available
+    }
+
+    // If not in cache, create new Task and initialize it
+    Task* newTask = new Task(id);
+    if (!newTask->mObjectIsNull) { // Assuming mObjectIsNull becomes false on successful initialization
+        taskCache.insert(id, &newTask);
+        return newTask;
+    } else {
+        delete newTask;  // Clean up if initialization failed
         return nullptr;
     }
-    return task;
 }
 
 bool Task::slotInsertWithMatter(Key matterid)

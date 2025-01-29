@@ -9,26 +9,36 @@ Entity::Entity(Key id)
     : Nutmeg::Object(id)
 {
     auto& entityCache = getCache<Entity>();
-    Entity* cachedEntity = cache<Entity>::getObjectFromCache(id, &Entity::GetEntity, entityCache);
-    if (cachedEntity) {
-        // If we find the Entity in cache, copy its state
-        *this = *cachedEntity;
-        mObjectIsNull = false; // Assuming this is inherited from Object
+    if (entityCache.contains(id)) {  // Check if Entity is already in cache
+        Entity* cachedEntity = *entityCache.object(id);
+        if (cachedEntity) {
+            *this = *cachedEntity;  // Copy state if found in cache
+            mObjectIsNull = false;
+            return;  // Exit constructor early if we've copied from cache
+        }
+    }
+    // If not in cache, proceed with initialization
+    InitializeEntity(id);
+}
+
+Entity* Entity::GetEntity(Key id) {
+    auto& entityCache = getCache<Entity>();
+    if (entityCache.contains(id)) {
+        return *entityCache.object(id);  // Return from cache if available
+    }
+
+    // If not in cache, create new Entity and initialize it
+    Entity* newEntity = new Entity(id);
+    if (!newEntity->mObjectIsNull) { // Assuming mObjectIsNull becomes false on successful initialization
+        entityCache.insert(id, &newEntity);
+        return newEntity;
     } else {
-        // If not in cache, proceed with initialization
-        InitializeEntity(id);
+        delete newEntity;  // Clean up if initialization failed
+        return nullptr;
     }
 }
 
-// Static method to fetch an Entity from the database if not in cache
-Entity* Entity::GetEntity(Key id) {
-    Entity* entity = new Entity(id); // This will call the constructor again, but now with cache check
-    if (entity->mObjectIsNull) { // Assuming this is inherited from Object
-        delete entity; // Clean up if initialization failed
-        return nullptr;
-    }
-    return entity;
-}
+
 Entity::Entity(String entityName) : Nutmeg::Object()
 {
     Key id = Nutdb::InsertEntity(entityName);

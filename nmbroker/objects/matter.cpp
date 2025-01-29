@@ -8,25 +8,33 @@ Matter::Matter() : Nutmeg::Object{} {}
 Matter::Matter(Key newid) : Nutmeg::Object()
 {
     auto& matterCache = getCache<Matter>();
-    Matter* cachedMatter = cache<Matter>::getObjectFromCache(newid, &Matter::GetMatter, matterCache);
-    if (cachedMatter) {
-        // If we find the matter in cache, copy its state
-        *this = *cachedMatter;
-        mObjectIsNull = false; // Assuming Matter inherits this from Object
-    } else {
-        // If not in cache, initialize normally
-        InitializeMatter(newid);
+    if (matterCache.contains(newid)) {  // Check if Matter is already in cache
+        Matter* cachedMatter = *matterCache.object(newid);
+        if (cachedMatter) {
+            *this = *cachedMatter;  // Copy state if found in cache
+            mObjectIsNull = false;
+            return;  // Exit constructor early if we've copied from cache
+        }
     }
+    // If not in cache, initialize normally
+    InitializeMatter(newid);
 }
 
-// Static method to fetch a Matter from the database if not in cache
 Matter* Matter::GetMatter(Key id) {
-    Matter* matter = new Matter(id); // This will call the constructor again, but now with cache check
-    if (matter->mObjectIsNull) { // Assuming Matter inherits this from Object
-        delete matter; // Clean up if initialization failed
+    auto& matterCache = getCache<Matter>();
+    if (matterCache.contains(id)) {
+        return *matterCache.object(id);  // Return from cache if available
+    }
+
+    // If not in cache, create new Matter and initialize it
+    Matter* newMatter = new Matter(id);
+    if (!newMatter->mObjectIsNull) { // Assuming mObjectIsNull becomes false on successful initialization
+        matterCache.insert(id, &newMatter);
+        return newMatter;
+    } else {
+        delete newMatter;  // Clean up if initialization failed
         return nullptr;
     }
-    return matter;
 }
 
 Matter::Matter(QString docketNumber) : Nutmeg::Object()

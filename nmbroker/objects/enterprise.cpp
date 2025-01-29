@@ -9,26 +9,35 @@ Enterprise::Enterprise(Key id)
     : Nutmeg::Entity{id}
 {
     auto& enterpriseCache = getCache<Enterprise>();
-    Enterprise* cachedEnterprise = cache<Enterprise>::getObjectFromCache(id, &Enterprise::GetEnterprise, enterpriseCache);
-    if (cachedEnterprise) {
-        // If we find the Enterprise in cache, copy its state
-        *this = *cachedEnterprise;
-        mObjectIsNull = false; // Assuming this is inherited from Object via Entity
+    if (enterpriseCache.contains(id)) {  // Check if Enterprise is already in cache
+        Enterprise* cachedEnterprise = *enterpriseCache.object(id);
+        if (cachedEnterprise) {
+            *this = *cachedEnterprise;  // Copy state if found in cache
+            mObjectIsNull = false;
+            return;  // Exit constructor early if we've copied from cache
+        }
+    }
+    // If not in cache, proceed with initialization
+    InitializeEnterprise(id);
+}
+
+Enterprise* Enterprise::GetEnterprise(Key id) {
+    auto& enterpriseCache = getCache<Enterprise>();
+    if (enterpriseCache.contains(id)) {
+        return *enterpriseCache.object(id);  // Return from cache if available
+    }
+
+    // If not in cache, create new Enterprise and initialize it
+    Enterprise* newEnterprise = new Enterprise(id);
+    if (!newEnterprise->mObjectIsNull) { // Assuming mObjectIsNull becomes false on successful initialization
+        enterpriseCache.insert(id, &newEnterprise);
+        return newEnterprise;
     } else {
-        // If not in cache, proceed with initialization
-        InitializeEnterprise(id);
+        delete newEnterprise;  // Clean up if initialization failed
+        return nullptr;
     }
 }
 
-// Static method to fetch an Enterprise from the database if not in cache
-Enterprise* Enterprise::GetEnterprise(Key id) {
-    Enterprise* enterprise = new Enterprise(id); // This will call the constructor again, but now with cache check
-    if (enterprise->mObjectIsNull) { // Assuming this is inherited from Object via Entity
-        delete enterprise; // Clean up if initialization failed
-        return nullptr;
-    }
-    return enterprise;
-}
 Enterprise::Enterprise(String enterpriseName) : Nutmeg::Entity{}
 {
     Key newid = Nutdb::InsertEnterprise(enterpriseName);

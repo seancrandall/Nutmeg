@@ -6,25 +6,33 @@ namespace Nutmeg
 Object::Object(Key id) //: QObject(parent)
 {
     auto& objectCache = getCache<Object>();
-    Object* cachedObject = cache<Object>::getObjectFromCache(id, &Object::GetObject, objectCache);
-    if (cachedObject) {
-        // If we find the object in cache, copy its state
-        *this = *cachedObject;
-        mObjectIsNull = false;
-    } else {
-        // If not in cache, initialize normally
-        InitializeObject(id);
+    if (objectCache.contains(id)) {  // Check if object is already in cache
+        Object* cachedObject = *objectCache.object(id);
+        if (cachedObject) {
+            *this = *cachedObject;  // Copy state if found in cache
+            mObjectIsNull = false;
+            return;  // Exit constructor early if we've copied from cache
+        }
     }
+    // If not in cache, initialize normally
+    InitializeObject(id);
 }
 
-// Static method
 Object* Object::GetObject(Key id) {
-    Object* obj = new Object(id); // Create a new object to fetch from DB
-    if (obj->mObjectIsNull) {
-        delete obj; // Clean up if initialization failed
+    auto& objectCache = getCache<Object>();
+    if (objectCache.contains(id)) {
+        return *objectCache.object(id);  // Return from cache if available
+    }
+
+    // If not in cache, create new Object and initialize it
+    Object* newObject = new Object();
+    if (newObject->InitializeObject(id)) { // InitializeObject returns bool for success
+        objectCache.insert(id, &newObject);
+        return newObject;
+    } else {
+        delete newObject;  // Clean up if initialization failed
         return nullptr;
     }
-    return obj;
 }
 
 Object::Object() //: QObject(parent)
@@ -205,12 +213,14 @@ bool Object::InitializeObject(Key newid)
     primaryKey = mDat.ObjectId;
     if(mDat.ObjectId == 0)
     {
+        mObjectIsNull = true;
         return InitializeObject(0);
     }
 
     mObjectType = Nutdb::GetObjectTypeString(mDat.fkObjectType);
     if(mObjectType == QString()) return false;
 
+    mObjectIsNull = false;
     getObjectFlags();
     getObjectTags();
     getObjectDocuments();
