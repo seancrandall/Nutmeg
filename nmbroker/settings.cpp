@@ -31,8 +31,27 @@ Settings::Settings(QObject *parent) : QSettings("DockPilot Software", "nutmeg", 
     mFontSize = value("font_size", DEFAULT_FONT_SIZE).toUInt();
     endGroup();
 
+    beginGroup("cache");
+    mObjectCacheSize = value("object_cache_size", DEFAULT_OBJECT_CACHE_SIZE).toUInt();
+    mFlagsCacheSize = value("flags_cache_size", DEFAULT_FLAGS_CACHE_SIZE).toUInt();
+    mTagsCacheSize = value("tags_cache_size", DEFAULT_TAGS_CACHE_SIZE).toUInt();
+    mDeadlinesCacheSize = value("deadlines_cache_size", DEFAULT_DEADLINES_CACHE_SIZE).toUInt();
+    endGroup();
+
     //If any values are missing from the config file, this will write the defaults to that file
     populate();
+}
+
+void Settings::setFontFamily(QString val)
+{
+    setValue("display/font_family", val);
+    mFontFamily = val;
+}
+
+void Settings::setFontSize(int val)
+{
+    setValue("display/font_size", val);
+    mFontSize = val;
 }
 
 const QString Nutmeg::Settings::getAirUrl()
@@ -68,6 +87,30 @@ void Settings::setPreferredLogLines(unsigned int newval)
     setValue("general/preferred_log_lines", newval);
 }
 
+void Settings::setObjectCacheSize(uint newsize)
+{
+    mObjectCacheSize = newsize;
+    setValue("cache/object_cache_size", newsize);
+}
+
+void Settings::setFlagsCacheSize(uint newsize)
+{
+    mFlagsCacheSize = newsize;
+    setValue("cache/flags_cache_size", newsize);
+}
+
+void Settings::setTagsCacheSize(uint newsize)
+{
+    mTagsCacheSize = newsize;
+    setValue("cache/tags_cache_size", newsize);
+}
+
+void Settings::setDeadlinesCacheSize(uint newsize)
+{
+    mDeadlinesCacheSize = newsize;
+    setValue("cache/deadlines_cache_size", newsize);
+}
+
 void Settings::populate()
 {
     server = mServer;
@@ -85,6 +128,11 @@ void Settings::populate()
     airUrl = mAirUrl;
     maxLogLines = mMaxLogLines;
     preferredLogLines = mPreferredLogLines;
+
+    objectCacheSize = mObjectCacheSize;
+    flagsCacheSize = mFlagsCacheSize;
+    tagsCacheSize = mTagsCacheSize;
+    deadlinesCacheSize = mDeadlinesCacheSize;
 
     QSettings::sync();
 }

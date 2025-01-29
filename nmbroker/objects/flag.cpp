@@ -7,7 +7,6 @@ Flag::Flag(Key object_id, String camel_case) : FlagClass(camel_case)
 {
     mObjectId = object_id;
     mFlagValue = Nutdb::GetFlag(mObjectId, mCamelCase);
-    // mValid = nut->query.isValid();
 }
 
 Flag::~Flag() {}

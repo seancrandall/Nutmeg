@@ -142,7 +142,7 @@ void MainWindow::SetupResponses()
 #endif
 
     // Populate the responses container with ResponsePanels
-    auto tmpcount = responses->rowCount();
+    //auto tmpcount = responses->rowCount();
     for (auto i = 0; i < responses->rowCount(); ++i)
     {
         Key id = responses->record(i).field(0).value().toUInt();

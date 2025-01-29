@@ -221,9 +221,11 @@ bool Object::InitializeObject(Key newid)
     if(mObjectType == QString()) return false;
 
     mObjectIsNull = false;
-    getObjectFlags();
-    getObjectTags();
-    getObjectDocuments();
+    /////////////////////////////////////////////////
+    /// Removing these to test performance
+    //getObjectFlags();
+    //getObjectTags();
+    //getObjectDocuments();
     return true;
 }
 

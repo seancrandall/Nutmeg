@@ -30,6 +30,8 @@ cache<Task> taskCache;
 cache<TrademarkMatter> trademarkMatterCache;
 cache<Object> dbcache;
 
+Settings set;
+
 template<>
 cache<Appointment>& getCache<Appointment>() { return appointmentCache; }
 

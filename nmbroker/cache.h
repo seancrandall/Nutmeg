@@ -3,6 +3,7 @@
 
 #include <QCache>
 #include "nutmeg.h"
+#include "settings.h"
 
 namespace Nutmeg
 {
@@ -23,7 +24,7 @@ class TrademarkMatter;
 // Forward declaration for cache
 template<typename T> class cache;
 
-// Now, instead of a global cache, we'll use this function to get the correct cache
+// Use this function to get the correct cache
 template<typename T>
 cache<T>& getCache();
 
@@ -31,7 +32,7 @@ template<typename T>
 class cache : public QCache<Key, T*>
 {
 public:
-    cache(int capacity = 200) : QCache<Key, T*>(capacity) {}
+    cache(int capacity = 5000) : QCache<Key, T*>(capacity) {}
 
     static T* getObjectFromCache(Key id, T* (*fetchMethod)(Key), cache<T>& cacheInstance)
     {

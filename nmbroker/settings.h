@@ -30,6 +30,12 @@ namespace Nutmeg
 #define DEFAULT_FONT_FAMILY "Arial"
 #define DEFAULT_FONT_SIZE 12
 
+//Cache Defaults
+#define DEFAULT_OBJECT_CACHE_SIZE 5000
+#define DEFAULT_FLAGS_CACHE_SIZE 5000
+#define DEFAULT_TAGS_CACHE_SIZE 5000
+#define DEFAULT_DEADLINES_CACHE_SIZE 5000
+
 class Settings : public QSettings
 {
   public:
@@ -55,6 +61,12 @@ class Settings : public QSettings
     Property(getFontFamily, setFontFamily) QString fontFamily;
 	Property(getFontSize, setFontSize) uint fontSize;
 
+    //Cache
+    Property(getObjectCacheSize, setObjectCacheSize) unsigned int objectCacheSize;
+    Property(getFlagsCacheSize, setFlagsCacheSize) unsigned int flagsCacheSize;
+    Property(getTagsCacheSize, setTagsCacheSize) unsigned int tagsCacheSize;
+    Property(getDeadlinesCacheSize, setDeadlinesCacheSize) unsigned int deadlinesCacheSize;
+
     // Property(getFontWeight, setFontWeight) QString fontWeight;
 
     void setServer(QString val)
@@ -72,41 +84,19 @@ class Settings : public QSettings
     }
 
     void setUsername(QString val) { setValue("database/username", val), mUsername = val; }
-
     void setPassword(QString val) { setValue("database/password", val), mPassword = val; }
-
     void setDocsLocation(QString val) { setValue("documents/docs_location", val), mDocsLocation = val; }
-
     void setMaxFilenameLength(uint val) { setValue("documents/max_docname_length", val), mMaxFilenameLength = val; }
-
-    void setFontFamily(QString val)
-    {
-        setValue("display/font_family", val);
-        mFontFamily = val;
-    }
-
-    void setFontSize(int val)
-    {
-        setValue("display/font_size", val);
-        mFontSize = val;
-    }
-
+    void setFontFamily(QString val);
+    void setFontSize(int val);
     QString getServer(void) { return mServer = value("database/server").toString(); }
-
     uint getPort(void) { return mPort = value("database/port").toUInt(); }
-
     QString getDatabaseName(void) { return mDatabaseName = value("database/database_name").toString(); }
-
     QString getUsername(void) { return mUsername = value("database/username").toString(); }
-
     QString getPassword(void) { return mPassword = value("database/password").toString(); }
-
     QString getDocsLocation(void) { return mDocsLocation = value("documents/docs_location").toString(); }
-
     uint getMaxFilenameLength(void) { return mMaxFilenameLength = value("documents/max_docname_length").toUInt(); }
-
     QString getFontFamily(void) { return mFontFamily = value("display/font_family").toString(); }
-
     uint getFontSize(void) { return mFontSize = value("display/font_size").toUInt(); }
 
     const QString getAirUrl(void);
@@ -117,6 +107,16 @@ class Settings : public QSettings
 
     unsigned int getPreferredLogLines(void);
     void setPreferredLogLines(unsigned int newval);
+
+    uint getObjectCacheSize(void) {return mObjectCacheSize = value("cache/object_cache_size").toUInt();}
+    uint getFlagsCacheSize(void) {return mFlagsCacheSize = value("cache/flags_cache_size").toUInt();}
+    uint getTagsCacheSize(void) {return mTagsCacheSize = value("cache/tags_cache_size").toUInt();}
+    uint getDeadlinesCacheSize(void) {return mDeadlinesCacheSize = value("cache/deadlines_cache_size").toUInt();}
+
+    void setObjectCacheSize(uint newsize);
+    void setFlagsCacheSize(uint newsize);
+    void setTagsCacheSize(uint newsize);
+    void setDeadlinesCacheSize(uint newsize);
 
   protected:
     QString mServer;
@@ -133,6 +133,12 @@ class Settings : public QSettings
 
     QString mFontFamily;
     uint mFontSize;
+
+    //Cache sizes
+    uint mObjectCacheSize;
+    uint mFlagsCacheSize;
+    uint mTagsCacheSize;
+    uint mDeadlinesCacheSize;
 
     void populate(void);
 };
