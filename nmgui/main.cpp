@@ -8,7 +8,7 @@
 
 #include "logger.h"
 #include "settings.h"
-#include "cache.h"
+#include "cache/cache.h"
 
 int main(int argc, char *argv[])
 {

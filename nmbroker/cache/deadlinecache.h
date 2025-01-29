@@ -11,7 +11,7 @@ class Deadline;  // Forward declaration of the class
 class DeadlineCache : public QCache<Key, Deadline*>
 {
 public:
-    explicit DeadlineCache(int capacity = 200) : QCache<Key, Deadline*>(capacity) {}
+    explicit DeadlineCache(int capacity = 5000) : QCache<Key, Deadline*>(capacity) {}
 
     Deadline* getDeadlineFromCache(Key id, Deadline* (*fetchMethod)(Key))
     {
@@ -41,6 +41,7 @@ public:
 
 extern DeadlineCache deadlineCache;  // Declare the global cache instance
 
-}
+} //namespace Nutmeg
+
 
 #endif // NUTMEG_DEADLINECACHE_H

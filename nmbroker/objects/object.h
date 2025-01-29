@@ -7,7 +7,7 @@
 #include "flag.h"
 #include "property.h"
 #include "tag.h"
-#include "cache.h"
+#include "cache/cache.h"
 
 namespace Nutmeg
 {
@@ -88,12 +88,6 @@ class Object
     void ChangeObjectType(QString newObjectType);
     virtual bool Commit(void);
 
-    //void SetFlag(QString camelCase) { SetFlag(camelCase); }
-    //void slotClearFlag(QString camelCase) { ClearFlag(camelCase); }
-    //void slotTagObject(QString tagText) { TagObject(tagText); }
-    //void slotClearTag(QString tagText) { ClearTag(tagText); }
-
-
   protected:
     ObjectData mDat;
     QString mObjectType;
@@ -122,6 +116,11 @@ class Object
 
 private:
     static Object* GetObject(Key id);
+
+    void FetchFlags(void);
+    void FetchTags(void);
+    void FetchAppointments(void);
+    void FetchDocuments(void);
 };
 
 } // namespace Nutmeg

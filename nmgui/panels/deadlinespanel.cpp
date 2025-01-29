@@ -32,7 +32,7 @@ void DeadlinesPanel::Gather()
     mDeadline->holdSoftDeadline(softEdit->date);
     mDeadline->holdHardDeadline(hardEdit->date);
     mDeadline->holdNextDeadline(nextEdit->date);
-    mDeadline->slotCommit();
+    mDeadline->Commit();
 }
 
 void DeadlinesPanel::slotUpdateTriggerDate() {

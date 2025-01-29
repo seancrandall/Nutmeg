@@ -10,22 +10,35 @@ Deadline::Deadline()
 
 Deadline::Deadline(Key newid)
 {
-    Deadline* cachedDeadline = deadlineCache.getDeadlineFromCache(newid, &Deadline::GetDeadline);
-    if (cachedDeadline) {
-        *this = *cachedDeadline;
-    } else {
-        // If not in cache, proceed with initialization
-        InitializeDeadline(newid);
+    if (deadlineCache.contains(newid)) {  // Check if the deadline is already in cache
+        Deadline* cachedDeadline = *deadlineCache.object(newid);
+        if (cachedDeadline) {
+            *this = *cachedDeadline;
+            return;
+        }
     }
+    // If not in cache, proceed with initialization
+    InitializeDeadline(newid);
 }
 
 Deadline* Deadline::GetDeadline(Key id) {
-    Deadline* deadline = new Deadline(id);
-    if (deadline->mDat.DeadlineId == 0) { // Initialization failed
-        delete deadline;
+    if (deadlineCache.contains(id)) {  // Check cache first
+        return *deadlineCache.object(id);
+    }
+
+    Deadline* newDeadline = new Deadline(id);
+    if (newDeadline->mDat.DeadlineId == 0) { // Initialization failed
+        delete newDeadline;
         return nullptr;
     }
-    return deadline;
+
+    // Insert into cache only after successful initialization
+    Deadline** tempPtr = new Deadline*[1];
+    tempPtr[0] = newDeadline;
+    deadlineCache.insert(id, tempPtr);
+    delete[] tempPtr;  // Clean up the temporary array
+
+    return newDeadline;
 }
 
 Deadline::~Deadline()

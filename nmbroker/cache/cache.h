@@ -3,7 +3,6 @@
 
 #include <QCache>
 #include "nutmeg.h"
-#include "settings.h"
 
 namespace Nutmeg
 {
@@ -32,7 +31,7 @@ template<typename T>
 class cache : public QCache<Key, T*>
 {
 public:
-    cache(int capacity = 5000) : QCache<Key, T*>(capacity) {}
+    cache(int capacity = 3000) : QCache<Key, T*>(capacity) {}
 
     static T* getObjectFromCache(Key id, T* (*fetchMethod)(Key), cache<T>& cacheInstance)
     {

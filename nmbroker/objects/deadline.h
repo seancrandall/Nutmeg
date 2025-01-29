@@ -76,7 +76,8 @@ class Deadline
     bool InitializeDeadline(Key id);
 };
 
-extern DeadlineCache deadlineCache;  // Declare the global cache instance
+//extern DeadlineCache deadlineCache;
+
 
 } // namespace Nutmeg
 

@@ -13,22 +13,26 @@
 #include "objects/task.h"
 #include "objects/trademarkmatter.h"
 
+#include "settings.h"
+
 namespace Nutmeg
 {
-cache<Appointment> appointmentCache;
-cache<CopyrightMatter> copyrightMatterCache;
-cache<Document> documentCache;
-cache<Enterprise> enterpriseCache;
-cache<Entity> entityCache;
-cache<Filing> filingCache;
-cache<Matter> matterCache;
-cache<Object> objectCache;
-cache<PatentMatter> patentMatterCache;
-cache<Person> personCache;
-cache<Response> responseCache;
-cache<Task> taskCache;
-cache<TrademarkMatter> trademarkMatterCache;
-cache<Object> dbcache;
+Settings cs;
+
+cache<Appointment> appointmentCache (cs.objectCacheSize);
+cache<CopyrightMatter> copyrightMatterCache(cs.objectCacheSize);
+cache<Document> documentCache(cs.objectCacheSize);
+cache<Enterprise> enterpriseCache(cs.objectCacheSize);
+cache<Entity> entityCache(cs.objectCacheSize);
+cache<Filing> filingCache(cs.objectCacheSize);
+cache<Matter> matterCache(cs.objectCacheSize);
+cache<Object> objectCache(cs.objectCacheSize);
+cache<PatentMatter> patentMatterCache(cs.objectCacheSize);
+cache<Person> personCache(cs.objectCacheSize);
+cache<Response> responseCache(cs.objectCacheSize);
+cache<Task> taskCache(cs.objectCacheSize);
+cache<TrademarkMatter> trademarkMatterCache(cs.objectCacheSize);
+cache<Object> dbcache(cs.objectCacheSize);
 
 Settings set;
 

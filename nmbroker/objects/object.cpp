@@ -35,6 +35,47 @@ Object* Object::GetObject(Key id) {
     }
 }
 
+void Object::FetchFlags()
+{
+    mFlags = QHash<QString, Flag>();
+    QStringList flagStrings = Nutdb::GetObjectFlags(mDat.ObjectId);
+
+    if (flagStrings.size() > 0)
+    {
+        // for ( const auto& i : flagStrings )
+        for (auto i = 0; i < flagStrings.size(); i++)
+        {
+            mFlags.insert(flagStrings[i], Flag(mDat.ObjectId, flagStrings[i]));
+        }
+    }
+}
+
+void Object::FetchTags()
+{
+    QStringList tagStrings = Nutdb::GetObjectTags(mDat.ObjectId);
+    mTags = QHash<QString, Tag>();
+
+    if (tagStrings.size() > 0)
+    {
+        for (auto i = 0; i < tagStrings.size(); i++)
+        {
+            mTags.insert(tagStrings[i], Tag(tagStrings[i]));
+        }
+    }
+}
+
+void Object::FetchAppointments()
+{
+    mAppointments = QList<Key>();
+    mAppointments = Nutdb::GetObjectAppointments(mDat.ObjectId);
+}
+
+void Object::FetchDocuments()
+{
+    mDocuments = QList<Key>();
+    mDocuments = Nutdb::GetObjectDocuments(mDat.ObjectId);
+}
+
 Object::Object() //: QObject(parent)
 {
     InitializeObject(0);
@@ -75,46 +116,22 @@ const QVector<QString>& Object::getErrors() const {
 
 const QHash<QString, Flag> Object::getObjectFlags()
 {
-    mFlags = QHash<QString, Flag>();
-    QStringList flagStrings = Nutdb::GetObjectFlags(mDat.ObjectId);
-
-    if (flagStrings.size() > 0)
-    {
-        // for ( const auto& i : flagStrings )
-        for (auto i = 0; i < flagStrings.size(); i++)
-        {
-            mFlags.insert(flagStrings[i], Flag(mDat.ObjectId, flagStrings[i]));
-        }
-    }
     return mFlags;
 }
 
 const QHash<QString, Tag> Object::getObjectTags()
 {
-    QStringList tagStrings = Nutdb::GetObjectTags(mDat.ObjectId);
-    mTags = QHash<QString, Tag>();
 
-    if (tagStrings.size() > 0)
-    {
-        for (auto i = 0; i < tagStrings.size(); i++)
-        {
-            mTags.insert(tagStrings[i], Tag(tagStrings[i]));
-        }
-    }
     return mTags;
 }
 
 const QList<Key> Object::getObjectDocuments()
 {
-    mDocuments = QList<Key>();
-    mDocuments = Nutdb::GetObjectDocuments(mDat.ObjectId);
     return mDocuments;
 }
 
 const QList<Key> Object::getObjectAppointments()
 {
-    mAppointments = QList<Key>();
-    mAppointments = Nutdb::GetObjectAppointments(mDat.ObjectId);
     return mAppointments;
 }
 
@@ -221,11 +238,12 @@ bool Object::InitializeObject(Key newid)
     if(mObjectType == QString()) return false;
 
     mObjectIsNull = false;
-    /////////////////////////////////////////////////
-    /// Removing these to test performance
-    //getObjectFlags();
-    //getObjectTags();
-    //getObjectDocuments();
+
+    FetchFlags();
+    FetchTags();
+    FetchAppointments();
+    FetchDocuments();
+
     return true;
 }
 

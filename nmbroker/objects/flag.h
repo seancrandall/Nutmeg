@@ -16,6 +16,7 @@ class Flag : public FlagClass
   public:
     explicit Flag(Key object_id, String camel_case);
     ~Flag();
+    static Flag* GetFlag(Key id);  //Static method for fetching from database
 
     Property(getFlagValue, setFlagValue) bool value;
     ReadOnlyProperty(getObjectId) Key objectId;
@@ -30,6 +31,9 @@ class Flag : public FlagClass
   protected:
     bool mFlagValue;
     Key mObjectId;
+    Key mFlagKey;
+
+    void InitializeFlag(Key flagId);
 };
 
 } // namespace Nutmeg
