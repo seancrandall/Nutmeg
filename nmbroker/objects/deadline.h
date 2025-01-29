@@ -8,6 +8,7 @@
 #include "nutmeg.h"
 #include "property.h"
 #include "structures.h"
+#include "cache/deadlinecache.h"
 
 #define deadlineTableName  "deadline"
 
@@ -32,14 +33,16 @@ class Deadline
 
   public:
     Deadline();
-    Deadline(Key newid);
+    explicit Deadline(Key newid);
+    ~Deadline();
+    static Deadline* GetDeadline(Key id);
 
-    Property(getId, slotSetId) Key DeadlineId;
-    Property(getTriggerDate, slotSetTriggerDate) Date TriggerDate;
-    Property(getSoftDeadline, slotSetSoftDeadline) Date SoftDeadline;
-    Property(getHardDeadline, slotSetHardDeadline) Date HardDeadline;
-    Property(getNextDeadline, slotSetNextDeadline) Date NextDeadline;
-    Property(getUpdatePolicy, slotSetUpatePolicy) UpdatePolicy updatePolicy;
+    Property(getId, SetId) Key DeadlineId;
+    Property(getTriggerDate, SetTriggerDate) Date TriggerDate;
+    Property(getSoftDeadline, SetSoftDeadline) Date SoftDeadline;
+    Property(getHardDeadline, SetHardDeadline) Date HardDeadline;
+    Property(getNextDeadline, SetNextDeadline) Date NextDeadline;
+    Property(getUpdatePolicy, SetUpatePolicy) UpdatePolicy updatePolicy;
     ReadOnlyProperty(getColor) QColor color;
 
     // Getters
@@ -52,15 +55,14 @@ class Deadline
     QColor getColor(void);
     static const QColor getDateColor(const QDate& referenceDate);
 
-  public slots:
-    bool slotSetId(Key newval);
-    bool slotCommit(void);
-    bool slotUpdate(DeadlineData newval);
+    bool SetId(Key newval);
+    bool Commit(void);
+    bool Update(DeadlineData newval);
 
-    bool slotSetTriggerDate(const QDate &newval);
-    bool slotSetSoftDeadline(const QDate &newval);
-    bool slotSetHardDeadline(const QDate &newval);
-    bool slotSetNextDeadline(const Date &newval);
+    bool SetTriggerDate(const QDate &newval);
+    bool SetSoftDeadline(const QDate &newval);
+    bool SetHardDeadline(const QDate &newval);
+    bool SetNextDeadline(const Date &newval);
 
     void holdTriggerDate(const QDate &newval){mDat.TriggerDate = newval;}
     void holdSoftDeadline(const QDate &newval){mDat.SoftDeadline = newval;}
@@ -73,6 +75,8 @@ class Deadline
 
     bool InitializeDeadline(Key id);
 };
+
+extern DeadlineCache deadlineCache;  // Declare the global cache instance
 
 } // namespace Nutmeg
 

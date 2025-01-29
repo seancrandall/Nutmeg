@@ -10,7 +10,27 @@ Deadline::Deadline()
 
 Deadline::Deadline(Key newid)
 {
-    InitializeDeadline(newid);
+    Deadline* cachedDeadline = deadlineCache.getDeadlineFromCache(newid, &Deadline::GetDeadline);
+    if (cachedDeadline) {
+        *this = *cachedDeadline;
+    } else {
+        // If not in cache, proceed with initialization
+        InitializeDeadline(newid);
+    }
+}
+
+Deadline* Deadline::GetDeadline(Key id) {
+    Deadline* deadline = new Deadline(id);
+    if (deadline->mDat.DeadlineId == 0) { // Initialization failed
+        delete deadline;
+        return nullptr;
+    }
+    return deadline;
+}
+
+Deadline::~Deadline()
+{
+
 }
 
 QColor Deadline::getColor()
@@ -55,17 +75,17 @@ const QColor Deadline::getDateColor(const QDate &referenceDate)
     }
 }
 
-bool Deadline::slotSetId(Key newval)
+bool Deadline::SetId(Key newval)
 {
     return InitializeDeadline(newval);
 }
 
-bool Deadline::slotCommit()
+bool Deadline::Commit()
 {
-    return slotUpdate(mDat);
+    return Update(mDat);
 }
 
-bool Deadline::slotUpdate(DeadlineData newval)
+bool Deadline::Update(DeadlineData newval)
 {
     bool result = Nutdb::UpdateDeadline(newval);
     if(!result) return false;
@@ -73,7 +93,7 @@ bool Deadline::slotUpdate(DeadlineData newval)
     return InitializeDeadline(newval.DeadlineId);
 }
 
-bool Deadline::slotSetTriggerDate(const QDate &newval)
+bool Deadline::SetTriggerDate(const QDate &newval)
 {
     QString stringval = newval.toString("yyyy-MM-dd");
     bool result = Nutdb::UpdateField(deadlineTableName, "TriggerDate", mDat.DeadlineId, stringval);
@@ -81,7 +101,7 @@ bool Deadline::slotSetTriggerDate(const QDate &newval)
     return result;
 }
 
-bool Deadline::slotSetSoftDeadline(const QDate &newval)
+bool Deadline::SetSoftDeadline(const QDate &newval)
 {
     QString stringval = newval.toString("yyyy-MM-dd");
     bool result = Nutdb::UpdateField(deadlineTableName, "SoftDeadline", mDat.DeadlineId, stringval);
@@ -89,7 +109,7 @@ bool Deadline::slotSetSoftDeadline(const QDate &newval)
     return result;
 }
 
-bool Deadline::slotSetHardDeadline(const QDate &newval)
+bool Deadline::SetHardDeadline(const QDate &newval)
 {
     QString stringval = newval.toString("yyyy-MM-dd");
     bool result = Nutdb::UpdateField(deadlineTableName, "HardDeadline", mDat.DeadlineId, stringval);
@@ -97,7 +117,7 @@ bool Deadline::slotSetHardDeadline(const QDate &newval)
     return result;
 }
 
-bool Deadline::slotSetNextDeadline(const QDate &newval)
+bool Deadline::SetNextDeadline(const QDate &newval)
 {
     QString stringval = newval.toString("yyyy-MM-dd");
     bool result = Nutdb::UpdateField(deadlineTableName, "NextDeadline", mDat.DeadlineId, stringval);
