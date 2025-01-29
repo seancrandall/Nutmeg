@@ -9,7 +9,8 @@ Appointment::Appointment()
 Appointment::Appointment(Key apptid)
     : Nutmeg::Object{apptid}
 {
-    Appointment* cachedAppointment = cache<Appointment>::getObjectFromCache(apptid, &Appointment::GetAppointment);
+    auto& appointmentCache = getCache<Appointment>();
+    Appointment* cachedAppointment = cache<Appointment>::getObjectFromCache(apptid, &Appointment::GetAppointment, appointmentCache);
     if (cachedAppointment) {
         // If we find the Appointment in cache, copy its state
         *this = *cachedAppointment;

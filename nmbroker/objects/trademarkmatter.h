@@ -91,7 +91,7 @@ class TrademarkMatter : public Nutmeg::Matter
     void holdMark(String newval){mDat.Mark = newval;};
     void holdGoodsServices(String newval){mDat.GoodsServices = newval;};
 
-  protected:
+protected:
     bool InitializeTrademarkMatter(Key id);
 
     TrademarkMatterData mDat;

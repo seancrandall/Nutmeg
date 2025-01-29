@@ -2,7 +2,6 @@
 #define NUTMEG_PATENTMATTER_H
 
 #include "matter.h"
-#include <QObject>
 
 #define patentMatterTableName "patentMatter"
 
@@ -11,7 +10,6 @@ namespace Nutmeg
 
 class PatentMatter : public Nutmeg::Matter
 {
-    Q_OBJECT
   public:
     explicit PatentMatter();
       explicit PatentMatter(Key id);
@@ -93,7 +91,7 @@ class PatentMatter : public Nutmeg::Matter
     void holdfkAsFiledClaims(Key newval) {mDat.fkAsFiledClaims = newval;}
 
 
-  protected:
+protected:
     bool InitializePatentMatter(Key id);
 
     PatentMatterData mDat;

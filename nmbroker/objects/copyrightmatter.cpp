@@ -7,7 +7,8 @@ CopyrightMatter::CopyrightMatter() : Nutmeg::Matter{} {}
 
 CopyrightMatter::CopyrightMatter(Key newid) : Matter(newid)
 {
-    CopyrightMatter* cachedCopyrightMatter = cache<CopyrightMatter>::getObjectFromCache(newid, &CopyrightMatter::GetCopyrightMatter);
+    auto& copyrightMatterCache = getCache<CopyrightMatter>();
+    CopyrightMatter* cachedCopyrightMatter = cache<CopyrightMatter>::getObjectFromCache(newid, &CopyrightMatter::GetCopyrightMatter, copyrightMatterCache);
     if (cachedCopyrightMatter) {
         // If we find the CopyrightMatter in cache, copy its state
         *this = *cachedCopyrightMatter;

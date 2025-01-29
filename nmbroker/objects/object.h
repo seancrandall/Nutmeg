@@ -1,9 +1,10 @@
 #ifndef NUTMEG_OBJECT_H
 #define NUTMEG_OBJECT_H
 
+#include "nutmeg.h"
+
 #include "dbaccess/nutdb.h"
 #include "flag.h"
-#include "nutmeg.h"
 #include "property.h"
 #include "tag.h"
 #include "cache.h"

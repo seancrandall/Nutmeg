@@ -25,14 +25,14 @@ public:
     {
         if(cacheInstance.contains(id))
         {
-            return *cacheInstance.object(id); // No need for dynamic_cast here since we're using the correct cache
+            return *cacheInstance.object(id);
         }
         else
         {
             T* result = fetchMethod(id);
             if(result)
             {
-                cacheInstance.insert(id, result);
+                cacheInstance.insert(id, &result); // Directly insert the pointer
             }
             return result;
         }
@@ -43,7 +43,6 @@ public:
         cacheInstance.remove(id);
     }
 };
-
 // Example of how to define and use specific caches
 //extern cache<Object> dbcache;
 //extern cache<Appointment> appointmentCache;
@@ -56,7 +55,7 @@ public:
 //cache<Appointment>& getCache<Appointment>() { return appointmentCache; }
 
 // Function to initialize caches if needed
-//void initCaches();
+void initCaches();
 }
 
 #endif // NUTMEG_CACHE_H

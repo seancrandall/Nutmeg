@@ -7,9 +7,27 @@ Filing::Filing() : Nutmeg::Task{} {}
 
 Filing::Filing(Key id) : Nutmeg::Task(id)
 {
-    InitializeFiling(id);
+    auto& filingCache = Nutmeg::getCache<Filing>();
+    Filing* cachedFiling = Nutmeg::cache<Filing>::getObjectFromCache(id, &Filing::GetFiling, filingCache);
+    if (cachedFiling) {
+        // If we find the Filing in cache, copy its state
+        *this = *cachedFiling;
+        mObjectIsNull = false; // Assuming this is inherited from Object via Task
+    } else {
+        // If not in cache, proceed with initialization
+        InitializeFiling(id);
+    }
 }
 
+// Static method to fetch a Filing from the database if not in cache
+Filing* Filing::GetFiling(Key id) {
+    Filing* filing = new Filing(id); // This will call the constructor again, but now with cache check
+    if (filing->mObjectIsNull) { // Assuming this is inherited from Object via Task
+        delete filing; // Clean up if initialization failed
+        return nullptr;
+    }
+    return filing;
+}
 bool Filing::slotUpdate(FilingData dat)
 {
     bool result = Nutdb::UpdateFiling(dat);

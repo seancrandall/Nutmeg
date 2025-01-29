@@ -8,7 +8,8 @@ Task::Task() : Object() {}
 
 Task::Task(Key newid) : Object()
 {
-    Task* cachedTask = cache<Task>::getObjectFromCache(newid, &Task::GetTask);
+    auto& taskCache = getCache<Task>();
+    Task* cachedTask = cache<Task>::getObjectFromCache(newid, &Task::GetTask, taskCache);
     if (cachedTask) {
         // If we find the Task in cache, copy its state
         *this = *cachedTask;

@@ -7,7 +7,8 @@ Matter::Matter() : Nutmeg::Object{} {}
 
 Matter::Matter(Key newid) : Nutmeg::Object()
 {
-    Matter* cachedMatter = cache<Matter>::getObjectFromCache(newid, &Matter::GetMatter);
+    auto& matterCache = getCache<Matter>();
+    Matter* cachedMatter = cache<Matter>::getObjectFromCache(newid, &Matter::GetMatter, matterCache);
     if (cachedMatter) {
         // If we find the matter in cache, copy its state
         *this = *cachedMatter;

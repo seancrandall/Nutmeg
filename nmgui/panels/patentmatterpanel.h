@@ -27,7 +27,7 @@ class PatentMatterPanel : public Nutmeg::GroupBox
 {
     Q_OBJECT
 public:
-    PatentMatterPanel(PatentMatter* pmatter, QWidget *parent = nullptr);
+    PatentMatterPanel(std::shared_ptr<PatentMatter> pmatter, QWidget *parent = nullptr);
     PatentMatterPanel(Key patentMatterId, QWidget *parent = nullptr);
 
 public slots:

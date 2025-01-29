@@ -12,7 +12,8 @@ Person::Person()
 Person::Person(Key id)
     : Nutmeg::Entity(id)
 {
-    Person* cachedPerson = cache<Person>::getObjectFromCache(id, &Person::GetPerson);
+    auto& personCache = getCache<Person>();
+    Person* cachedPerson = cache<Person>::getObjectFromCache(id, &Person::GetPerson, personCache);
     if (cachedPerson) {
         // If we find the Person in cache, copy its state
         *this = *cachedPerson;

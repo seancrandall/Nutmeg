@@ -8,7 +8,8 @@ Entity::Entity() : Nutmeg::Object{} {}
 Entity::Entity(Key id)
     : Nutmeg::Object(id)
 {
-    Entity* cachedEntity = cache<Entity>::getObjectFromCache(id, &Entity::GetEntity);
+    auto& entityCache = getCache<Entity>();
+    Entity* cachedEntity = cache<Entity>::getObjectFromCache(id, &Entity::GetEntity, entityCache);
     if (cachedEntity) {
         // If we find the Entity in cache, copy its state
         *this = *cachedEntity;

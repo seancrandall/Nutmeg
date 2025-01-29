@@ -13,6 +13,7 @@ class Matter : public Nutmeg::Object
     explicit Matter();
     explicit Matter(Key id);
     explicit Matter(QString docketNumber);
+    virtual ~Matter() = default;
 
     Property(getId, SetId) Key MatterId;
     Property(getfkParent, SetfkParent) Key fkParent;
@@ -71,7 +72,7 @@ class Matter : public Nutmeg::Object
     void holdfkMatterJurisdiction(Key newval) {mDat.fkMatterJurisdiction = newval;dirty["fkMatterJurisdiction"] = true;}
     void holdOldId(Key newval) {mDat.OldMatterId = newval;dirty["OldMatterId"] = true;}
 
-  protected:
+protected:
     MatterData mDat;
     bool InitializeMatter(Key id);
 private:

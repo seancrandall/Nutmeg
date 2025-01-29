@@ -5,10 +5,10 @@ namespace Nutmeg
 
 AddExaminerInterviewDialog::AddExaminerInterviewDialog(Key responseId, QWidget *parent)
     : Dialog(parent)
-    , mResponse(responseId, this)
+    , mResponse(responseId)
     , mAttorney(mResponse.fkWorkAttorney)
-    , mMatter(mResponse.fkMatter, this)
-    , mExaminer(mMatter.fkExaminer, this)
+    , mMatter(mResponse.fkMatter)
+    , mExaminer(mMatter.fkExaminer)
     , eiInfo(mResponse.ResponseId, mAttorney.PersonId)
 {
     setupDisplay();

@@ -5,7 +5,8 @@ namespace Nutmeg
 
 Object::Object(Key id) //: QObject(parent)
 {
-    Object* cachedObject = cache<Object>::getObjectFromCache(id, &Object::GetObject);
+    auto& objectCache = getCache<Object>();
+    Object* cachedObject = cache<Object>::getObjectFromCache(id, &Object::GetObject, objectCache);
     if (cachedObject) {
         // If we find the object in cache, copy its state
         *this = *cachedObject;

@@ -2,14 +2,13 @@
 #define NUTMEG_FILING_H
 
 #include "task.h"
-#include <QObject>
 
+#define filingTableName  "filing"
 namespace Nutmeg
 {
 
 class Filing : public Nutmeg::Task
 {
-    Q_OBJECT
   public:
     explicit Filing();
       explicit Filing(Key id);
@@ -23,8 +22,6 @@ class Filing : public Nutmeg::Task
     virtual Key getId(void) override { return mDat.FilingId; }
     Key getfkFilingStatus(void) { return mDat.fkFilingStatus; }
     Key getfkAsFiledDocument(void) { return mDat.fkAsFiledDocument; }
-
-  public slots:
 
     bool slotUpdate(FilingData dat);
     virtual bool SetId(Key newval) override;
@@ -40,7 +37,8 @@ class Filing : public Nutmeg::Task
   protected:
     FilingData mDat;
     bool InitializeFiling(Key id);
-    const QString filingTableName = "filing";
+private:
+    static Filing* GetFiling(Key id);
 };
 
 } // namespace Nutmeg

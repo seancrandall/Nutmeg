@@ -7,7 +7,8 @@ PatentMatter::PatentMatter() : Nutmeg::Matter{} {}
 
 PatentMatter::PatentMatter(Key id) : Nutmeg::Matter(id)
 {
-    PatentMatter* cachedPatentMatter = cache<PatentMatter>::getObjectFromCache(id, &PatentMatter::GetPatentMatter);
+    auto& patentMatterCache = getCache<PatentMatter>();
+    PatentMatter* cachedPatentMatter = cache<PatentMatter>::getObjectFromCache(id, &PatentMatter::GetPatentMatter, patentMatterCache);
     if (cachedPatentMatter) {
         // If we find the PatentMatter in cache, copy its state
         *this = *cachedPatentMatter;

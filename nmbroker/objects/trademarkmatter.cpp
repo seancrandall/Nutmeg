@@ -7,7 +7,8 @@ TrademarkMatter::TrademarkMatter() : Nutmeg::Matter{} {}
 
 TrademarkMatter::TrademarkMatter(Key id) : Nutmeg::Matter(id)
 {
-    TrademarkMatter* cachedTrademarkMatter = cache<TrademarkMatter>::getObjectFromCache(id, &TrademarkMatter::GetTrademarkMatter);
+    auto& trademarkMatterCache = getCache<TrademarkMatter>();
+    TrademarkMatter* cachedTrademarkMatter = cache<TrademarkMatter>::getObjectFromCache(id, &TrademarkMatter::GetTrademarkMatter, trademarkMatterCache);
     if (cachedTrademarkMatter) {
         // If we find the TrademarkMatter in cache, copy its state
         *this = *cachedTrademarkMatter;

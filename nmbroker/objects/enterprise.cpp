@@ -8,7 +8,8 @@ Enterprise::Enterprise() : Nutmeg::Entity{} {}
 Enterprise::Enterprise(Key id)
     : Nutmeg::Entity{id}
 {
-    Enterprise* cachedEnterprise = cache<Enterprise>::getObjectFromCache(id, &Enterprise::GetEnterprise);
+    auto& enterpriseCache = getCache<Enterprise>();
+    Enterprise* cachedEnterprise = cache<Enterprise>::getObjectFromCache(id, &Enterprise::GetEnterprise, enterpriseCache);
     if (cachedEnterprise) {
         // If we find the Enterprise in cache, copy its state
         *this = *cachedEnterprise;

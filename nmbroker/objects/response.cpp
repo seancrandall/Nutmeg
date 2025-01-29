@@ -10,7 +10,9 @@ Response::Response() : Nutmeg::Task{}
 
 Response::Response(Key newid) : Nutmeg::Task(newid)
 {
-    Response* cachedResponse = cache<Response>::getObjectFromCache(newid, &Response::GetResponse);
+    auto& responseCache = getCache<Response>();
+    Response* cachedResponse = cache<Response>::getObjectFromCache(newid, &Response::GetResponse, responseCache)
+        ;
     if (cachedResponse) {
         // If we find the Response in cache, copy its state
         *this = *cachedResponse;

@@ -8,7 +8,8 @@ Document::Document() : Object() {}
 Document::Document(Key id)
     : Object(id)
 {
-    Document* cachedDocument = cache<Document>::getObjectFromCache(id, &Document::GetDocument);
+    auto& documentCache = getCache<Document>();
+    Document* cachedDocument = cache<Document>::getObjectFromCache(id, &Document::GetDocument, documentCache);
     if (cachedDocument) {
         // If we find the Document in cache, copy its state
         *this = *cachedDocument;
