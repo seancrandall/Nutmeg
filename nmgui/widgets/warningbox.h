@@ -12,7 +12,7 @@ class WarningBox : public Nutmeg::MessageBox
 {
     Q_OBJECT
   public:
-    WarningBox(QWidget *parent = nullptr);
+    WarningBox(const QString& warningText = QString(), QWidget *parent = nullptr);
 };
 
 } // namespace Nutmeg

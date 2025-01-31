@@ -8,6 +8,15 @@
 namespace Nutmeg
 {
 
+typedef enum{
+    ExaminerInterviewPatent = 1,
+    InventorIinterviewTrademark = 2,
+    InventorInterview = 3,
+    ClientCall = 4,
+    ClientOfficeHours = 5,
+    UnspecifiedAppointment = 999
+} AppointmentType;
+
 class Appointment : public Nutmeg::Object
 {
   public:
@@ -15,22 +24,23 @@ class Appointment : public Nutmeg::Object
       explicit Appointment(Key apptid);
     explicit Appointment(DateTime apptime, Key taskId);
 
-    Property(getId, slotSetId) Key AppointmentId;
-    Property(getAppointmentTime, slotSetAppointmentTime) DateTime AppointmentTime;
-    Property(getfkAppointmentType, slotSetfkAppointmentType) Key fkAppointmentType;
+    Property(getId, SetId) Key AppointmentId;
+    Property(getAppointmentTime, SetAppointmentTime) DateTime AppointmentTime;
+    Property(getfkAppointmentType, SetfkAppointmentType) Key fkAppointmentType;
+    Property(setfkAppointmentType, SetfkAppointmentType) Key type;
 
     // Overrides
     virtual Key getId(void) override { return mDat.AppointmentId; }
 
-    bool slotUpdate(AppointmentData dat);
+    bool Update(AppointmentData dat);
     virtual bool SetId(Key newid) override;
     virtual bool Commit(void) override;
 
     DateTime getAppointmentTime(void) { return mDat.AppointmentTime; }
     Key getfkAppointmentType(void) { return mDat.fkAppointmentType; }
 
-    bool slotSetAppointmentTime(DateTime newappt);
-    bool slotSetfkAppointmentType(Key newfk);
+    bool SetAppointmentTime(DateTime newappt);
+    bool SetfkAppointmentType(Key newfk);
 
     void holdAppointmentTime(DateTime newval) {mDat.AppointmentTime = newval; dirty["AppointmentTime"] = true;}
     void holdfkAppointmentType(Key newval) {mDat.fkAppointmentType = newval; dirty["fkAppointmentType"] = true;}

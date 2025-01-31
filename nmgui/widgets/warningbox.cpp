@@ -3,6 +3,11 @@
 namespace Nutmeg
 {
 
-WarningBox::WarningBox(QWidget *parent) : Nutmeg::MessageBox(parent) { icon = QMessageBox::Warning; }
+WarningBox::WarningBox(const QString& warningText, QWidget *parent) : Nutmeg::MessageBox(parent)
+{
+    icon = QMessageBox::Warning;
+    if(warningText != QString())
+        setText(warningText);
+}
 
 } // namespace Nutmeg

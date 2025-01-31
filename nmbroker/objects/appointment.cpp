@@ -46,7 +46,7 @@ Appointment::Appointment(DateTime apptime, Key taskId) : Nutmeg::Object{}
     InitializeAppointment(mDat.AppointmentId);
 }
 
-bool Appointment::slotUpdate(AppointmentData dat)
+bool Appointment::Update(AppointmentData dat)
 {
     bool result = Nutdb::UpdateAppointment(dat);
     if(!result) return false;
@@ -64,17 +64,17 @@ bool Appointment::SetId(Key newid)
 
 bool Appointment::Commit()
 {
-    return slotUpdate(mDat);
+    return Update(mDat);
 }
 
-bool Appointment::slotSetAppointmentTime(DateTime newappt)
+bool Appointment::SetAppointmentTime(DateTime newappt)
 {
     bool result = WriteDateTime(appointmentTableName, "AppointmentTime", newappt);
     if(result) mDat.AppointmentTime = newappt;
     return result;
 }
 
-bool Appointment::slotSetfkAppointmentType(Key newfk)
+bool Appointment::SetfkAppointmentType(Key newfk)
 {
     bool result = WriteKey(appointmentTableName, "fkAppointmentType", newfk);
     if(result) mDat.fkAppointmentType = newfk;

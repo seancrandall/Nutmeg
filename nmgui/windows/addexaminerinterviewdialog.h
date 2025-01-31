@@ -9,6 +9,7 @@
 #include "nutmeg.h"
 #include "property.h"
 #include "dialog.h"
+#include "widgets/warningbox.h"
 #include "widgets/examinerinterviewinformation.h"
 
 #include "settings.h"
@@ -41,13 +42,14 @@ class AddExaminerInterviewDialog : public Nutmeg::Dialog
     virtual void setupDisplay(void) override;
     virtual void connectSignalsAndSlots(void) override;
 
-    Response mResponse;
-    Person mAttorney;
-    PatentMatter mMatter;
-    Person mExaminer;
+    std::shared_ptr<Task> mTask;
+    std::shared_ptr<Person> mAttorney;
+    std::shared_ptr<PatentMatter> mMatter;
+    std::shared_ptr<Person> mExaminer;
     QDateTime mAppointment = QDateTime::currentDateTime();
 
     ExaminerInterviewInformation eiInfo;
+    bool valid = false;
 };
 
 } // namespace Nutmeg

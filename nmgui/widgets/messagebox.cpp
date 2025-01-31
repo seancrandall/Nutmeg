@@ -3,6 +3,10 @@
 namespace Nutmeg
 {
 
-MessageBox::MessageBox(QWidget *parent) : QMessageBox(parent) {}
+MessageBox::MessageBox(QWidget *parent)
+    : QMessageBox(parent)
+{
+    setModal(true);
+}
 
 } // namespace Nutmeg

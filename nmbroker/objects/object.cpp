@@ -1,4 +1,5 @@
 #include "object.h"
+#include "logger.h"
 
 namespace Nutmeg
 {
@@ -247,44 +248,74 @@ bool Object::InitializeObject(Key newid)
     return true;
 }
 
-bool Object::WriteAbstractValue(QString table, String fieldName, String value)
+#include "logger.h" // Assume this provides Logger::LogMessage(const QString& message)
+
+bool Object::WriteAbstractValue(QString table, QString fieldName, QString value)
 {
-    return Nutdb::UpdateField(table, fieldName, primaryKey, value);
+    bool success = Nutdb::UpdateField(table, fieldName, primaryKey, value);
+    if (!success) {
+        Logger::LogMessage(QString("Error: Failed to update field '%1' in table '%2'").arg(fieldName).arg(table));
+    }
+    return success;
 }
 
-bool Object::WriteString(QString table, String field, String value)
+bool Object::WriteString(QString table, QString field, QString value)
 {
-    return WriteAbstractValue(table, field, value);
+    bool success = WriteAbstractValue(table, field, value);
+    if (!success) {
+        Logger::LogMessage(QString("Error: Failed to write string value to field '%1' in table '%2'").arg(field).arg(table));
+    }
+    return success;
 }
 
-bool Object::WriteKey(QString table, String field, Key value)
+bool Object::WriteKey(QString table, QString field, Key value)
 {
     QString strval = QString::number(value);
-    return WriteAbstractValue(table, field, strval);
+    bool success = WriteAbstractValue(table, field, strval);
+    if (!success) {
+        Logger::LogMessage(QString("Error: Failed to write key value to field '%1' in table '%2'").arg(field).arg(table));
+    }
+    return success;
 }
 
-bool Object::WriteDate(QString table, String field, Date date)
+bool Object::WriteDate(QString table, QString field, Date date)
 {
     QString strval = date.toString("yyyy-MM-dd");
-    return WriteAbstractValue(table, field, strval);
+    bool success = WriteAbstractValue(table, field, strval);
+    if (!success) {
+        Logger::LogMessage(QString("Error: Failed to write date to field '%1' in table '%2'").arg(field).arg(table));
+    }
+    return success;
 }
 
-bool Object::WriteDateTime(QString table, String field, DateTime dtime)
+bool Object::WriteDateTime(QString table, QString field, DateTime dtime)
 {
     QString strval = dtime.toString("yyyy-MM-dd HH:mm:ss");
-    return WriteAbstractValue(table, field, strval);
+    bool success = WriteAbstractValue(table, field, strval);
+    if (!success) {
+        Logger::LogMessage(QString("Error: Failed to write datetime to field '%1' in table '%2'").arg(field).arg(table));
+    }
+    return success;
 }
 
-bool Object::WriteBoolean(QString table, String field, bool value)
+bool Object::WriteBoolean(QString table, QString field, bool value)
 {
     QString strval = QString::number((int)value);
-    return WriteAbstractValue(table, field, strval);
+    bool success = WriteAbstractValue(table, field, strval);
+    if (!success) {
+        Logger::LogMessage(QString("Error: Failed to write boolean to field '%1' in table '%2'").arg(field).arg(table));
+    }
+    return success;
 }
 
 bool Object::WriteValue(QString table, QString field, QVariant value)
 {
     QString strval = value.toString();
-    return WriteAbstractValue(table, field, strval);
+    bool success = WriteAbstractValue(table, field, strval);
+    if (!success) {
+        Logger::LogMessage(QString("Error: Failed to write value to field '%1' in table '%2'").arg(field).arg(table));
+    }
+    return success;
 }
 
 } // namespace Nutmeg
