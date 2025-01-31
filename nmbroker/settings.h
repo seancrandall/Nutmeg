@@ -4,12 +4,12 @@
 #include <QDebug>
 #include <QFile>
 #include <QSettings>
+#include <QStandardPaths>
 
 #include "property.h"
 
 namespace Nutmeg
 {
-
 // Database defaults
 #define DEFAULT_SERVER "192.168.1.1"
 #define DEFAULT_PORT "3306"
@@ -21,6 +21,8 @@ namespace Nutmeg
 #define DEFAULT_AIR_URL "https://www.uspto.gov"
 #define DEFAULT_MAX_LOG_LINES 1000
 #define DEFAULT_PREFERRED_LOG_LINES 1500
+#define DEFAULT_ICS_SAVE_LOCATION QStandardPaths::writableLocation(QStandardPaths::HomeLocation)
+
 
 // Documents defaults
 #define DEFAULT_DOCS_LOCATION "~/"
@@ -52,6 +54,7 @@ class Settings : public QSettings
     Property(getAirUrl, setAirUrl) QString airUrl;
     Property(getMaxLogLines, setMaxLogLines) unsigned int maxLogLines;
     Property(getPreferredLogLines, setPreferredLogLines) unsigned int preferredLogLines;
+    Property(getIcsSaveLocation, setIcsSaveLocation) QString icsSaveLocation;
 
     // Documents
     Property(getDocsLocation, setDocsLocation) QString docsLocation;
@@ -102,6 +105,9 @@ class Settings : public QSettings
     const QString getAirUrl(void);
     void setAirUrl(const QString newurl);
 
+    const QString getIcsSaveLocation(void);
+    void setIcsSaveLocation(const QString &newloc);
+
     unsigned int getMaxLogLines(void);
     void setMaxLogLines(unsigned int newval);
 
@@ -130,6 +136,7 @@ class Settings : public QSettings
     QString mAirUrl;
     unsigned int mMaxLogLines,
         mPreferredLogLines;
+    QString mIcsSaveLocation;
 
     QString mFontFamily;
     uint mFontSize;

@@ -15,10 +15,11 @@ Settings::Settings(QObject *parent) : QSettings("DockPilot Software", "nutmeg", 
     mPassword = value("password", DEFAULT_PASSWORD).toString();
     endGroup();
 
-    beginGroup("general");
+    beginGroup("preferences");
     mAirUrl = value("air_url", DEFAULT_AIR_URL).toString();
     mMaxLogLines = value("max_log_lines", DEFAULT_MAX_LOG_LINES).toUInt();
     mPreferredLogLines = value("preferred_log_lines", DEFAULT_PREFERRED_LOG_LINES).toUInt();
+    mIcsSaveLocation = value("preferences/ics_save_location", DEFAULT_ICS_SAVE_LOCATION).toString();
     endGroup();
 
     beginGroup("documents");
@@ -56,35 +57,46 @@ void Settings::setFontSize(int val)
 
 const QString Nutmeg::Settings::getAirUrl()
 {
-    return mAirUrl = value("general/air_url").toString();
+    return mAirUrl = value("preferences/air_url").toString();
 }
 
 void Nutmeg::Settings::setAirUrl(const QString newurl)
 {
     mAirUrl = newurl;
-    setValue("general/air_url", newurl);
+    setValue("preferences/air_url", newurl);
+}
+
+const QString Settings::getIcsSaveLocation()
+{
+    return mIcsSaveLocation = value("preferences/ics_save_location").toString();
+}
+
+void Settings::setIcsSaveLocation(const QString &newloc)
+{
+    mIcsSaveLocation = newloc;
+    setValue("preferences/ics_save_location", newloc);
 }
 
 unsigned int Settings::getMaxLogLines()
 {
-    return mMaxLogLines = value("general/max_log_lines").toUInt();
+    return mMaxLogLines = value("preferences/max_log_lines").toUInt();
 }
 
 void Settings::setMaxLogLines(unsigned int newval)
 {
     mMaxLogLines = newval;
-    setValue("general/max_log_lines", newval);
+    setValue("preferences/max_log_lines", newval);
 }
 
 unsigned int Settings::getPreferredLogLines()
 {
-    return mPreferredLogLines = value("general/preferred_log_lines").toUInt();
+    return mPreferredLogLines = value("preferences/preferred_log_lines").toUInt();
 }
 
 void Settings::setPreferredLogLines(unsigned int newval)
 {
     mPreferredLogLines = newval;
-    setValue("general/preferred_log_lines", newval);
+    setValue("preferences/preferred_log_lines", newval);
 }
 
 void Settings::setObjectCacheSize(uint newsize)
