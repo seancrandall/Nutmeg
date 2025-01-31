@@ -334,3 +334,13 @@ DISTFILES += \
 
 RESOURCES += \
     nutmeg_resources.qrc
+
+unix: CONFIG += link_pkgconfig
+
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../libical/build/lib/release/ -lical
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../libical/build/lib/debug/ -lical
+else:unix: LIBS += -L$$PWD/../libical/build/lib/ -lical
+
+INCLUDEPATH += $$PWD/../libical/build/src/libical
+DEPENDPATH += $$PWD/../libical/build/src/libical
