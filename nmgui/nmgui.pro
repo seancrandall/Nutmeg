@@ -47,6 +47,7 @@ SOURCES += \
     panels/responsetaskpanel.cpp \
     panels/taskpanel.cpp \
     panels/taskpanelfull.cpp \
+    utils/icalbuilder.cpp \
     widgets/abstractremovablebutton.cpp \
     widgets/checkbox.cpp \
     widgets/comboeditadd.cpp \
@@ -190,6 +191,7 @@ HEADERS += \
     panels/responsetaskpanel.h \
     panels/taskpanel.h \
     panels/taskpanelfull.h \
+    utils/icalbuilder.h \
     widgets/abstractremovablebutton.h \
     widgets/checkbox.h \
     widgets/comboeditadd.h \
