@@ -230,6 +230,8 @@ bool IcalBuilder::openIcsFile()
     @param companyName Name of the company that provides the ICS file
     @param productName Name of the product used to generate the ICS file
     @return Returns a QString with the ICS file contents
+
+    By default, the method creates a 15 minute alarm before the event.
      */
 QString IcalBuilder::createIcsEvent(const QString &summary
                                     , const QString &start
@@ -277,6 +279,21 @@ QString IcalBuilder::createIcsEvent(const QString &summary
     if (!description.isEmpty()) {
         icalcomponent_add_property(event, icalproperty_new_description(description.toUtf8().data()));
     }
+
+    // Add VALARM for reminder
+    icalcomponent *alarm = icalcomponent_new_valarm();
+    if (!alarm) {
+        Logger::LogMessage("Error: Failed to create VALARM component.");
+        icalcomponent_free(event);
+        icalcomponent_free(cal);
+        return QString();
+    }
+
+    icalcomponent_add_property(alarm, icalproperty_new_action(ICAL_ACTION_DISPLAY));
+    icalcomponent_add_property(alarm, icalproperty_new_description("Reminder: Event starts soon"));
+    icalcomponent_add_property(alarm, icalproperty_new_trigger(icaltriggertype_from_int(-15 * 60))); // 15 minutes before start
+
+    icalcomponent_add_component(event, alarm);
 
     icalcomponent_add_component(cal, event);
 

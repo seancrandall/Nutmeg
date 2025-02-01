@@ -11,6 +11,8 @@
 #include "dialog.h"
 #include "widgets/warningbox.h"
 #include "widgets/examinerinterviewinformation.h"
+#include "widgets/dateedit.h"
+#include "widgets/timeedit.h"
 
 #include "settings.h"
 
@@ -29,15 +31,20 @@ class AddExaminerInterviewDialog : public Nutmeg::Dialog
     virtual void slotHandleAccepted(void) override;
     virtual void slotScatter(void) override;
     virtual void slotGather(void) override;
-    void slotUpdateInterview(const QDateTime &newInterviewTime);
+    void slotUpdateInterview();
+
+    //void slotTimeChanged(QTime &newtime);
+    //void slotDateChanged(QDate &newdate);
 
 
 
-  private:
   protected:
-    QDateTimeEdit *interviewTimeEditor;
+    //QDateTimeEdit *interviewTimeEditor;
+    DateEdit *dateEditor;
+    TimeEdit *timeEditor;
     QLabel *interviewInformationPanel;
     QVBoxLayout *verticalLayout;
+    QHBoxLayout *dtLayout;
 
     virtual void setupDisplay(void) override;
     virtual void connectSignalsAndSlots(void) override;
@@ -46,10 +53,14 @@ class AddExaminerInterviewDialog : public Nutmeg::Dialog
     std::shared_ptr<Person> mAttorney;
     std::shared_ptr<PatentMatter> mMatter;
     std::shared_ptr<Person> mExaminer;
-    QDateTime mAppointmentTime = QDateTime::currentDateTime();
 
     ExaminerInterviewInformation eiInfo;
     bool valid = false;
+
+  private:
+    QDate mAppointmentDate;
+    QTime mAppointmentTime;
+    QDateTime mAppointmentDateTime;
 };
 
 } // namespace Nutmeg

@@ -13,6 +13,9 @@ AddExaminerInterviewDialog::AddExaminerInterviewDialog(Key responseId, QWidget *
     , mMatter(std::make_shared<PatentMatter>(mTask->fkMatter))
     , mExaminer(std::make_shared<Person>(mMatter->fkExaminer))
     , eiInfo(mTask->TaskId, mAttorney->PersonId)
+    , mAppointmentDate(QDate::currentDate())
+    , mAppointmentTime(QTime::currentTime())
+    , mAppointmentDateTime(QDateTime::currentDateTime())
 {
     setupDisplay();
     connectSignalsAndSlots();
@@ -43,7 +46,12 @@ void AddExaminerInterviewDialog::slotHandleAccepted()
 
 void AddExaminerInterviewDialog::slotScatter()
 {
-    eiInfo.interviewTime = interviewTimeEditor->dateTime();
+    dateEditor->date = mAppointmentDate;
+    timeEditor->time = mAppointmentTime;
+    mAppointmentDateTime.setDate(mAppointmentDate);
+    mAppointmentDateTime.setTime(mAppointmentTime);
+
+    eiInfo.interviewTime = mAppointmentDateTime;
     interviewInformationPanel->setTextFormat(Qt::RichText);
     interviewInformationPanel->setText(eiInfo.html);
 }
@@ -52,12 +60,17 @@ void AddExaminerInterviewDialog::slotGather()
 {
     Settings set;
     //Add a new EI for the matter with the given DateTime
-    mAppointmentTime = interviewTimeEditor->dateTime();
-    Appointment *appt = new Appointment(mAppointmentTime, mTask->TaskId);
+    //mAppointmentTime = interviewTimeEditor->dateTime();
+    mAppointmentDate = dateEditor->date;
+    mAppointmentTime = timeEditor->time;
+    mAppointmentDateTime.setDate(mAppointmentDate);
+    mAppointmentDateTime.setTime(mAppointmentTime);
+
+    Appointment *appt = new Appointment(mAppointmentDateTime, mTask->TaskId);
     appt->type = Nutmeg::ExaminerInterviewPatent;
     delete appt;
 
-    IcalBuilder *builder = new IcalBuilder(mAppointmentTime, mAppointmentTime.addMSecs(1800));
+    IcalBuilder *builder = new IcalBuilder(mAppointmentDateTime, mAppointmentDateTime.addMSecs(1800));
 
     builder->companyName = set.companyName;
     builder->productName = set.softwareName;
@@ -70,8 +83,8 @@ void AddExaminerInterviewDialog::slotGather()
     //Build an Event Description
     Entity client = Entity(mMatter->fkClient);
     QString Description = QString("Examiner Interview");
-    Description += QString("Date: %1").arg(mAppointmentTime.date().toString(Qt::ISODate));
-    Description += QString("Time: %1").arg(mAppointmentTime.time().toString());
+    Description += QString("Date: %1").arg(mAppointmentDateTime.date().toString(Qt::ISODate));
+    Description += QString("Time: %1").arg(mAppointmentDateTime.time().toString());
     Description += QString("Client: %1").arg(client.FullLegalName);
     Description += QString("Examiner: %1").arg(mExaminer->FullLegalName);
     Description += QString("Response Type: %1").arg(mTask->TaskTypeString);
@@ -81,25 +94,33 @@ void AddExaminerInterviewDialog::slotGather()
     mTask->NeedsExaminerInterview = false;
 }
 
-void AddExaminerInterviewDialog::slotUpdateInterview(const QDateTime &newInterviewTime)
+void AddExaminerInterviewDialog::slotUpdateInterview()
 {
-    Q_UNUSED(newInterviewTime); //scatter grabs it from the control anyway
+    //Q_UNUSED(newInterviewTime); //scatter grabs it from the control anyway
     valid = true;
     slotScatter();
 }
 
+
 void AddExaminerInterviewDialog::setupDisplay()
 {
-    interviewTimeEditor = new QDateTimeEdit();
-    interviewTimeEditor->setDateTime(QDateTime::currentDateTime());
-    interviewTimeEditor->setDisplayFormat("ddd MMMM d yyyy hh:mm");
-    interviewTimeEditor->setCalendarPopup(true);
+    dateEditor = new DateEdit();
+    timeEditor = new TimeEdit();
+    dateEditor->date = QDate::currentDate();
+    timeEditor->setTime(QTime::currentTime());
+    //interviewTimeEditor->setDateTime(QDateTime::currentDateTime());
+    //interviewTimeEditor->setDisplayFormat("ddd MMMM d yyyy hh:mm");
+    //interviewTimeEditor->setCalendarPopup(true);
 
     interviewInformationPanel = new QLabel();
     interviewInformationPanel->setTextInteractionFlags(Qt::TextSelectableByMouse);
 
+    dtLayout = new QHBoxLayout();
+    dtLayout->addWidget(dateEditor);
+    dtLayout->addWidget(timeEditor);
+
     verticalLayout = new QVBoxLayout(workspace);
-    verticalLayout->addWidget(interviewTimeEditor);
+    verticalLayout->addLayout(dtLayout);
     verticalLayout->addWidget(interviewInformationPanel);
 
     updateLayout();
@@ -109,8 +130,13 @@ void AddExaminerInterviewDialog::connectSignalsAndSlots()
 {
     Dialog::connectSignalsAndSlots();
 
-    QObject::connect(interviewTimeEditor,       &QDateTimeEdit::dateTimeChanged,
+    QObject::connect(dateEditor,                &DateEdit::dateChanged,
                      this,                      &AddExaminerInterviewDialog::slotUpdateInterview);
+
+    QObject::connect(timeEditor,                &TimeEdit::dateChanged,
+                     this,                      &AddExaminerInterviewDialog::slotUpdateInterview);
+
+
 }
 
 

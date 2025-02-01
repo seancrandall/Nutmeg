@@ -65,6 +65,7 @@ SOURCES += \
     widgets/peoplecompleter.cpp \
     widgets/personsearchbox.cpp \
     widgets/spinbox.cpp \
+    widgets/timeedit.cpp \
     widgets/workattorneysearchbox.cpp \
     widgets/xbutton.cpp \
     ../nmbroker/dbaccess/nutdb.cpp \
@@ -209,6 +210,7 @@ HEADERS += \
     widgets/peoplecompleter.h \
     widgets/personsearchbox.h \
     widgets/spinbox.h \
+    widgets/timeedit.h \
     widgets/workattorneysearchbox.h \
     widgets/xbutton.h \
     ../nmbroker/dbaccess/viewcontractingfirmsmodel.h \

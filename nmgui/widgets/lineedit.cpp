@@ -3,6 +3,9 @@
 namespace Nutmeg
 {
 
-LineEdit::LineEdit(QWidget *parent) : QLineEdit(parent) {}
+LineEdit::LineEdit(QWidget *parent)
+    : QLineEdit(parent)
+{
+}
 
 } // namespace Nutmeg
