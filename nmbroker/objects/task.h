@@ -7,6 +7,45 @@
 namespace Nutmeg
 {
 
+#include <QHash>
+
+QHash<Key, QString> TaskNames = {
+    {1, "1 - Nofinal Office Action (US)"},
+    {2, "2 - AFCP After Final"},
+    {3, "Appeal Brief"},
+    {4, "Restriction Requirement"},
+    {5, "Missing Parts"},
+    {6, "Pay Issue Fee"},
+    {7, "CON Recommendation"},
+    {8, "Notice of Allowance Review (Aurora)"},
+    {9, "Foreign OA Instruction"},
+    {10, "Corrected Application Papers"},
+    {11, "Foreign Claim Set"},
+    {12, "Certificate of Correction"},
+    {14, "4 - RCE With Amendment"},
+    {15, "3 - RCE Without Amendment"},
+    {16, "Proposed Examiner's Amendment"},
+    {17, "Terminal Disclaimer"},
+    {18, "5 - Notice of Appeal"},
+    {19, "Nonprovisional Patent Application"},
+    {20, "Provisional Patent Application"},
+    {21, "Continuation Application"},
+    {22, "CIP Application"},
+    {23, "Reissue Application"},
+    {24, "Claim Chart"},
+    {25, "Trademark Application (Current Use)"},
+    {26, "Trademark Application (Intent to Use)"},
+    {27, "Trademark Application (International)"},
+    {28, "Trademark Office Action"},
+    {29, "Statement of Use"},
+    {30, "File Specimen"},
+    {31, "File Disclaimer"},
+    {32, "File Copyright"},
+    {33, "Litigation Support Task"},
+    {34, "Memorandum"},
+    {35, "Reply to Examiner's Answer"}
+};
+
 class Task : public Nutmeg::Object
 {
   public:
@@ -27,6 +66,7 @@ class Task : public Nutmeg::Object
     Property(getfkAuthorizationDocument, slotSetfkAuthorizationDocument) Key fkAuthorizationDocument;
     Property(getOldTaskId, slotSetOldTaskId) Key OldTaskId;
     Property(getfkTaskType, slotSetfkTaskType) Key fkTaskType;
+    ReadOnlyProperty(getTaskTypeString) QString TaskTypeString;
 
     // Flag Properties
     Property(getNeedsExaminerInterview, slotSetNeedsExaminerInterview) bool NeedsExaminerInterview;
@@ -52,6 +92,7 @@ class Task : public Nutmeg::Object
     bool getNeedsExaminerInterview(void) { return bNeedsExaminerInterview; }
     bool getExaminerInterviewScheduled(void) { return bExaminerInterviewScheduled; }
     bool getWithParalegal(void) { return bWithParalegal; }
+    const QString getTaskTypeString(void);
 
     //Hold properties
     void holdfkMatter(Key newkey) {mDat.fkMatter = newkey; dirty["fkMatter"]  = true;}

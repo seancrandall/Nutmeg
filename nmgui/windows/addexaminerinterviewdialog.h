@@ -46,7 +46,7 @@ class AddExaminerInterviewDialog : public Nutmeg::Dialog
     std::shared_ptr<Person> mAttorney;
     std::shared_ptr<PatentMatter> mMatter;
     std::shared_ptr<Person> mExaminer;
-    QDateTime mAppointment = QDateTime::currentDateTime();
+    QDateTime mAppointmentTime = QDateTime::currentDateTime();
 
     ExaminerInterviewInformation eiInfo;
     bool valid = false;

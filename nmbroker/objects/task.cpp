@@ -21,6 +21,11 @@ Task::Task(Key newid) : Object(newid)
     InitializeTask(newid);
 }
 
+const QString Task::getTaskTypeString()
+{
+    return TaskNames[mDat.fkTaskType];
+}
+
 Task* Task::GetTask(Key id) {
     auto& taskCache = getCache<Task>();
     if (taskCache.contains(id)) {

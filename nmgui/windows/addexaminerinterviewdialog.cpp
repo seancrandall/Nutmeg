@@ -1,6 +1,7 @@
 #include "addexaminerinterviewdialog.h"
 #include "objects/appointment.h"
 #include "utils/icalbuilder.h"
+#include "objects/entity.h"
 
 namespace Nutmeg
 {
@@ -50,11 +51,27 @@ void AddExaminerInterviewDialog::slotScatter()
 void AddExaminerInterviewDialog::slotGather()
 {
     //Add a new EI for the matter with the given DateTime
-    Appointment *appt = new Appointment(mAppointment, mTask->TaskId);
+    mAppointmentTime = interviewTimeEditor->dateTime();
+    Appointment *appt = new Appointment(mAppointmentTime, mTask->TaskId);
     appt->type = Nutmeg::ExaminerInterviewPatent;
     delete appt;
 
-    IcalBuilder *builder = new IcalBuilder(mAppointment, mAppointment.addMSecs(1800));
+    IcalBuilder *builder = new IcalBuilder(mAppointmentTime, mAppointmentTime.addMSecs(1800));
+    QString EventName = QString("Examiner Interview for %1 (%2)")
+                            .arg(mMatter->AttorneyDocketNumber)
+                            .arg(mMatter->ApplicationSerialNumber);
+    builder->eventName = EventName;
+
+    //Build an Event Description
+    Entity client = Entity(mMatter->fkClient);
+    QString Description = QString("Examiner Interview");
+    Description += QString("Date: %1").arg(mAppointmentTime.date().toString(Qt::ISODate));
+    Description += QString("Time: %1").arg(mAppointmentTime.time().toString());
+    Description += QString("Client: %1").arg(client.FullLegalName);
+    Description += QString("Examiner: %1").arg(mExaminer->FullLegalName);
+    Description += QString("Response Type: %1").arg(mTask->TaskTypeString);
+    builder->description = Description;
+
     builder->openIcsFile();
 }
 

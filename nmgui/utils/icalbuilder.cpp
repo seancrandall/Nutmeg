@@ -99,6 +99,16 @@ void IcalBuilder::setEndTime(const QDateTime &newtime)
     }
 }
 
+const QString IcalBuilder::getDescription() const
+{
+    return mDescription;
+}
+
+void IcalBuilder::setDescription(const QString &description)
+{
+    mDescription = description;
+}
+
 const QString IcalBuilder::getCompanyName() const
 {
     return mCompanyName;
@@ -125,6 +135,41 @@ void IcalBuilder::setProductName(const QString &newname)
     mProductName = newname;
 }
 
+const QString IcalBuilder::getOutputLocation()
+{
+    return mOutputLocation;
+}
+
+bool IcalBuilder::setOutputLocation(const QString &newloc)
+{
+    mOutputValid = false;
+    // Convert the path to a QFileInfo object to check its properties
+    QFileInfo fileInfo(newloc);
+
+    // Check if the path exists
+    if (!fileInfo.exists()) {
+        Logger::LogMessage(QString("Error: Output location '%1' does not exist.").arg(newloc));
+        return false;
+    }
+
+    // Check if the path is a directory
+    if (!fileInfo.isDir()) {
+        Logger::LogMessage(QString("Error: Output location '%1' is not a directory.").arg(newloc));
+        return false;
+    }
+
+    // Check if the directory is writable
+    if (!fileInfo.isWritable()) {
+        Logger::LogMessage(QString("Error: Output location '%1' is not writable.").arg(newloc));
+        return false;
+    }
+
+    // If all checks pass, set the new location
+    mOutputLocation = newloc;
+    mOutputValid = true;
+    return true;
+}
+
 QString IcalBuilder::getIcsString()
 {
     if (mStartTimeString.isEmpty() || mEndTimeString.isEmpty() || mEventName.isEmpty()) {
@@ -140,23 +185,21 @@ QString IcalBuilder::getIcsString()
     return mIcsFileString;
 }
 
-void IcalBuilder::openIcsFile()
+bool IcalBuilder::openIcsFile()
 {
     QString icsString = getIcsString();
     if (icsString.isEmpty()) {
         Logger::LogMessage("Error: No ICS string to write to file.");
-        return;
+        return false;
     }
 
-    // Use QStandardPaths to get a temporary location
-    QString tempDir = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-    if (tempDir.isEmpty()) {
-        Logger::LogMessage("Error: Could not find a writable temporary directory.");
-        return;
+    if(!mOutputValid){
+        Logger::LogMessage(QString("Could not make an ICS file because %1 is not writeable").arg(mOutputLocation));
+        return false;
     }
 
     // Create a unique file name
-    QString fileName = tempDir + QDir::separator() + "event_" + QUuid::createUuid().toString() + ".ics";
+    QString fileName = outputLocation + QDir::separator() + "event_" + QUuid::createUuid().toString() + ".ics";
 
     // Write out the ICS file
     QFile file(fileName);
@@ -164,16 +207,20 @@ void IcalBuilder::openIcsFile()
         QTextStream out(&file);
         out << icsString;
         file.close();
+        Logger::LogMessage(QString("Wrote ICS file %1.").arg(file.fileName()));
 
         // Use QDesktopServices to open the ICS file with the default handler
         if (!QDesktopServices::openUrl(QUrl::fromLocalFile(fileName))) {
             // Handle error - file could not be opened by default application
             Logger::LogMessage("Error: Failed to open ICS file with default application.");
+            return false;
         }
     } else {
         // Handle error - file could not be created
         Logger::LogMessage("Error: Failed to create ICS file at: " + fileName);
+        return true;
     }
+    return true;
 }
 /**
     @brief IcalBuilder::createIcsEvent Static method to build an ICS file string from several input parameters
@@ -187,6 +234,7 @@ void IcalBuilder::openIcsFile()
 QString IcalBuilder::createIcsEvent(const QString &summary
                                     , const QString &start
                                     , const QString &end
+                                    , const QString &description
                                     , const QString &companyName
                                     , const QString &productName)
 {
@@ -225,6 +273,11 @@ QString IcalBuilder::createIcsEvent(const QString &summary
     icalcomponent_add_property(event, icalproperty_new_dtstart(start_time));
     icalcomponent_add_property(event, icalproperty_new_dtend(end_time));
 
+    // Add the DESCRIPTION field
+    if (!description.isEmpty()) {
+        icalcomponent_add_property(event, icalproperty_new_description(description.toUtf8().data()));
+    }
+
     icalcomponent_add_component(cal, event);
 
     char *ical_string = icalcomponent_as_ical_string(cal);
@@ -248,6 +301,15 @@ void IcalBuilder::Initialize()
     endTime = startTime.addSecs(1800); //default to 30 minutes
     companyName = "Unspecified Company";
     productName = "Unspecified Product";
+
+    // Use QStandardPaths to get a temporary location
+    QString tempDir = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+    if (tempDir.isEmpty()) {
+        Logger::LogMessage("Error: Could not find a writable temporary directory for ICS file.");
+    } else {
+        outputLocation = tempDir;
+        mOutputValid = true;
+    }
 }
 
 } // namespace Nutmeg
