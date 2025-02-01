@@ -31,10 +31,10 @@ class AddExaminerInterviewDialog : public Nutmeg::Dialog
     virtual void slotHandleAccepted(void) override;
     virtual void slotScatter(void) override;
     virtual void slotGather(void) override;
-    void slotUpdateInterview();
+    //void slotUpdateInterview();
 
-    //void slotTimeChanged(QTime &newtime);
-    //void slotDateChanged(QDate &newdate);
+    void slotTimeChanged();
+    void slotDateChanged();
 
 
 

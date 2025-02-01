@@ -5,7 +5,7 @@ namespace Nutmeg {
 TimeEdit::TimeEdit(QWidget *parent)
     : QTimeEdit(parent)
 {
-    setDisplayFormat("H:m ap");
+    setDisplayFormat("hh:mm ap");
 }
 
 } // namespace Nutmeg

@@ -94,11 +94,23 @@ void AddExaminerInterviewDialog::slotGather()
     mTask->NeedsExaminerInterview = false;
 }
 
-void AddExaminerInterviewDialog::slotUpdateInterview()
+
+void AddExaminerInterviewDialog::slotTimeChanged()
 {
-    //Q_UNUSED(newInterviewTime); //scatter grabs it from the control anyway
     valid = true;
-    slotScatter();
+    mAppointmentTime = timeEditor->getTime();
+    mAppointmentDateTime = QDateTime(mAppointmentDate, mAppointmentTime);
+    eiInfo.interviewTime = mAppointmentDateTime;
+    interviewInformationPanel->setText(eiInfo.html);
+}
+
+void AddExaminerInterviewDialog::slotDateChanged()
+{
+    valid = true;
+    mAppointmentDate = dateEditor->getDate();
+    mAppointmentDateTime = QDateTime(mAppointmentDate, mAppointmentTime);
+    eiInfo.interviewTime = mAppointmentDateTime;
+    interviewInformationPanel->setText(eiInfo.html);
 }
 
 
@@ -108,9 +120,6 @@ void AddExaminerInterviewDialog::setupDisplay()
     timeEditor = new TimeEdit();
     dateEditor->date = QDate::currentDate();
     timeEditor->setTime(QTime::currentTime());
-    //interviewTimeEditor->setDateTime(QDateTime::currentDateTime());
-    //interviewTimeEditor->setDisplayFormat("ddd MMMM d yyyy hh:mm");
-    //interviewTimeEditor->setCalendarPopup(true);
 
     interviewInformationPanel = new QLabel();
     interviewInformationPanel->setTextInteractionFlags(Qt::TextSelectableByMouse);
@@ -130,11 +139,11 @@ void AddExaminerInterviewDialog::connectSignalsAndSlots()
 {
     Dialog::connectSignalsAndSlots();
 
-    QObject::connect(dateEditor,                &DateEdit::dateChanged,
-                     this,                      &AddExaminerInterviewDialog::slotUpdateInterview);
+    QObject::connect(dateEditor,                &Nutmeg::DateEdit::dateChanged,
+                     this,                      &AddExaminerInterviewDialog::slotDateChanged);
 
-    QObject::connect(timeEditor,                &TimeEdit::dateChanged,
-                     this,                      &AddExaminerInterviewDialog::slotUpdateInterview);
+    QObject::connect(timeEditor,                &Nutmeg::TimeEdit::timeChanged,
+                     this,                      &AddExaminerInterviewDialog::slotTimeChanged);
 
 
 }
