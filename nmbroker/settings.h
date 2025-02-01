@@ -43,6 +43,9 @@ class Settings : public QSettings
   public:
     Settings(QObject *parent = nullptr);
 
+    ReadOnlyProperty(getCompanyName) QString companyName;
+    ReadOnlyProperty(getSoftwareName) QString softwareName;
+
     // Database
     Property(getServer, setServer) QString server;
 	Property(getPort, setPort) uint port;
@@ -85,6 +88,9 @@ class Settings : public QSettings
         setValue("database/database_name", val);
         mDatabaseName = val;
     }
+
+    const QString getCompanyName(void){return mCompanyName;}
+    const QString getSoftwareName(void) {return mSoftwareName;}
 
     void setUsername(QString val) { setValue("database/username", val), mUsername = val; }
     void setPassword(QString val) { setValue("database/password", val), mPassword = val; }
@@ -148,6 +154,10 @@ class Settings : public QSettings
     uint mDeadlinesCacheSize;
 
     void populate(void);
+
+private:
+   QString mCompanyName;
+    QString mSoftwareName;
 };
 
 } // namespace Nutmeg

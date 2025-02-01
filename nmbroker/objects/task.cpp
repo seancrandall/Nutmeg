@@ -43,7 +43,7 @@ Task* Task::GetTask(Key id) {
     }
 }
 
-bool Task::slotInsertWithMatter(Key matterid)
+bool Task::InsertWithMatter(Key matterid)
 {
     Key newid = Nutdb::InsertTask(matterid);
     if(newid)
@@ -55,7 +55,7 @@ bool Task::slotInsertWithMatter(Key matterid)
     else return false;
 }
 
-bool Task::slotInsertWithMatter(Key matterid, Date triggerDate)
+bool Task::InsertWithMatter(Key matterid, Date triggerDate)
 {
     Key newid = Nutdb::InsertTask(matterid, triggerDate);
     if(newid)
@@ -67,7 +67,7 @@ bool Task::slotInsertWithMatter(Key matterid, Date triggerDate)
     else return false;
 }
 
-bool Task::slotUpdate(TaskData dat)
+bool Task::Update(TaskData dat)
 {
     bool result = Nutdb::UpdateTask(dat);
     if(!result) return false;
@@ -85,10 +85,10 @@ bool Task::SetId(Key newid)
 
 bool Task::Commit()
 {
-    return slotUpdate(mDat);
+    return Update(mDat);
 }
 
-bool Task::slotSetfkMatter(Key newfk)
+bool Task::SetfkMatter(Key newfk)
 {
     bool result = WriteKey(taskTableName, "fkMatter", newfk);
     if(result)
@@ -96,7 +96,7 @@ bool Task::slotSetfkMatter(Key newfk)
     return result;
 }
 
-bool Task::slotSetDateAssigned(Date newdate)
+bool Task::SetDateAssigned(Date newdate)
 {
     bool result = WriteDate(taskTableName, "DateAssigned", newdate);
     if (result)
@@ -104,7 +104,7 @@ bool Task::slotSetDateAssigned(Date newdate)
     return result;
 }
 
-bool Task::slotSetfkDeadline(Key newfk)
+bool Task::SetfkDeadline(Key newfk)
 {
     bool result = WriteKey(taskTableName, "fkDeadline", newfk);
     if(result)
@@ -112,7 +112,7 @@ bool Task::slotSetfkDeadline(Key newfk)
     return result;
 }
 
-bool Task::slotSetExpectedFee(float newfee)
+bool Task::SetExpectedFee(float newfee)
 {
     bool result = WriteValue(taskTableName, "ExpectedFee", QVariant::fromValue(newfee));
     if(result)
@@ -120,7 +120,7 @@ bool Task::slotSetExpectedFee(float newfee)
     return result;
 }
 
-bool Task::slotSetFeePercent(float newpercent)
+bool Task::SetFeePercent(float newpercent)
 {
     bool result = WriteValue(taskTableName, "FeePercent", QVariant::fromValue(newpercent));
     if(result)
@@ -128,7 +128,7 @@ bool Task::slotSetFeePercent(float newpercent)
     return result;
 }
 
-bool Task::slotSetApprovalRequested(Date newdate)
+bool Task::SetApprovalRequested(Date newdate)
 {
     bool result = WriteDate(taskTableName, "ApprovalRequested", newdate);
     if(result)
@@ -136,7 +136,7 @@ bool Task::slotSetApprovalRequested(Date newdate)
     return result;
 }
 
-bool Task::slotSetApprovalReceived(Date newdate)
+bool Task::SetApprovalReceived(Date newdate)
 {
     bool result = WriteDate(taskTableName, "ApprovalReceived", newdate);
     if(result)
@@ -144,7 +144,7 @@ bool Task::slotSetApprovalReceived(Date newdate)
     return result;
 }
 
-bool Task::slotSetComplete(bool newval)
+bool Task::SetComplete(bool newval)
 {
     bool result = WriteBoolean(taskTableName, "Complete", newval);
     if(result)
@@ -152,7 +152,7 @@ bool Task::slotSetComplete(bool newval)
     return result;
 }
 
-bool Task::slotSetfkWorkAttorney(Key newfk)
+bool Task::SetfkWorkAttorney(Key newfk)
 {
     bool result = WriteKey(taskTableName, "fkWorkAttorney", newfk);
     if(result)
@@ -160,7 +160,7 @@ bool Task::slotSetfkWorkAttorney(Key newfk)
     return result;
 }
 
-bool Task::slotSetfkParalegal(Key newfk)
+bool Task::SetfkParalegal(Key newfk)
 {
     bool result = WriteKey(taskTableName, "fkParalegal", newfk);
     if(result)
@@ -169,7 +169,7 @@ bool Task::slotSetfkParalegal(Key newfk)
 
 }
 
-bool Task::slotSetfkAuthorizationDocument(Key newfk)
+bool Task::SetfkAuthorizationDocument(Key newfk)
 {
     bool result = WriteKey(taskTableName, "fkAuthorizationDocument", newfk);
     if(result)
@@ -177,7 +177,7 @@ bool Task::slotSetfkAuthorizationDocument(Key newfk)
     return result;
 }
 
-bool Task::slotSetOldTaskId(Key newfk)
+bool Task::SetOldTaskId(Key newfk)
 {
     bool result = WriteKey(taskTableName, "OldTaskId", newfk);
     if(result)
@@ -185,7 +185,7 @@ bool Task::slotSetOldTaskId(Key newfk)
     return result;
 }
 
-bool Task::slotSetfkTaskType(Key newfk)
+bool Task::SetfkTaskType(Key newfk)
 {
     bool result = WriteKey(taskTableName, "fkTaskType", newfk);
     if(result)
@@ -193,7 +193,7 @@ bool Task::slotSetfkTaskType(Key newfk)
     return result;
 }
 
-bool Task::slotSetNeedsExaminerInterview(bool newval)
+bool Task::SetNeedsExaminerInterview(bool newval)
 {
     bool result = SetFlagValue("NeedsExaminerInterview", newval);
     if(result)
@@ -201,7 +201,7 @@ bool Task::slotSetNeedsExaminerInterview(bool newval)
     return result;
 }
 
-bool Task::slotSetExaminerInterviewScheduled(bool newval)
+bool Task::SetExaminerInterviewScheduled(bool newval)
 {
     bool result = SetFlagValue("ExaminerInterviewScheduled", newval);
     if(result)
@@ -209,7 +209,7 @@ bool Task::slotSetExaminerInterviewScheduled(bool newval)
     return result;
 }
 
-bool Task::slotSetWithParalegal(bool newval)
+bool Task::SetWithParalegal(bool newval)
 {
     bool result = SetFlagValue("WithParalegal", newval);
     if(result)

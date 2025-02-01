@@ -17,26 +17,26 @@ class Task : public Nutmeg::Object
     explicit Task();
       explicit Task(Key id);
 
-    Property(getId, slotSetId) Key TaskId;
-    Property(getfkMatter, slotSetfkMatter) Key fkMatter;
-    Property(getDateAssigned, slotSetDateAssigned) Date DateAssigned;
-    Property(getfkDeadline, slotSetfkDeadline) Key fkDeadline;
-    Property(getExpectedFee, slotSetExpectedFee) float ExpectedFee;
-    Property(getFeePercent, slotSetFeePercent) float FeePercent;
-    Property(getApprovalRequested, slotSetApprovalRequested) Date ApprovalRequested;
-    Property(getApprovalReceived, slotSetApprovalReceived) Date ApprovalReceived;
-    Property(getComplete, slotSetComplete) bool Complete;
-    Property(getfkWorkAttorney, slotSetfkWorkAttorney) Key fkWorkAttorney;
-    Property(getfkParalegal, slotSetfkParalegal) Key fkParalegal;
-    Property(getfkAuthorizationDocument, slotSetfkAuthorizationDocument) Key fkAuthorizationDocument;
-    Property(getOldTaskId, slotSetOldTaskId) Key OldTaskId;
-    Property(getfkTaskType, slotSetfkTaskType) Key fkTaskType;
+    Property(getId, SetId) Key TaskId;
+    Property(getfkMatter, SetfkMatter) Key fkMatter;
+    Property(getDateAssigned, SetDateAssigned) Date DateAssigned;
+    Property(getfkDeadline, SetfkDeadline) Key fkDeadline;
+    Property(getExpectedFee, SetExpectedFee) float ExpectedFee;
+    Property(getFeePercent, SetFeePercent) float FeePercent;
+    Property(getApprovalRequested, SetApprovalRequested) Date ApprovalRequested;
+    Property(getApprovalReceived, SetApprovalReceived) Date ApprovalReceived;
+    Property(getComplete, SetComplete) bool Complete;
+    Property(getfkWorkAttorney, SetfkWorkAttorney) Key fkWorkAttorney;
+    Property(getfkParalegal, SetfkParalegal) Key fkParalegal;
+    Property(getfkAuthorizationDocument, SetfkAuthorizationDocument) Key fkAuthorizationDocument;
+    Property(getOldTaskId, SetOldTaskId) Key OldTaskId;
+    Property(getfkTaskType, SetfkTaskType) Key fkTaskType;
     ReadOnlyProperty(getTaskTypeString) QString TaskTypeString;
 
     // Flag Properties
-    Property(getNeedsExaminerInterview, slotSetNeedsExaminerInterview) bool NeedsExaminerInterview;
-    Property(getExaminerInterviewScheduled, slotSetExaminerInterviewScheduled) bool ExaminerInterviewScheduled;
-    Property(getWithParalegal, slotSetWithParalegal) bool WithParalegal;
+    Property(getNeedsExaminerInterview, SetNeedsExaminerInterview) bool NeedsExaminerInterview;
+    Property(getExaminerInterviewScheduled, SetExaminerInterviewScheduled) bool ExaminerInterviewScheduled;
+    Property(getWithParalegal, SetWithParalegal) bool WithParalegal;
 
     // Getters
     virtual Key getId(void) override { return mDat.TaskId; }
@@ -77,29 +77,29 @@ class Task : public Nutmeg::Object
     void holdExaminerInterviewScheduled(bool newval) {bExaminerInterviewScheduled = newval; dirty["bWithParalegal"] = true;}
     void holdWithParalegal(bool newval) {bWithParalegal = newval;}
 
-    bool slotInsertWithMatter(Key matterid);
-    bool slotInsertWithMatter(Key matterid, Date triggerDate);
+    bool InsertWithMatter(Key matterid);
+    bool InsertWithMatter(Key matterid, Date triggerDate);
 
-    bool slotUpdate(TaskData dat);
+    bool Update(TaskData dat);
     virtual bool SetId(Key newid) override;
     virtual bool Commit(void) override;
 
-    bool slotSetfkMatter(Key newfk);
-    bool slotSetDateAssigned(Date newdate);
-    bool slotSetfkDeadline(Key newfk);
-    bool slotSetExpectedFee(float newfee);
-    bool slotSetFeePercent(float newpercent);
-    bool slotSetApprovalRequested(Date newdate);
-    bool slotSetApprovalReceived(Date newdate);
-    bool slotSetComplete(bool newval);
-    bool slotSetfkWorkAttorney(Key newfk);
-    bool slotSetfkParalegal(Key newfk);
-    bool slotSetfkAuthorizationDocument(Key newfk);
-    bool slotSetOldTaskId(Key newfk);
-    bool slotSetfkTaskType(Key newfk);
-    bool slotSetNeedsExaminerInterview(bool newval);
-    bool slotSetExaminerInterviewScheduled(bool newval);
-    bool slotSetWithParalegal(bool newval);
+    bool SetfkMatter(Key newfk);
+    bool SetDateAssigned(Date newdate);
+    bool SetfkDeadline(Key newfk);
+    bool SetExpectedFee(float newfee);
+    bool SetFeePercent(float newpercent);
+    bool SetApprovalRequested(Date newdate);
+    bool SetApprovalReceived(Date newdate);
+    bool SetComplete(bool newval);
+    bool SetfkWorkAttorney(Key newfk);
+    bool SetfkParalegal(Key newfk);
+    bool SetfkAuthorizationDocument(Key newfk);
+    bool SetOldTaskId(Key newfk);
+    bool SetfkTaskType(Key newfk);
+    bool SetNeedsExaminerInterview(bool newval);
+    bool SetExaminerInterviewScheduled(bool newval);
+    bool SetWithParalegal(bool newval);
 
   protected:
     bool InitializeTask(Key id);
@@ -114,8 +114,8 @@ private:
     static Task* GetTask(Key id);
 
     QHash<Key, QString> TaskNames = {
-        {1, "1 - Nofinal Office Action (US)"},
-        {2, "2 - AFCP After Final"},
+        {1, "Nofinal Office Action (US)"},
+        {2, "AFCP After Final"},
         {3, "Appeal Brief"},
         {4, "Restriction Requirement"},
         {5, "Missing Parts"},
@@ -126,11 +126,11 @@ private:
         {10, "Corrected Application Papers"},
         {11, "Foreign Claim Set"},
         {12, "Certificate of Correction"},
-        {14, "4 - RCE With Amendment"},
-        {15, "3 - RCE Without Amendment"},
+        {14, "RCE With Amendment"},
+        {15, "RCE Without Amendment"},
         {16, "Proposed Examiner's Amendment"},
         {17, "Terminal Disclaimer"},
-        {18, "5 - Notice of Appeal"},
+        {18, "Notice of Appeal"},
         {19, "Nonprovisional Patent Application"},
         {20, "Provisional Patent Application"},
         {21, "Continuation Application"},

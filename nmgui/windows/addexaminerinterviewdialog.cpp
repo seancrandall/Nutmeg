@@ -50,6 +50,7 @@ void AddExaminerInterviewDialog::slotScatter()
 
 void AddExaminerInterviewDialog::slotGather()
 {
+    Settings set;
     //Add a new EI for the matter with the given DateTime
     mAppointmentTime = interviewTimeEditor->dateTime();
     Appointment *appt = new Appointment(mAppointmentTime, mTask->TaskId);
@@ -57,6 +58,10 @@ void AddExaminerInterviewDialog::slotGather()
     delete appt;
 
     IcalBuilder *builder = new IcalBuilder(mAppointmentTime, mAppointmentTime.addMSecs(1800));
+
+    builder->companyName = set.companyName;
+    builder->productName = set.softwareName;
+
     QString EventName = QString("Examiner Interview for %1 (%2)")
                             .arg(mMatter->AttorneyDocketNumber)
                             .arg(mMatter->ApplicationSerialNumber);
@@ -73,6 +78,7 @@ void AddExaminerInterviewDialog::slotGather()
     builder->description = Description;
 
     builder->openIcsFile();
+    mTask->NeedsExaminerInterview = false;
 }
 
 void AddExaminerInterviewDialog::slotUpdateInterview(const QDateTime &newInterviewTime)

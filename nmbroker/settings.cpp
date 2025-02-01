@@ -3,8 +3,12 @@
 namespace Nutmeg
 {
 
-Settings::Settings(QObject *parent) : QSettings("DockPilot Software", "nutmeg", parent)
+Settings::Settings(QObject *parent)
+    : QSettings("DockPilot Software", "nutmeg", parent)
+    , mCompanyName("DockPilot Software")
+    , mSoftwareName("Nutmeg Docket Minder")
 {
+
     setDefaultFormat(QSettings::IniFormat);
 
     beginGroup("database");
