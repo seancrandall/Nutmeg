@@ -170,21 +170,6 @@ bool IcalBuilder::setOutputLocation(const QString &newloc)
     return true;
 }
 
-QString IcalBuilder::getIcsString()
-{
-    if (mStartTimeString.isEmpty() || mEndTimeString.isEmpty() || mEventName.isEmpty()) {
-        Logger::LogMessage("Error: Cannot generate ICS string. Missing necessary data.");
-        return QString();
-    }
-    mIcsFileString = createIcsEvent(mEventName
-                                    , mStartTimeString
-                                    , mEndTimeString
-                                    , mCompanyName
-                                    , mProductName);
-
-    return mIcsFileString;
-}
-
 bool IcalBuilder::openIcsFile()
 {
     QString icsString = getIcsString();
@@ -222,93 +207,65 @@ bool IcalBuilder::openIcsFile()
     }
     return true;
 }
-/**
-    @brief IcalBuilder::createIcsEvent Static method to build an ICS file string from several input parameters
-    @param summary The "summary" or heder description of the event.
-    @param start Start time for the event (defaults to current date/time if not specified)
-    @param end End time for the event (defaults to 30 minutes after start)
-    @param companyName Name of the company that provides the ICS file
-    @param productName Name of the product used to generate the ICS file
-    @return Returns a QString with the ICS file contents
 
-    By default, the method creates a 15 minute alarm before the event.
-     */
-QString IcalBuilder::createIcsEvent(const QString &summary
-                                    , const QString &start
-                                    , const QString &end
-                                    , const QString &description
-                                    , const QString &companyName
-                                    , const QString &productName)
+QString IcalBuilder::getIcsString()
 {
-    icalcomponent *cal = icalcomponent_new(ICAL_VCALENDAR_COMPONENT);
-    if (!cal) {
-        Logger::LogMessage("Error: Failed to create VCALENDAR component.");
+    if (mEventName.isEmpty() || mStartTimeString.isEmpty() || mEndTimeString.isEmpty()) {
+        Logger::LogMessage("Error: Cannot generate ICS string. Missing necessary data.");
         return QString();
     }
 
-    icalcomponent_add_property(cal, icalproperty_new_version("2.0"));
+    QString icsString;
+    QTextStream stream(&icsString, QIODevice::WriteOnly);
 
-    QString ProductId;
-    QString lCompanyName = companyName.isEmpty() ? "Your Company" : companyName;
-    QString lProductName = productName.isEmpty() ? "Your Product" : productName;
+    // VCALENDAR component
+    stream << "BEGIN:VCALENDAR\n";
+    stream << "VERSION:2.0\n";
+    stream << "PRODID:-//" << mCompanyName << "//NONSGML " << mProductName << "//EN\n";
 
-    ProductId = "-//" + lCompanyName + "//NONSGML " + lProductName + "//EN";
-    icalcomponent_add_property(cal, icalproperty_new_prodid(ProductId.toStdString().c_str()));
+    // VEVENT component
+    stream << "BEGIN:VEVENT\n";
+    stream << "SUMMARY:" << mEventName << "\n";
+    stream << "DTSTART:" << mStartTimeString << "\n";
+    stream << "DTEND:" << mEndTimeString << "\n";
 
-    icalcomponent *event = icalcomponent_new(ICAL_VEVENT_COMPONENT);
-    if (!event) {
-        Logger::LogMessage("Error: Failed to create VEVENT component.");
-        icalcomponent_free(cal);
-        return QString();
+    if (!mDescription.isEmpty()) {
+        // Handle multi-line description by folding lines at 75 characters
+        QStringList lines = mDescription.split('\n');
+        stream << "DESCRIPTION:";
+        for (int i = 0; i < lines.size(); ++i) {
+            if (i > 0) {
+                stream << " "; // Space for continuation
+            }
+            QString line = lines[i];
+            while (!line.isEmpty()) {
+                // Fold long lines
+                QString segment = line.left(75);
+                stream << segment << "\n";
+                line = line.mid(75);
+                if (!line.isEmpty()) {
+                    stream << " "; // Space for continuation of folded line
+                }
+            }
+        }
     }
 
-    // Check if end time is after start time
-    icaltimetype start_time = icaltime_from_string(start.toUtf8().data());
-    icaltimetype end_time = icaltime_from_string(end.toUtf8().data());
+    //Insert a newline so that there's not problem with the description
+    stream << "\n";
 
-    if (icaltime_compare(start_time, end_time) > 0) {
-        Logger::LogMessage("Error: End time is before start time. Setting end time to start time.");
-        end_time = start_time;
+    // Add reminder if set
+    if (mReminderMinutes > 0) {
+        stream << "BEGIN:VALARM\n";
+        stream << "ACTION:DISPLAY\n";
+        stream << "DESCRIPTION:Reminder: Event starts soon\n";
+        stream << "TRIGGER:-PT" << mReminderMinutes << "M\n";
+        stream << "END:VALARM\n";
     }
 
-    icalcomponent_add_property(event, icalproperty_new_summary(summary.toUtf8().data()));
-    icalcomponent_add_property(event, icalproperty_new_dtstart(start_time));
-    icalcomponent_add_property(event, icalproperty_new_dtend(end_time));
+    stream << "END:VEVENT\n";
+    stream << "END:VCALENDAR\n";
 
-    // Add the DESCRIPTION field
-    if (!description.isEmpty()) {
-        icalcomponent_add_property(event, icalproperty_new_description(description.toUtf8().data()));
-    }
-
-    // Add VALARM for reminder
-    icalcomponent *alarm = icalcomponent_new_valarm();
-    if (!alarm) {
-        Logger::LogMessage("Error: Failed to create VALARM component.");
-        icalcomponent_free(event);
-        icalcomponent_free(cal);
-        return QString();
-    }
-
-    icalcomponent_add_property(alarm, icalproperty_new_action(ICAL_ACTION_DISPLAY));
-    icalcomponent_add_property(alarm, icalproperty_new_description("Reminder: Event starts soon"));
-    icalcomponent_add_property(alarm, icalproperty_new_trigger(icaltriggertype_from_int(-15 * 60))); // 15 minutes before start
-
-    icalcomponent_add_component(event, alarm);
-
-    icalcomponent_add_component(cal, event);
-
-    char *ical_string = icalcomponent_as_ical_string(cal);
-    if (!ical_string) {
-        Logger::LogMessage("Error: Failed to generate iCalendar string.");
-        icalcomponent_free(cal);
-        return QString();
-    }
-
-    QString icsContent = QString::fromUtf8(ical_string);
-    free(ical_string);
-    icalcomponent_free(cal);
-
-    return icsContent;
+    return icsString;
 }
 
 void IcalBuilder::Initialize()

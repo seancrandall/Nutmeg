@@ -55,7 +55,7 @@ class AddExaminerInterviewDialog : public Nutmeg::Dialog
     std::shared_ptr<Person> mExaminer;
 
     ExaminerInterviewInformation eiInfo;
-    bool valid = false;
+    bool valid;
 
   private:
     QDate mAppointmentDate;

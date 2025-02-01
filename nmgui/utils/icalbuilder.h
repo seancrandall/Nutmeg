@@ -10,7 +10,6 @@
 #include <QUuid>
 #include <QDesktopServices>
 #include <QStandardPaths>
-#include <libical/ical.h>
 
 #include "property.h"
 #include "settings.h"
@@ -33,6 +32,7 @@ public:
     Property(getOutputLocation, setOutputLocation) QString outputLocation;
     ReadOnlyProperty(getOutputValid) bool outputValid;
     ReadOnlyProperty(getIcsString) QString icsString;
+    Property(getReminderMinutes, setReminderMinutes) uint reminderMinutes;
 
     const QString getEventName(void) const;
     void setEventName(const QString &newname);
@@ -49,18 +49,11 @@ public:
     const QString getOutputLocation(void);
     bool setOutputLocation(const QString& newloc);
     bool getOutputValid(void) {return mOutputValid;}
+    uint getReminderMinutes(void) const;
+    void setReminderMinutes(uint mins);
     QString getIcsString(void);
 
     bool openIcsFile(void);
-
-
-    static QString createIcsEvent(const QString &summary
-                                        , const QString &start
-                                        , const QString &end
-                                        , const QString &description = QString()
-                                        , const QString &companyName = QString()
-                                        , const QString &productName = QString());
-
 
 private:
     QString mEventName;
@@ -74,6 +67,7 @@ private:
     QString mIcsFileString;
     QString mOutputLocation;
     bool mOutputValid = false;
+    uint mReminderMinutes = 15;
 
     void Initialize(void);
 };

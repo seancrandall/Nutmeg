@@ -24,7 +24,7 @@ AddExaminerInterviewDialog::AddExaminerInterviewDialog(Key responseId, QWidget *
     QUrl url(settings.airUrl);
     QDesktopServices::openUrl(url);
     slotScatter();
-    show();
+    interviewInformationPanel->hide();
 }
 
 void AddExaminerInterviewDialog::slotHandleRejected()
@@ -53,7 +53,8 @@ void AddExaminerInterviewDialog::slotScatter()
 
     eiInfo.interviewTime = mAppointmentDateTime;
     interviewInformationPanel->setTextFormat(Qt::RichText);
-    interviewInformationPanel->setText(eiInfo.html);
+    //interviewInformationPanel->setText(eiInfo.html);
+    valid = false;
 }
 
 void AddExaminerInterviewDialog::slotGather()
@@ -83,11 +84,11 @@ void AddExaminerInterviewDialog::slotGather()
     //Build an Event Description
     Entity client = Entity(mMatter->fkClient);
     QString Description = QString("Examiner Interview");
-    Description += QString("Date: %1").arg(mAppointmentDateTime.date().toString(Qt::ISODate));
-    Description += QString("Time: %1").arg(mAppointmentDateTime.time().toString());
-    Description += QString("Client: %1").arg(client.FullLegalName);
-    Description += QString("Examiner: %1").arg(mExaminer->FullLegalName);
-    Description += QString("Response Type: %1").arg(mTask->TaskTypeString);
+    Description += QString("Date: %1\n").arg(mAppointmentDateTime.date().toString(Qt::ISODate));
+    Description += QString("Time: %1\n").arg(mAppointmentDateTime.time().toString());
+    Description += QString("Client: %1\n").arg(client.FullLegalName);
+    Description += QString("Examiner: %1\n").arg(mExaminer->FullLegalName);
+    Description += QString("Response Type: %1\n").arg(mTask->TaskTypeString);
     builder->description = Description;
 
     builder->openIcsFile();
@@ -102,6 +103,7 @@ void AddExaminerInterviewDialog::slotTimeChanged()
     mAppointmentDateTime = QDateTime(mAppointmentDate, mAppointmentTime);
     eiInfo.interviewTime = mAppointmentDateTime;
     interviewInformationPanel->setText(eiInfo.html);
+    interviewInformationPanel->show();
 }
 
 void AddExaminerInterviewDialog::slotDateChanged()
@@ -111,6 +113,7 @@ void AddExaminerInterviewDialog::slotDateChanged()
     mAppointmentDateTime = QDateTime(mAppointmentDate, mAppointmentTime);
     eiInfo.interviewTime = mAppointmentDateTime;
     interviewInformationPanel->setText(eiInfo.html);
+    interviewInformationPanel->show();
 }
 
 

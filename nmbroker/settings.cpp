@@ -144,6 +144,7 @@ void Settings::populate()
     airUrl = mAirUrl;
     maxLogLines = mMaxLogLines;
     preferredLogLines = mPreferredLogLines;
+    icsSaveLocation = mIcsSaveLocation;
 
     objectCacheSize = mObjectCacheSize;
     flagsCacheSize = mFlagsCacheSize;
