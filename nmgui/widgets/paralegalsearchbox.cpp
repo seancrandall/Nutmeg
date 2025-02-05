@@ -18,6 +18,17 @@ ParalegalSearchBox::ParalegalSearchBox(Key inikey, QWidget *parent)
     emit signalKeySelected(inikey);
 }
 
+void ParalegalSearchBox::slotAddRecord(const QString &input)
+{
+    Q_UNUSED(input);
+
+    if (isNew)
+    {
+        InsertPersonDialog *diag = new InsertPersonDialog(FirstName, LastName, this);
+        key = diag->exec();
+    }
+}
+
 void ParalegalSearchBox::Initialize()
 {
     if(!gViewParalegalsModel)

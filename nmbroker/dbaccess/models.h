@@ -28,6 +28,7 @@
 #include "viewtrademarktasktypesmodel.h"
 #include "viewworkattorneysmodel.h"
 
+namespace Nutmeg{
 extern std::unique_ptr<Nutmeg::appointmentTypeModel> gAppointmentTypeModel;
 extern std::unique_ptr<Nutmeg::ResponsesDashboardTableModel> gResponsesDashboardTableModel;
 extern std::unique_ptr<Nutmeg::taskTypeModel> gTaskTypeModel;
@@ -53,5 +54,7 @@ extern std::unique_ptr<Nutmeg::viewTaskTypesModel> gViewTaskTypesModel;
 extern std::unique_ptr<Nutmeg::viewTrademarkFilingTypesModel> gViewTrademarkFilingTypesModel;
 extern std::unique_ptr<Nutmeg::viewTrademarkTaskTypesModel> gViewTrademarkTaskTypesModel;
 extern std::unique_ptr<Nutmeg::viewWorkAttorneysModel> gViewWorkAttorneysModel;
+
+} //namespace Nutmeg
 
 #endif // MODELS_H
