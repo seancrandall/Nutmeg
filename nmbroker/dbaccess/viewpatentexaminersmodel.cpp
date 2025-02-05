@@ -7,6 +7,8 @@ viewPatentExaminersModel::viewPatentExaminersModel(QObject *parent) : Nutmeg::Ta
 {
     setTable("viewPatentExaminers");
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 } // namespace Nutmeg

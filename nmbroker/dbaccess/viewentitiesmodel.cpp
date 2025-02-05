@@ -7,6 +7,8 @@ viewEntitiesModel::viewEntitiesModel(QObject *parent) : Nutmeg::TableModel{paren
 {
     setTable("viewEntities");
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 } // namespace Nutmeg

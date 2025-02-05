@@ -7,6 +7,8 @@ viewCopyrightFilingTypesModel::viewCopyrightFilingTypesModel(QObject *parent) : 
 {
     setTable("viewCopyrightFilingTypes");
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 } // namespace Nutmeg

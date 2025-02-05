@@ -7,6 +7,8 @@ viewFilingTypesModel::viewFilingTypesModel(QObject *parent) : Nutmeg::TableModel
 {
     setTable("viewFilingTypes");
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 } // namespace Nutmeg

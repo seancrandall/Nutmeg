@@ -7,6 +7,8 @@ viewContractingFirmsModel::viewContractingFirmsModel(QObject *parent) : Nutmeg::
 {
     setTable("viewContractingFirms");
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 } // namespace Nutmeg

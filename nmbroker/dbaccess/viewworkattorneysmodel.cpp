@@ -7,6 +7,8 @@ viewWorkAttorneysModel::viewWorkAttorneysModel(QObject *parent) : Nutmeg::TableM
 {
     setTable("viewWorkAttorneys");
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 } // namespace Nutmeg

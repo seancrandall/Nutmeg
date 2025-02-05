@@ -2,13 +2,15 @@
 #include "exception.h"
 #include<QSqlDriver>
 
-// Key InsertDocumentWithParse(String FullPath);
+// Key InsertDocumentWithParse(QString FullPath);
 namespace Nutmeg
 {
 
 uint Nutdb::mErrorCount = 0;
 bool Nutdb::mLastOperationSuccessful = 0;
 QVector<QString> Nutdb::mErrorList = QVector<QString>();
+QList<QPair<Key, QString>> Nutdb::mAllFlags;
+QList<QPair<Key, QString>> Nutdb::mAllTags;
 
 Nutdb::Nutdb()
 {
@@ -249,25 +251,23 @@ bool Nutdb::UpdateField(QString table, QString field, Key key, QString value)
     return true;
 }
 
-
-
 ///
 /// \brief Nutdb::GetRecord Get a single database record
 /// \param table The name of the table to select the record from
 /// \param id The primary key of the record to select
 /// \return Returns a QSqlRecord with the selected record
 ///
-QSqlRecord Nutdb::GetRecord(String table, Key id)
+QSqlRecord Nutdb::GetRecord(QString table, Key id)
 {
     QSqlDatabase db = QSqlDatabase::database();
     QSqlQuery query = QSqlQuery(db);
     QSqlRecord record;
-    String primaryKeyName;
+    QString primaryKeyName;
 
     primaryKeyName = GetPrimaryKeyName(table);
 
            // Build the SQL query with table and primary key name directly
-    String sqlQuery = QString("SELECT * FROM %1 WHERE %2 = :id").arg(table).arg(primaryKeyName);
+    QString sqlQuery = QString("SELECT * FROM %1 WHERE %2 = :id").arg(table).arg(primaryKeyName);
 
            // Prepare and bind values
     query.prepare(sqlQuery);
@@ -291,7 +291,7 @@ QSqlRecord Nutdb::GetRecord(String table, Key id)
     return record;
 }
 
-const QList<QSqlRecord> Nutdb::SearchLike(String table, String fieldName, String searchString)
+const QList<QSqlRecord> Nutdb::SearchLike(QString table, QString fieldName, QString searchQString)
 {
     QList<QSqlRecord> resultList;
 
@@ -306,7 +306,7 @@ const QList<QSqlRecord> Nutdb::SearchLike(String table, String fieldName, String
     }
 
            // Construct the SQL query
-    QString sql = QString("SELECT * FROM %1 WHERE %2 LIKE :searchString").arg(table, fieldName);
+    QString sql = QString("SELECT * FROM %1 WHERE %2 LIKE :searchQString").arg(table, fieldName);
 
     QSqlQuery query(QSqlDatabase::database());
 
@@ -318,7 +318,7 @@ const QList<QSqlRecord> Nutdb::SearchLike(String table, String fieldName, String
         Nutdb::AddErrorMessage(errmsg);
     }
       // Set the search parameter with wildcard
-    query.bindValue(":searchString", QString("%%1%").arg(searchString));
+    query.bindValue(":searchQString", QString("%%1%").arg(searchQString));
 
            // Execute the query
     mLastOperationSuccessful = query.exec();
@@ -360,7 +360,7 @@ Key Nutdb::AddRoleToPerson(Key personId, Key roleId)
     return CallStoredKeyProcedure("AddRoleToPerson", params);
 }
 
-Key Nutdb::InsertClientNatural(String firstName, String lastName)
+Key Nutdb::InsertClientNatural(QString firstName, QString lastName)
 {
     QVariantList params;
 
@@ -380,7 +380,7 @@ Key Nutdb::InsertCopyrightFiling(Key matterId, Date triggerDate)
     return CallStoredKeyProcedure("InsertCopyrightFiling", params);
 }
 
-Key Nutdb::InsertCopyrightMatter(String docketNumber)
+Key Nutdb::InsertCopyrightMatter(QString docketNumber)
 {
     QVariantList params;
 
@@ -389,7 +389,7 @@ Key Nutdb::InsertCopyrightMatter(String docketNumber)
     return CallStoredKeyProcedure("InsertCopyrightMatter", params);
 }
 
-Key Nutdb::InsertDocument(String title)
+Key Nutdb::InsertDocument(QString title)
 {
     QVariantList params;
 
@@ -398,7 +398,7 @@ Key Nutdb::InsertDocument(String title)
     return CallStoredKeyProcedure("InsertDocument", params);
 }
 
-Key Nutdb::InsertEnterprise(String enterpriseName)
+Key Nutdb::InsertEnterprise(QString enterpriseName)
 {
     QVariantList params;
 
@@ -407,7 +407,7 @@ Key Nutdb::InsertEnterprise(String enterpriseName)
     return CallStoredKeyProcedure("InsertEnterprise", params);
 }
 
-Key Nutdb::InsertEntity(String entityName)
+Key Nutdb::InsertEntity(QString entityName)
 {
     QVariantList params;
 
@@ -416,7 +416,7 @@ Key Nutdb::InsertEntity(String entityName)
     return CallStoredKeyProcedure("InsertEntity", params);
 }
 
-Key Nutdb::InsertExaminer(String firstName, String lastName)
+Key Nutdb::InsertExaminer(QString firstName, QString lastName)
 {
     QVariantList params;
 
@@ -446,7 +446,7 @@ Key Nutdb::InsertFinalOA(Key matterId, Date triggerDate)
     return CallStoredKeyProcedure("InsertFinalOA", params);
 }
 
-Key Nutdb::InsertGeneralMatter(String docketNumber)
+Key Nutdb::InsertGeneralMatter(QString docketNumber)
 {
     QVariantList params;
 
@@ -455,7 +455,7 @@ Key Nutdb::InsertGeneralMatter(String docketNumber)
     return CallStoredKeyProcedure("InsertGeneralMatter", params);
 }
 
-Key Nutdb::InsertInventor(String firstName, String lastName)
+Key Nutdb::InsertInventor(QString firstName, QString lastName)
 {
     QVariantList params;
 
@@ -465,7 +465,7 @@ Key Nutdb::InsertInventor(String firstName, String lastName)
     return CallStoredKeyProcedure("InsertInventor", params);
 }
 
-Key Nutdb::InsertMatter(String docketNumber)
+Key Nutdb::InsertMatter(QString docketNumber)
 {
     QVariantList params;
 
@@ -484,7 +484,7 @@ Key Nutdb::InsertNonfinalOA(Key matterId, Date triggerDate)
     return CallStoredKeyProcedure("InsertNonfinalOA", params);
 }
 
-Key Nutdb::InsertNote(Key objectId, String noteText)
+Key Nutdb::InsertNote(Key objectId, QString noteText)
 {
     QVariantList params;
 
@@ -494,7 +494,7 @@ Key Nutdb::InsertNote(Key objectId, String noteText)
     return CallStoredKeyProcedure("InsertNote", params);
 }
 
-Key Nutdb::InsertObject(String objectType)
+Key Nutdb::InsertObject(QString objectType)
 {
     QVariantList params;
 
@@ -503,7 +503,7 @@ Key Nutdb::InsertObject(String objectType)
     return CallStoredKeyProcedure("InsertObject", params);
 }
 
-Key Nutdb::InsertParalegal(String firstName, String lastName)
+Key Nutdb::InsertParalegal(QString firstName, QString lastName)
 {
     QVariantList params;
 
@@ -513,7 +513,7 @@ Key Nutdb::InsertParalegal(String firstName, String lastName)
     return CallStoredKeyProcedure("InsertParalegal", params);
 }
 
-Key Nutdb::InsertPatentExaminer(String firstName, String lastName)
+Key Nutdb::InsertPatentExaminer(QString firstName, QString lastName)
 {
     QVariantList params;
 
@@ -533,7 +533,7 @@ Key Nutdb::InsertPatentFiling(Key matterId, Date triggerDate)
     return CallStoredKeyProcedure("InsertPatentFiling", params);
 }
 
-Key Nutdb::InsertPatentMatter(String docketNumber)
+Key Nutdb::InsertPatentMatter(QString docketNumber)
 {
     QVariantList params;
 
@@ -552,7 +552,7 @@ Key Nutdb::InsertPatentResponse(Key matterId, Date triggerDate)
     return CallStoredKeyProcedure("InsertPatentResponse", params);
 }
 
-Key Nutdb::InsertPerson(String firstName, String lastName)
+Key Nutdb::InsertPerson(QString firstName, QString lastName)
 {
     QVariantList params;
 
@@ -642,7 +642,7 @@ Key Nutdb::InsertTaskTwoMonth(Key matterId, Date triggerDate)
     return CallStoredKeyProcedure("InsertTaskTwoMonth", params);
 }
 
-Key Nutdb::InsertTaskWithMatter(String docketNumber, Date triggerDate)
+Key Nutdb::InsertTaskWithMatter(QString docketNumber, Date triggerDate)
 {
     QVariantList params;
 
@@ -662,7 +662,7 @@ Key Nutdb::InsertTrademarkFiling(Key matterId, Date triggerDate)
     return CallStoredKeyProcedure("InsertTrademarkFiling", params);
 }
 
-Key Nutdb::InsertTrademarkMatter(String docketNumber)
+Key Nutdb::InsertTrademarkMatter(QString docketNumber)
 {
     QVariantList params;
 
@@ -681,7 +681,7 @@ Key Nutdb::InsertTrademarkResponse(Key matterId, Date triggerDate)
     return CallStoredKeyProcedure("InsertTrademarkResponse", params);
 }
 
-Key Nutdb::InsertWorkAttorney(String firstName, String lastName)
+Key Nutdb::InsertWorkAttorney(QString firstName, QString lastName)
 {
     QVariantList params;
 
@@ -691,7 +691,7 @@ Key Nutdb::InsertWorkAttorney(String firstName, String lastName)
     return CallStoredKeyProcedure("InsertWorkAttorney", params);
 }
 
-Key Nutdb::MergeTags(Key tagOneId, Key tagTwoId, String tagText)
+Key Nutdb::MergeTags(Key tagOneId, Key tagTwoId, QString tagText)
 {
     QVariantList params;
 
@@ -702,7 +702,7 @@ Key Nutdb::MergeTags(Key tagOneId, Key tagTwoId, String tagText)
     return CallStoredKeyProcedure("MergeTags", params);
 }
 
-Key Nutdb::SetFlag(Key associatedObjectId, String camelCase)
+Key Nutdb::SetFlag(Key associatedObjectId, QString camelCase)
 {
     QVariantList params;
 
@@ -712,7 +712,7 @@ Key Nutdb::SetFlag(Key associatedObjectId, String camelCase)
     return CallStoredKeyProcedure("SetFlag", params);
 }
 
-Key Nutdb::TagObject(Key objectId, String tagText)
+Key Nutdb::TagObject(Key objectId, QString tagText)
 {
     QVariantList params;
 
@@ -917,7 +917,7 @@ EnterpriseData Nutdb::GetEnterprise(Key id)
     return dat;
 }
 
-Key Nutdb::InsertTag(String tagText)
+Key Nutdb::InsertTag(QString tagText)
 {
     QVariantList params;
 
@@ -967,7 +967,7 @@ FilingData Nutdb::GetFiling(Key id)
     return dat;
 }
 
-bool Nutdb::GetFlag(Key objectId, String camelCase)
+bool Nutdb::GetFlag(Key objectId, QString camelCase)
 {
     QVariantList params;
 
@@ -982,7 +982,7 @@ bool Nutdb::GetFlag(Key objectId, String camelCase)
     return result.toBool();
 }
 
-FlagClassData Nutdb::GetFlagClass(String camelCase)
+FlagClassData Nutdb::GetFlagClass(QString camelCase)
 {
     QSqlQuery query;
     QVariantList params;
@@ -1001,6 +1001,29 @@ FlagClassData Nutdb::GetFlagClass(String camelCase)
 
     return dat;
 }
+
+FlagClassData Nutdb::GetFlagClass(Key id)
+{
+    QSqlQuery query;
+    QVariantList params;
+    FlagClassData dat;
+
+    params.append(QVariant::fromValue(id));
+
+    // query = CallStoredProcedure("GetFlagClass", params);
+    // if(!mLastOperationSuccessful)
+    //     return dat;
+
+    dat.FlagClassId = query.record().field("FlagClassId").value().toUInt();
+    dat.CamelCase = query.record().field("CamelCase").value().toString();
+    dat.Label = query.record().field("Label").value().toString();
+    dat.Description = query.record().field("Description").value().toString();
+
+    return dat;
+
+}
+
+
 
 MatterData Nutdb::GetMatter(Key id)
 {
@@ -1042,53 +1065,89 @@ ObjectData Nutdb::GetObject(Key id)
     return dat;
 }
 
-QList<String> Nutdb::GetObjectFlags(Key objectId)
+void Nutdb::GetAllObjectFlags()
 {
     QSqlQuery query;
-    QVariantList params;
-    QList<String> flagList;
+    QString sql = "SELECT ObjectId, CamelCase FROM flag";
 
-    params.append(NullableInteger(objectId));
+    if (query.exec(sql)) {
+        mAllFlags.clear(); // Clear existing data before adding new
+        while (query.next()) {
+            Key objectId = query.value(0).toUInt();
+            QString flag = query.value(1).toString();
+            mAllFlags.append(QPair<Key, QString>(objectId, flag));
+        }
+    } else {
+        qDebug() << "Failed to fetch all flags:" << query.lastError().text();
+        // Handle error, possibly by setting a flag or throwing an exception
+    }
+}
 
-    query = CallStoredProcedure("GetObjectFlags", params);
-    if(!mLastOperationSuccessful)
-        return flagList;
+QList<QString> Nutdb::GetObjectFlags(Key objectId)
+{
+    QList<QString> flagList;
 
-    while (query.next())
-        flagList.append(query.record().field(0).value().toString());
+    // Ensure we have the latest flags by calling GetAllObjectFlags if not already done
+    if (mAllFlags.isEmpty()) {
+        GetAllObjectFlags();
+    }
+
+    for (const auto &flagPair : mAllFlags) {
+        if (flagPair.first == objectId) {
+            flagList.append(flagPair.second);
+        }
+    }
 
     return flagList;
 }
 
-QList<Key> Nutdb::GetFlagObjects(const QString camelCase)
+QList<Key> Nutdb::GetFlagObjects(const QString &camelCase)
 {
-    QSqlQuery query;
-    QList<Key> resultList;
+    QList<Key> objectIds;
 
-    QVariantList params;
-    params.append(camelCase);
+    // Ensure we have the latest flags by calling GetAllObjectFlags if not already done
+    if (mAllFlags.isEmpty()) {
+        GetAllObjectFlags();
+    }
 
-    query = CallStoredProcedure("GetFlagObjects", params);
-    if(!mLastOperationSuccessful)
-        return resultList;
+    for (const auto &flagPair : mAllFlags) {
+        if (flagPair.second == camelCase) {
+            objectIds.append(flagPair.first);
+        }
+    }
 
-    while (query.next())
-        resultList.append(query.record().field(0).value().toUInt());
-
-    return resultList;
+    return objectIds;
 }
 
-String Nutdb::GetObjectTypeString(Key objectTypeId)
+void Nutdb::GetAllTags()
+{
+    QSqlQuery query;
+    QString sql = "SELECT TagId, TagText FROM tag";
+
+    if (query.exec(sql)) {
+        mAllTags.clear(); // Clear existing data before adding new
+        while (query.next()) {
+            Key tagId = query.value(0).toUInt();
+            QString tagText = query.value(1).toString();
+            mAllTags.append(QPair<Key, QString>(tagId, tagText));
+        }
+    } else {
+        qDebug() << "Failed to fetch all tags:" << query.lastError().text();
+        // Handle error, possibly by setting a flag or throwing an exception
+    }
+}
+
+QString Nutdb::GetObjectTypeString(Key objectTypeId)
 {
     ObjectTypeData dat;
     QVariantList params;
 
     params.append(NullableInteger(objectTypeId));
 
-    return CallStoredReturnProcedure("GetObjectTypeString", params).toString();
+    return CallStoredReturnProcedure("GetObjectTypeQString", params).toString();
 }
 
-Key Nutdb::GetObjectTypeId(String objectTypeText)
+Key Nutdb::GetObjectTypeId(QString objectTypeText)
 {
     ObjectTypeData dat;
 
@@ -1100,23 +1159,28 @@ Key Nutdb::GetObjectTypeId(String objectTypeText)
 
 QList<String> Nutdb::GetObjectTags(Key objectId)
 {
-    QSqlQuery query;
-    QVariantList params;
     QList<String> tagList;
 
-    params.append(NullableInteger(objectId));
+    // // Ensure we have the latest tags by calling GetAllTags if not already done
+    // if (mAllTags.isEmpty()) {
+    //     GetAllTags();
+    // }
 
-    query = CallStoredProcedure("GetObjectTags", params);
-    if(!mLastOperationSuccessful)
-        return tagList;
-
-    while (query.next())
-        tagList.append(query.record().field(0).value().toString());
+    // for (const auto &objectTag : mAllTags) {
+    //     if (objectTag.first == objectId) {
+    //         for (const auto &tag : mAllTags) {
+    //             if (tag.first == objectTag.second) {
+    //                 tagList.append(tag.second);
+    //                 break; // Assuming one tag per tag ID
+    //             }
+    //         }
+    //     }
+    // }
 
     return tagList;
 }
 
-QList<Key> Nutdb::GetTagObjects(String tagText)
+QList<Key> Nutdb::GetTagObjects(const QString &tagText)
 {
     QSqlQuery query;
     QList<Key> resultList;
@@ -1216,7 +1280,7 @@ TagData Nutdb::GetTag(Key id)
     return dat;
 }
 
-Key Nutdb::GetTagId(String tagText)
+Key Nutdb::GetTagId(QString tagText)
 {
     QVariantList params;
 
@@ -1783,7 +1847,7 @@ Key Nutdb::AssociateDocumentWithObject(Key documentId, Key objectId)
     return CallStoredKeyProcedure("AssocaiteDocumentWithObject", params);
 }
 
-Key Nutdb::ClearFlag(Key associatedObjectId, String camelCase)
+Key Nutdb::ClearFlag(Key associatedObjectId, QString camelCase)
 {
     QVariantList params;
 
@@ -1793,7 +1857,7 @@ Key Nutdb::ClearFlag(Key associatedObjectId, String camelCase)
     return CallStoredKeyProcedure("ClearFlag", params);
 }
 
-Key Nutdb::ClearTag(Key objectId, String tagText)
+Key Nutdb::ClearTag(Key objectId, QString tagText)
 {
     QVariantList params;
 
@@ -1897,7 +1961,7 @@ Key Nutdb::InsertAppointmentWithZone(DateTime appointmentTime, int utcOffset)
     }
 }
 
-Key Nutdb::InsertCaseInventor(String firstName, String lastName, Key patentCaseId)
+Key Nutdb::InsertCaseInventor(QString firstName, QString lastName, Key patentCaseId)
 {
     QVariantList params;
 
@@ -1908,7 +1972,7 @@ Key Nutdb::InsertCaseInventor(String firstName, String lastName, Key patentCaseI
     return CallStoredKeyProcedure("InsertCaseInventor", params);
 }
 
-Key Nutdb::InsertClientEnterprise(String enterpriseName)
+Key Nutdb::InsertClientEnterprise(QString enterpriseName)
 {
     QVariantList params;
 
@@ -1917,11 +1981,11 @@ Key Nutdb::InsertClientEnterprise(String enterpriseName)
     return CallStoredKeyProcedure("InsertClientEnterprise", params);
 }
 
-String Nutdb::GetPrimaryKeyName(String table)
+QString Nutdb::GetPrimaryKeyName(QString table)
 {
     QSqlDatabase db = QSqlDatabase::database();
     QSqlQuery query(db);
-    String primaryKey;
+    QString primaryKey;
 
            // Prepare the SQL query
     QString sql = QString("SHOW KEYS FROM %1 WHERE Key_name = 'PRIMARY'").arg(table);
@@ -1942,7 +2006,7 @@ String Nutdb::GetPrimaryKeyName(String table)
             QString msg = QString("Could not find a primary key column for table %1.")
                               .arg(table);
             Nutdb::AddErrorMessage(msg);
-            return String(); // Assuming String is compatible with an empty return
+            return QString(); // Assuming QString is compatible with an empty return
         }
     }
     else
@@ -1950,7 +2014,7 @@ String Nutdb::GetPrimaryKeyName(String table)
         // Query execution failed
         QString msg = QString("Error executing query: '%1'.").arg(sql);
         Nutdb::AddErrorMessage(msg);
-        return String(); // Assuming String is compatible with an empty return
+        return QString(); // Assuming QString is compatible with an empty return
     }
 
     return primaryKey;

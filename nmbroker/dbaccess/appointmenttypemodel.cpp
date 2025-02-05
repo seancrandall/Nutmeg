@@ -7,6 +7,8 @@ appointmentTypeModel::appointmentTypeModel(QObject *parent)
 {
     setTable("appointmentType");
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 } // namespace Nutmeg

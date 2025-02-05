@@ -7,6 +7,8 @@ taskTypeModel::taskTypeModel(QObject *parent) : Nutmeg::TableModel{parent}
 {
     setTable("taskType");
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 } // namespace Nutmeg

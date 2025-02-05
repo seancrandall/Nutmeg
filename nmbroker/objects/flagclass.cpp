@@ -3,35 +3,32 @@
 namespace Nutmeg
 {
 
-FlagClass::FlagClass(String camelCase) : mCamelCase(camelCase)
+FlagClass::FlagClass(QString camelCase)
 {
-    FlagClassData dat = Nutdb::GetFlagClass(camelCase);
-
-    mFlagClassId = dat.FlagClassId;
-    // mCamelCase = dat.CamelCase;
-    mLabel = dat.Label;
-    mDescription = dat.Description;
-
-    // Get a list of objects associated with this flag
-    mAssociatedObjects = Nutdb::GetFlagObjects(mCamelCase);
+    mDat = Nutdb::GetFlagClass(camelCase);
 }
 
-void FlagClass::setCamelCase(String newCamelCase)
+FlagClass::FlagClass(Key id)
 {
-    mCamelCase = newCamelCase;
-    Nutdb::UpdateField("FlagClass", "CamelCase", mFlagClassId, newCamelCase);
+    mDat = Nutdb::GetFlagClass(id);
 }
 
-void FlagClass::setLabel(String newLabel)
+void FlagClass::setCamelCase(QString newCamelCase)
 {
-    mLabel = newLabel;
-    Nutdb::UpdateField("FlagClass", "Label", mFlagClassId, newLabel);
+    mDat.CamelCase = newCamelCase;
+    Nutdb::UpdateField("FlagClass", "CamelCase", mDat.FlagClassId, newCamelCase);
 }
 
-void FlagClass::setDescription(String newDescription)
+void FlagClass::setLabel(QString newLabel)
 {
-    mDescription = newDescription;
-    Nutdb::UpdateField("FlagClass", "Description", mFlagClassId, newDescription);
+    mDat.Label = newLabel;
+    Nutdb::UpdateField("FlagClass", "Label", mDat.FlagClassId, newLabel);
+}
+
+void FlagClass::setDescription(QString newDescription)
+{
+    mDat.Description = newDescription;
+    Nutdb::UpdateField("FlagClass", "Description", mDat.FlagClassId, newDescription);
 }
 
 } // namespace Nutmeg

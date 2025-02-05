@@ -7,6 +7,8 @@ viewFilingTaskTypesModel::viewFilingTaskTypesModel(QObject *parent) : Nutmeg::Ta
 {
     setTable("viewFilingTaskTypes");
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 } // namespace Nutmeg

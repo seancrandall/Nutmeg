@@ -12,6 +12,8 @@ ResponsesDashboardTableModel::ResponsesDashboardTableModel(QObject *parent) : Nu
     setRelation(4, QSqlRelation("viewClients", "EntityId", "EntityName"));
     setRelation(5, QSqlRelation("viewParalegals", "PersonId", "EntityName"));
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 QVariant ResponsesDashboardTableModel::data(const QModelIndex &index, int role) const

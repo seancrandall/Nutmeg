@@ -5,6 +5,7 @@
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlRelationalTableModel>
+#include <QHash>
 
 #include "nutdb.h"
 #include "property.h"
@@ -23,14 +24,20 @@ class TableModel : public QSqlRelationalTableModel
   public:
     explicit TableModel(QObject *parent = nullptr);
 
-    ReadOnlyProperty(getValid) bool valid;
-    ReadOnlyProperty(getLastError) QSqlError lastError;
-    //ReadOnlyProperty(getRecordByIndex) QSqlRecord keyRecord[];
+    ReadOnlyProperty(getLastError) QSqlError lastError; //! The last database error
+    ReadOnlyProperty(getRecordByIndex) QSqlRecord keyRecord[]; //! Gets a QSqlRecord as though the table were an array indexed by primary key
+    ReadOnlyProperty(getRowByPrimaryKey) int rowByPrimaryKey[]; //! Returns the ordinal index in the table that corresponds to the given key. For example, if the 7th row has key 482, rowByPrimaryKey[482] will return 6.
+    ReadOnlyProperty(getLoaded) bool loaded; //! True if the model is loaded into memory, otherwise false.
 
-    bool getValid(void);                //{return mValid;}
-    const QSqlError getLastError(void); // return mNut.db.lastError();}
-    //const QSqlRecord getRecordByIndex(Key index) const;
+    bool getLoaded(void) {return mIsLoaded;}
+    const QSqlError getLastError(void);
+    QSqlRecord getRecordByPrimaryKey(Key primaryKey) const;
+    int getRowByPrimaryKey(Key key) const;
 
+protected:
+    void IndexLocations(void);
+    QHash<Key, uint> mKeyLocations; //! Contains an indexed list of primary keys found in the table.
+    bool mIsLoaded = false; //! Child classes should set this to true after loading the model into memory
 };
 
 } // namespace Nutmeg

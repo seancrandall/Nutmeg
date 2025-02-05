@@ -7,6 +7,8 @@ viewCopyrightTaskTypesModel::viewCopyrightTaskTypesModel(QObject *parent) : Nutm
 {
     setTable("viewCopyrightTaskTypes");
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 } // namespace Nutmeg

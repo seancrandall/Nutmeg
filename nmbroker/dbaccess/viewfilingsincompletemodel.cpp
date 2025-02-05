@@ -7,6 +7,8 @@ viewFilingsIncompleteModel::viewFilingsIncompleteModel(QObject *parent) : Nutmeg
 {
     setTable("viewFilingsIncomplete");
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 } // namespace Nutmeg

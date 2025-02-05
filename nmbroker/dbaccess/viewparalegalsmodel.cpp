@@ -7,6 +7,8 @@ viewParalegalsModel::viewParalegalsModel(QObject *parent) : Nutmeg::TableModel{p
 {
     setTable("viewParalegals");
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 } // namespace Nutmeg

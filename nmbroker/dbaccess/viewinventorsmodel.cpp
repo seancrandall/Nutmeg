@@ -7,6 +7,8 @@ viewInventorsModel::viewInventorsModel(QObject *parent) : Nutmeg::TableModel{par
 {
     setTable("viewInventors");
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 } // namespace Nutmeg

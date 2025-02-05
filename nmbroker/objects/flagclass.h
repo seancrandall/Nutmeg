@@ -11,40 +11,34 @@ namespace Nutmeg
 class FlagClass
 {
   public:
-    FlagClass(String camelCase);
+    FlagClass(QString camelCase);
+    FlagClass(Key id);
+    ~FlagClass() = default;
 
     ReadOnlyProperty(getFlagClassId) Key flagclassId;
-    Property(getCamelCase, setCamelCase) String camelCase;
-    Property(getLabel, setLabel) String label;
-    Property(getDescription, setDescription) String description;
-    ReadOnlyProperty(getAssociatedObjects) QList<Key> associatedObjects;
-    ReadOnlyProperty(getValid) bool valid;
+    Property(getCamelCase, setCamelCase) QString camelCase;
+    Property(getLabel, setLabel) QString label;
+    Property(getDescription, setDescription) QString description;
 
-    Key getFlagClassId(void) { return mFlagClassId; }
+    Key getFlagClassId(void) { return mDat.FlagClassId; }
 
-    String getCamelCase(void) { return mCamelCase; }
+    String getCamelCase(void) { return mDat.CamelCase; }
 
     void setCamelCase(String newCamelCase);
 
-    String getLabel(void) { return mLabel; }
+    String getLabel(void) { return mDat.Label; }
 
     void setLabel(String newLabel);
 
-    String getDescription(void) { return mDescription; }
+    String getDescription(void) { return mDat.Description; }
 
     void setDescription(String newDescription);
 
-    bool getValid(void) { return mValid; }
 
   protected:
-    Key mFlagClassId;
-    String mCamelCase;
-    String mLabel;
-    String mDescription;
+      FlagClassData mDat;
 
-    QList<Key> mAssociatedObjects;
-
-    bool mValid = false;
+    //QList<Key> mAssociatedObjects;
 };
 
 } // namespace Nutmeg

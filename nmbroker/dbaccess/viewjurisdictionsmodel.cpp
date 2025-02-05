@@ -7,6 +7,8 @@ viewJurisdictionsModel::viewJurisdictionsModel(QObject *parent) : Nutmeg::TableM
 {
     setTable("viewJurisdictions");
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 } // namespace Nutmeg

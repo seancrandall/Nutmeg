@@ -7,6 +7,8 @@ viewTrademarkFilingTypesModel::viewTrademarkFilingTypesModel(QObject *parent) : 
 {
     setTable("viewTrademarkFilingTypes");
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 } // namespace Nutmeg

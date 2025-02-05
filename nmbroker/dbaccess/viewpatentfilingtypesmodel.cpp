@@ -7,6 +7,8 @@ viewPatentFilingTypesModel::viewPatentFilingTypesModel(QObject *parent) : Nutmeg
 {
     setTable("viewPatentFilingTypes");
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 } // namespace Nutmeg

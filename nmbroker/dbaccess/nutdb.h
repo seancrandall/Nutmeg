@@ -42,9 +42,9 @@ class Nutdb
     static QVariant NullableInteger(Key value);
     static QVariant NullableDate(const QDate date);
 
-    static QSqlRecord GetRecord(String table, Key id);
+    static QSqlRecord GetRecord(QString table, Key id);
 
-    static const QList<QSqlRecord> SearchLike(String table, String fieldName, String searchString);
+    static const QList<QSqlRecord> SearchLike(QString table, QString fieldName, QString searchQString);
 
     // UpdateRoutines
     //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,35 +99,35 @@ class Nutdb
     static Key AssignTrademarkCaseExaminer(Key trademarkCaseId, Key personId);
     static Key AssociateAppointmentWithObject(Key appointmentId, Key objectId);
     static Key AssociateDocumentWithObject(Key documentId, Key objectId);
-    static Key ClearFlag(Key associatedObjectId, String camelCase);
-    static Key ClearTag(Key objectId, String tagText);
+    static Key ClearFlag(Key associatedObjectId, QString camelCase);
+    static Key ClearTag(Key objectId, QString tagText);
     static Key InsertAppointment(DateTime appointmentTime, Key taskId);
     static Key InsertAppointment(DateTime appointmentTime);
     static Key InsertAppointmentWithZone(DateTime appointmentTime, int utcOffset, Key taskId);
     static Key InsertAppointmentWithZone(DateTime appointmentTime, int utcOffset);
-    static Key InsertCaseInventor(String firstName, String lastName, Key patentCaseId);
-    static Key InsertClientEnterprise(String enterpriseName);
-    static Key InsertClientNatural(String firstName, String lastName);
+    static Key InsertCaseInventor(QString firstName, QString lastName, Key patentCaseId);
+    static Key InsertClientEnterprise(QString enterpriseName);
+    static Key InsertClientNatural(QString firstName, QString lastName);
     static Key InsertCopyrightFiling(Key matterId, Date triggerDate = QDate::currentDate());
-    static Key InsertCopyrightMatter(String docketNumber);
-    static Key InsertDocument(String Title);
-    static Key InsertEnterprise(String enterpriseName);
-    static Key InsertEntity(String entityName);
-    static Key InsertExaminer(String firstName, String lastName);
+    static Key InsertCopyrightMatter(QString docketNumber);
+    static Key InsertDocument(QString Title);
+    static Key InsertEnterprise(QString enterpriseName);
+    static Key InsertEntity(QString entityName);
+    static Key InsertExaminer(QString firstName, QString lastName);
     static Key InsertFiling(Key matterId, Date triggerDate = QDate::currentDate());
     static Key InsertFinalOA(Key matterId, Date triggerDate = QDate::currentDate());
-    static Key InsertGeneralMatter(String docketNumber);
-    static Key InsertInventor(String firstName, String lastName);
-    static Key InsertMatter(String docketNumber);
+    static Key InsertGeneralMatter(QString docketNumber);
+    static Key InsertInventor(QString firstName, QString lastName);
+    static Key InsertMatter(QString docketNumber);
     static Key InsertNonfinalOA(Key matterId, Date triggerDate = QDate::currentDate());
-    static Key InsertNote(Key objectId, String noteText);
-    static Key InsertObject(String objectType);
-    static Key InsertParalegal(String firstName, String lastName);
-    static Key InsertPatentExaminer(String firstName, String lastName);
+    static Key InsertNote(Key objectId, QString noteText);
+    static Key InsertObject(QString objectType);
+    static Key InsertParalegal(QString firstName, QString lastName);
+    static Key InsertPatentExaminer(QString firstName, QString lastName);
     static Key InsertPatentFiling(Key matterId, Date triggerDate = QDate::currentDate());
-    static Key InsertPatentMatter(String docketNumber);
+    static Key InsertPatentMatter(QString docketNumber);
     static Key InsertPatentResponse(Key matterId, Date triggerDate = QDate::currentDate());
-    static Key InsertPerson(String firstName, String lastName);
+    static Key InsertPerson(QString firstName, QString lastName);
     static Key InsertResponse(Key matterId, Date triggerDate = QDate::currentDate());
     static Key InsertTask(Key matterId, Date triggerDate = QDate::currentDate());
     static Key InsertTaskNinety(Key matterId,
@@ -146,14 +146,14 @@ class Nutdb
     InsertTaskTwoMonth(Key matterId,
                        Date triggerDate = QDate::currentDate()); /// Inserts a task with a 2-month soft deadline
                                                                  /// and 6-month hard deadline. Patent-centric
-    static Key InsertTaskWithMatter(String docketNumber, Date triggerDate = QDate::currentDate());
+    static Key InsertTaskWithMatter(QString docketNumber, Date triggerDate = QDate::currentDate());
     static Key InsertTrademarkFiling(Key matterId, Date triggerDate = QDate::currentDate());
-    static Key InsertTrademarkMatter(String docketNumber);
+    static Key InsertTrademarkMatter(QString docketNumber);
     static Key InsertTrademarkResponse(Key matterId, Date triggerDate = QDate::currentDate());
-    static Key InsertWorkAttorney(String firstName, String lastName);
-    static Key MergeTags(Key tagOneId, Key tagTwoId, String tagText);
-    static Key SetFlag(Key associatedObjectId, String camelCase);
-    static Key TagObject(Key objectId, String tagText);
+    static Key InsertWorkAttorney(QString firstName, QString lastName);
+    static Key MergeTags(Key tagOneId, Key tagTwoId, QString tagText);
+    static Key SetFlag(Key associatedObjectId, QString camelCase);
+    static Key TagObject(Key objectId, QString tagText);
 
     // Get Routines
     //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -174,20 +174,23 @@ class Nutdb
     static EntityTypeData GetEntityType(Key id);
     static FilingData GetFiling(Key id);
     static FilingStatusData GetFilingStatus(Key id);
-    static bool GetFlag(Key objectId, String camelCase);
-    static FlagClassData GetFlagClass(String camelCase);
+    static bool GetFlag(Key objectId, QString camelCase);
+    static FlagClassData GetFlagClass(QString camelCase);
+    static FlagClassData GetFlagClass(Key id);
     static GeneralMatterData GetGeneralMatter(Key id);
     static GeneralTaskData GetGeneralTask(Key id);
     static JurisdictionData GetJurisdiction(Key id);
     static MatterData GetMatter(Key id);
     static NoteData GetNote(Key id);
     static ObjectData GetObject(Key id);
-    static QList<String> GetObjectFlags(Key objectId);
-    static QList<Key> GetFlagObjects(const QString camelCase);
-    static Key GetObjectTypeId(String objectTypeText);
-    static String GetObjectTypeString(Key objectTypeId);
-    static QList<String> GetObjectTags(Key objectId);
-    static QList<Key> GetTagObjects(String tagText);
+    static void GetAllObjectFlags(void);
+    static QList<QString> GetObjectFlags(Key objectId);
+    static QList<Key> GetFlagObjects(const QString &camelCase);
+    static Key GetObjectTypeId(QString objectTypeText);
+    static QString GetObjectTypeString(Key objectTypeId);
+    static void GetAllTags(void);
+    static QList<QString> GetObjectTags(Key objectId);
+    static QList<Key> GetTagObjects(const QString &tagText);
     static PatentMatterData GetPatentMatter(Key id);
     static PatentResponseData GetPatentResponse(Key id);
     static PersonData GetPerson(Key id);
@@ -196,7 +199,7 @@ class Nutdb
     static RoleData GetRole(Key id);
     static StateData GetState(Key id);
     static TagData GetTag(Key id);
-    static Key GetTagId(String tagText);
+    static Key GetTagId(QString tagText);
     static TaskData GetTask(Key id);
     static TaskClassData GetTaskClas(Key id);
     static TaskTypeData GetTaskType(Key id);
@@ -221,10 +224,10 @@ class Nutdb
                                                            // that already safe. Performs no parameter binding.
     static QVariant CallStoredReturnProcedure(QString procName, QVariantList parameters);
     static Key CallStoredKeyProcedure(QString procName, QVariantList parameters);
-    static Key InsertTag(String tagText); /// InsertTag inserts an unaffiliated tag. Should
+    static Key InsertTag(QString tagText); /// InsertTag inserts an unaffiliated tag. Should
                                           /// probably never be used. Instead, use TagObject
 
-    static String GetPrimaryKeyName(QString table);
+    static QString GetPrimaryKeyName(QString table);
 
 
   private:
@@ -236,7 +239,9 @@ class Nutdb
     static bool mLastOperationSuccessful;
     static uint mErrorCount;
     static QVector<QString> mErrorList;
-
+    static QList<QPair<Key, QString>> mAllFlags;
+    static QList<QPair<Key, QString>> mAllTags;
+    static QHash<Key, FlagClassData> mFlagClasses;
 };
 
 } // namespace Nutmeg

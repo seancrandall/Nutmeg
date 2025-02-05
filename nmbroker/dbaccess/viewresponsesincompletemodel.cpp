@@ -7,6 +7,8 @@ viewResponsesIncompleteModel::viewResponsesIncompleteModel(QObject *parent) : Nu
 {
     setTable("viewResponsesIncomplete");
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 } // namespace Nutmeg

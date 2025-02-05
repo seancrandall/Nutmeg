@@ -7,6 +7,8 @@ viewTaskClassModel::viewTaskClassModel(QObject *parent) : Nutmeg::TableModel{par
 {
     setTable("viewTaskClass");
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 } // namespace Nutmeg

@@ -7,6 +7,8 @@ viewResponseTaskTypesModel::viewResponseTaskTypesModel(QObject *parent) : Nutmeg
 {
     setTable("viewResponseTaskTypes");
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 } // namespace Nutmeg

@@ -20,6 +20,7 @@ SOURCES += \
     ../nmbroker/dbaccess/appointmenttypemodel.cpp \
     ../nmbroker/dbaccess/databaseconnection.cpp \
     ../nmbroker/dbaccess/exception.cpp \
+    ../nmbroker/dbaccess/models.cpp \
     ../nmbroker/dbaccess/viewcopyrightfilingtypesmodel.cpp \
     ../nmbroker/dbaccess/viewfilingsincompletemodel.cpp \
     ../nmbroker/dbaccess/viewfilingtasktypesmodel.cpp \
@@ -167,6 +168,7 @@ HEADERS += \
     ../nmbroker/dbaccess/appointmenttypemodel.h \
     ../nmbroker/dbaccess/databaseconnection.h \
     ../nmbroker/dbaccess/exception.h \
+    ../nmbroker/dbaccess/models.h \
     ../nmbroker/dbaccess/viewcopyrightfilingtypesmodel.h \
     ../nmbroker/dbaccess/viewfilingsincompletemodel.h \
     ../nmbroker/dbaccess/viewfilingtasktypesmodel.h \

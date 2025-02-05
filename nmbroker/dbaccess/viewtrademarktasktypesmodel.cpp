@@ -7,6 +7,8 @@ viewTrademarkTaskTypesModel::viewTrademarkTaskTypesModel(QObject *parent) : Nutm
 {
     setTable("viewTrademarkTaskTypes");
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 } // namespace Nutmeg

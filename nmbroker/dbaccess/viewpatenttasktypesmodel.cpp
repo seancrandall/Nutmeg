@@ -7,6 +7,8 @@ viewPatentTaskTypesModel::viewPatentTaskTypesModel(QObject *parent) : Nutmeg::Ta
 {
     setTable("viewPatentTaskTypes");
     select();
+    mIsLoaded = true;
+    IndexLocations();
 }
 
 } // namespace Nutmeg
