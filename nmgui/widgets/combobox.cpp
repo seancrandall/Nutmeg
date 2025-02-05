@@ -14,7 +14,7 @@ ComboBox::ComboBox(QWidget *parent) : QComboBox(parent)
     connect(this, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &Nutmeg::ComboBox::getKey);
 }
 
-void ComboBox::setTableModel(QSqlTableModel *newmod)
+void ComboBox::setTableModel(TableModel *newmod)
 {
     mModel = newmod;
     QComboBox::setModel(mModel);

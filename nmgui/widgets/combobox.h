@@ -31,7 +31,7 @@ class ComboBox : public QComboBox
     bool getIsNew(void);
 
   public slots:
-    void setTableModel(QSqlTableModel *newmod);
+    void setTableModel(TableModel *newmod);
     void setToKey(Key key);
 
     void setColumn(int newcol) { setModelColumn(newcol); }
