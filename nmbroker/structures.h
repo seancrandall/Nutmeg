@@ -9,13 +9,13 @@ namespace Nutmeg
 typedef struct
 {
     Key ActionId;
-    String ActionName;
+    QString ActionName;
 } ActionData;
 
 typedef struct
 {
     Key AppointmentId;
-    DateTime AppointmentTime;
+    QDateTime AppointmentTime;
     Key fkAppointmentType;
 } AppointmentData;
 
@@ -27,7 +27,7 @@ typedef struct
 typedef struct
 {
     Key CopyrightFormId;
-    String FormName;
+    QString FormName;
     Key fkStoredForm;
 } CopyrightFormData;
 
@@ -38,8 +38,8 @@ typedef struct
     Date Created;
     Date Filed;
     Date Registered;
-    String SerialNumber;
-    String RegistrationNumber;
+    QString SerialNumber;
+    QString RegistrationNumber;
     Key fkDeposit;
     Key fkWorkType;
 } CopyrightMatterData;
@@ -56,18 +56,18 @@ typedef struct
 typedef struct
 {
     Key DocumentId;
-    String FullyQualifiedPath;
-    String URL;
-    String Filename;
-    String Extension;
+    QString FullyQualifiedPath;
+    QString URL;
+    QString Filename;
+    QString Extension;
     ByteVector FileContent;
-    String Title;
+    QString Title;
 } DocumentData;
 
 typedef struct
 {
     Key EnterpriseId;
-    String EnterpriseName;
+    QString EnterpriseName;
     Key fkBusinessOrganizationType;
     Key fkBusinessJurisdiction;
     Key fkStateOfIncorporation;
@@ -78,31 +78,31 @@ typedef struct
 typedef struct
 {
     Key EntityId;
-    String EntityName;
-    String FullLegalName;
-    String PrimaryAddress;
-    String SecondaryAddress;
-    String Website;
-    String PrimaryPhone;
-    String SecondaryPhone;
-    String FaxNumber;
-    String PrimaryEmail;
-    String SecondaryEmail;
+    QString EntityName;
+    QString FullLegalName;
+    QString PrimaryAddress;
+    QString SecondaryAddress;
+    QString Website;
+    QString PrimaryPhone;
+    QString SecondaryPhone;
+    QString FaxNumber;
+    QString PrimaryEmail;
+    QString SecondaryEmail;
     Key fkState;
     Key fkJurisdiction;
-    String DocketPrefix;
+    QString DocketPrefix;
 } EntityData;
 
 typedef struct
 {
     Key EnterpriseRoleId;
-    String RoleName;
+    QString RoleName;
 } EnterpriseRoleData;
 
 typedef struct
 {
     Key EntityTypeId;
-    String TypeName;
+    QString TypeName;
 } EntityTypeData;
 
 typedef struct
@@ -115,23 +115,23 @@ typedef struct
 typedef struct
 {
     Key FilingBasisId;
-    String Section;
-    String Description;
+    QString Section;
+    QString Description;
 } FilingBasisData;
 
 typedef struct
 {
     Key FilingStatusId;
-    String Status;
-    String Comment;
+    QString Status;
+    QString Comment;
 } FilingStatusData;
 
 typedef struct
 {
     Key FlagClassId;
-    String CamelCase;
-    String Label;
-    String Description;
+    QString CamelCase;
+    QString Label;
+    QString Description;
 } FlagClassData;
 
 typedef struct
@@ -142,8 +142,8 @@ typedef struct
 typedef struct
 {
     Key GeneralTaskId;
-    String Title;
-    String Description;
+    QString Title;
+    QString Description;
     Key fkFiledDocument;
     Key fkTriggeringDocument;
 } GeneralTaskData;
@@ -151,10 +151,10 @@ typedef struct
 typedef struct
 {
     Key JurisdictionId;
-    String JurisdictionName;
-    String Description;
-    String CountryCode;
-    String TLD;
+    QString JurisdictionName;
+    QString Description;
+    QString CountryCode;
+    QString TLD;
     bool ValidResidence;
     bool ValidCitizenship;
 } JurisdictionData;
@@ -163,9 +163,9 @@ typedef struct
 {
     Key MatterId;
     Key fkParent;
-    String AttorneyDocketNumber;
-    String ClientDocketNumber;
-    String Title;
+    QString AttorneyDocketNumber;
+    QString ClientDocketNumber;
+    QString Title;
     Key fkClient;
     Key fkAssigningFirm;
     Key fkDefaultWorkAttorney;
@@ -178,7 +178,7 @@ typedef struct
 typedef struct
 {
     Key NoteId;
-    String Content;
+    QString Content;
 } NoteData;
 
 typedef struct
@@ -190,7 +190,7 @@ typedef struct
 typedef struct
 {
     Key ObjectTypeId;
-    String TypeNam;
+    QString TypeName;
 } ObjectTypeData;
 
 typedef struct
@@ -203,10 +203,10 @@ typedef struct
 {
     Key PatentMatterId;
     Date FilingDate;
-    String ApplicationSerialNumber;
-    String ConfirmationNumber;
-    String ArtUnit;
-    String PatentNumber;
+    QString ApplicationSerialNumber;
+    QString ConfirmationNumber;
+    QString ArtUnit;
+    QString PatentNumber;
     Key fkExaminer;
     Key fkFirstInventor;
     Key fkSupervisoryExaminer;
@@ -231,8 +231,8 @@ typedef struct
 typedef struct
 {
     Key PersonId;
-    String FirstName;
-    String LastName;
+    QString FirstName;
+    QString LastName;
     Key fkResidence;
     Key fkCitizenship;
     Key OldId;
@@ -241,7 +241,7 @@ typedef struct
 typedef struct
 {
     Key PortfolioId;
-    String PortfolioName;
+    QString PortfolioName;
     Key fkClient;
 } PortfolioData;
 
@@ -259,20 +259,20 @@ typedef struct
 typedef struct
 {
     Key RoleId;
-    String RoleName;
+    QString RoleName;
 } RoleData;
 
 typedef struct
 {
     Key StateId;
-    String StateName;
-    String Abbreviation;
+    QString StateName;
+    QString Abbreviation;
 } StateData;
 
 typedef struct
 {
     Key TagId;
-    String TagText;
+    QString TagText;
 } TagData;
 
 typedef struct
@@ -296,14 +296,14 @@ typedef struct
 typedef struct
 {
     Key TaskClassId;
-    String TaskClassName;
+    QString TaskClassName;
 } TaskClassData;
 
 typedef struct
 {
     Key TaskTypeId;
     Key fkTaskClass;
-    String TaskName;
+    QString TaskName;
 } TaskTypeData;
 
 typedef struct
@@ -317,8 +317,8 @@ typedef struct
     Date FirstUseInCommerce;
     Uint8 InternationalClass;
     Key fkStatus;
-    String SerialNumber;
-    String RegistrationNumber;
+    QString SerialNumber;
+    QString RegistrationNumber;
     Date PublicationDate;
     Date WindowOpens;
     Date NofeeWindowCloses;
@@ -328,8 +328,8 @@ typedef struct
     Key fkTrademarkJurisdiction;
     Key fkSpecimen;
     Key fkEvidenceOfUse;
-    String Mark;
-    String GoodsServices;
+    QString Mark;
+    QString GoodsServices;
     Key fkOwner;
 } TrademarkMatterData;
 
@@ -342,27 +342,27 @@ typedef struct
 typedef struct
 {
     Key TrademarkStatusId;
-    String StatusText;
+    QString StatusText;
 } TrademarkStatusData;
 
 typedef struct
 {
     Key UserId;
-    String Username;
-    String PasswordHash;
-    String LDAPToken;
+    QString Username;
+    QString PasswordHash;
+    QString LDAPToken;
 } UserData;
 
 typedef struct
 {
     Key WebroleId;
-    String WebroleName;
+    QString WebroleName;
 } WebroleData;
 
 typedef struct
 {
     Key WorkTypeId;
-    String WorkTypeName;
+    QString WorkTypeName;
     Key fkCopyrightForm;
 } WorkTypeData;
 

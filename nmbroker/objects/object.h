@@ -1,6 +1,8 @@
 #ifndef NUTMEG_OBJECT_H
 #define NUTMEG_OBJECT_H
 
+#include <QSqlRecord>
+
 #include "nutmeg.h"
 
 #include "dbaccess/nutdb.h"
@@ -34,8 +36,9 @@ namespace Nutmeg
 class Object
 {
   public:
-    explicit Object(Key object_id);
     explicit Object();
+    explicit Object(Key object_id);
+    explicit Object(QSqlRecord &record);
     explicit Object(QString objectType);        /// Should almost(?) never be called. Instead,
                                                 /// insert the correct higher-level object
     virtual ~Object() = default;
@@ -60,7 +63,7 @@ class Object
     bool setfkObjectType(Key newfk);
     void holdfkObjectType(Key newfk);
 
-    String getObjectType(void) { return mObjectType; }
+    QString getObjectType(void) { return mObjectType; }
 
     void setObjectType(String objectType);
     const QVector<QString>& getErrors(void) const;
@@ -80,8 +83,6 @@ class Object
     bool anyDirtyValues(void) const;
 
     void commit(void) { Commit(); }
-
-    //Object& operator=(Object&& other) noexcept;
 
     bool Update(ObjectData dat);
     virtual bool SetId(Key newid);
@@ -107,15 +108,21 @@ class Object
     virtual bool WriteBoolean(String table, String field, bool value);
     virtual bool WriteValue(String table, String field, QVariant value);
 
+    /**
+     * @brief checkFields Returns true if all necessary fields for the object are in the QSqlRecord. False if any fields not found
+     * @return True if all fields found. False if any not found.
+     */
+    virtual bool checkFields(QSqlRecord &record);
+    virtual void populate(QSqlRecord &record);
+
     bool mObjectIsNull = true;
     bool mHadError = false;
 
     QHash<QString, bool> dirty;
     QVector<QString> mErrors;
-    Key primaryKey = 0;
 
 private:
-    static Object* GetObject(Key id);
+    static std::shared_ptr<Object> GetObject(Key id);
 
     void FetchFlags(void);
     void FetchTags(void);

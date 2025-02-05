@@ -252,51 +252,7 @@ bool Nutdb::UpdateField(QString table, QString field, Key key, QString value)
 
 bool Nutdb::connect()
 {
-    QSqlDatabase mDb = QSqlDatabase::addDatabase("QMYSQL");
-    QSqlQuery query = QSqlQuery(mDb);
-    mDb.setHostName(server);
-    if (port > 0)
-        mDb.setPort(port); // only set port if one has been specified
-    mDb.setDatabaseName(databasename);
-    mDb.setUserName(username);
-    mDb.setPassword(password);
 
-    mLastOperationSuccessful = mDb.open();
-
-    if (!mLastOperationSuccessful)
-    {
-        qDebug() << "Database not successfully opened. Last error: " << mDb.lastError();
-        QString msg = "Database connection failed and returned error: " + mDb.lastError().text();
-        Nutdb::AddErrorMessage(msg);
-        return false;
-    }
-    else
-    {
-        QString logMessage = QString("Successfully opened schema %1 on %2:%3.")
-        .arg(databasename,
-             server,
-             QString::number(port));
-        Logger::LogMessage(logMessage);
-#ifdef QT_DEBUG
-        QString msg = QString("Found tables: ");
-        QStringList tables = mDb.tables();
-        for (const QString &str : tables)
-        {
-            msg += "\n" + str;
-        }
-        Logger::LogMessage(msg);
-#endif
-
-        query.prepare("SET time_zone=\"America/Denver\"");
-        mLastOperationSuccessful = query.exec();
-        if(!mLastOperationSuccessful)
-        {
-            QString msg = "Failed to set timezone to America/Denver.";
-            Nutdb::AddErrorMessage(msg);
-        }
-    }
-    //return mLastOperationSuccessful;
-    return true;
 }
 
 ///

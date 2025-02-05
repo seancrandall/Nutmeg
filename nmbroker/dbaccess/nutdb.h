@@ -42,27 +42,7 @@ class Nutdb
     static QVariant NullableInteger(Key value);
     static QVariant NullableDate(const QDate date);
 
-    // Database Setup
-    // Could do these with public members, but using properties is more long-term
-    // maintainable
-    Property(getServer, setServer) String server;
-    Property(getDatabaseName, setDatabaseName) String databasename;
-    Property(getPort, setPort) uint port;
-    Property(getUsername, setUsername) String username;
-    Property(getPassword, setPassword) String password;
-	//static ReadOnlyProperty(getLastOperationSuccessful) bool lastOperationSuccessful;
-	ReadOnlyProperty(getLastOperationSuccessful) bool lastOperationSuccessful;
 
-    void setServer(String val) { mServer = val; }
-    void setDatabaseName(String val) { mDatabaseName = val; }
-    void setPort(uint val) { mPort = val; }
-    void setUsername(String val) { mUsername = val; }
-    void setPassword(String val) { mPassword = val; }
-    String getServer(void) { return mServer; }
-    String getDatabaseName(void) { return mDatabaseName; }
-    uint getPort(void) { return mPort; }
-    String getUsername(void) { return mUsername; }
-    String getPassword(void) { return mPassword; }
 
     // QSqlDatabase& getDb(void){return mDb;}
 
@@ -259,12 +239,7 @@ class Nutdb
     // QSqlDatabase mDb;
     // QSqlQuery *mQuery;
 
-    // Server setup
-    String mServer;
-    uint mPort = 0;
-    String mDatabaseName;
-    String mUsername;
-    String mPassword;
+
 
     static bool mLastOperationSuccessful;
     static uint mErrorCount;

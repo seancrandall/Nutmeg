@@ -5,7 +5,8 @@ namespace Nutmeg
 
 PatentMatter::PatentMatter() : Nutmeg::Matter{} {}
 
-PatentMatter::PatentMatter(Key id) : Nutmeg::Matter(id)
+PatentMatter::PatentMatter(Key id)
+    : Nutmeg::Matter(id)
 {
     auto& patentMatterCache = getCache<PatentMatter>();
     if (patentMatterCache.contains(id)) {  // Check if PatentMatter is already in cache

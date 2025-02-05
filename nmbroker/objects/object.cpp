@@ -4,6 +4,39 @@
 namespace Nutmeg
 {
 
+Object::Object() //: QObject(parent)
+{
+    InitializeObject(0);
+}
+
+Object::Object(QSqlRecord &record)
+{
+    if(!checkFields(record))
+    {
+        InitializeObject(0);
+        return;
+    }
+
+    populate(record);
+    mObjectIsNull = false;
+    mHadError = false;
+}
+
+Object::Object(QString objectType)
+{
+    Key newkey = Nutdb::InsertObject(objectType);
+    if(newkey == 0)
+    {
+        InitializeObject(0);
+        return;
+    }
+    else
+    {
+        mDat.ObjectId = newkey;
+        InitializeObject(newkey);
+    }
+}
+
 Object::Object(Key id) //: QObject(parent)
 {
     auto& objectCache = getCache<Object>();
@@ -19,19 +52,24 @@ Object::Object(Key id) //: QObject(parent)
     InitializeObject(id);
 }
 
-Object* Object::GetObject(Key id) {
+std::shared_ptr<Object> Object::GetObject(Key id) {
     auto& objectCache = getCache<Object>();
     if (objectCache.contains(id)) {
-        return *objectCache.object(id);  // Return from cache if available
+        // Return a shared_ptr that does not manage the object's lifetime
+        return std::shared_ptr<Object>(*objectCache.object(id), [](Object*){});
     }
 
     // If not in cache, create new Object and initialize it
-    Object* newObject = new Object();
-    if (newObject->InitializeObject(id)) { // InitializeObject returns bool for success
-        objectCache.insert(id, &newObject);
+    auto newObject = std::make_shared<Object>();
+    if (newObject->InitializeObject(id)) {
+        // Insert the raw pointer into the cache
+        Object** tempPtr = new Object*[1];
+        tempPtr[0] = newObject.get();
+        objectCache.insert(id, tempPtr);
+        delete[] tempPtr; // Clean up the temporary pointer array
+
         return newObject;
     } else {
-        delete newObject;  // Clean up if initialization failed
         return nullptr;
     }
 }
@@ -75,26 +113,6 @@ void Object::FetchDocuments()
 {
     mDocuments = QList<Key>();
     mDocuments = Nutdb::GetObjectDocuments(mDat.ObjectId);
-}
-
-Object::Object() //: QObject(parent)
-{
-    InitializeObject(0);
-}
-
-Object::Object(QString objectType)
-{
-    Key newkey = Nutdb::InsertObject(objectType);
-    if(newkey == 0)
-    {
-        InitializeObject(0);
-        return;
-    }
-    else
-    {
-        mDat.ObjectId = newkey;
-        InitializeObject(newkey);
-    }
 }
 
 
@@ -217,18 +235,123 @@ void Object::ChangeObjectType(QString newObjectType)
 
 bool Object::Commit() { return Update(mDat); }
 
+
+
+bool Object::checkFields(QSqlRecord &record)
+{
+    bool found = (record.contains("ObjectId") &&
+                  record.contains("fkObjectType"));
+
+    return found;
+}
+
+void Object::populate(QSqlRecord &record)
+{
+    mDat.ObjectId = record.value("ObjectId").toUInt();
+    mDat.fkObjectType = record.value("fkObjectType").toUInt();
+}
+
+#include "logger.h" // Assume this provides Logger::LogMessage(const QString& message)
+
+bool Object::WriteAbstractValue(QString table, QString fieldName, QString value)
+{
+    bool success = Nutdb::UpdateField(table, fieldName, ObjectId, value);
+    if (!success) {
+        auto errmsg = QString("Error: Failed to update field '%1' in table '%2'").arg(fieldName).arg(table);
+        Logger::LogMessage(errmsg);
+        mHadError = true;
+        mErrors << errmsg;
+    }
+    return success;
+}
+
+bool Object::WriteString(QString table, QString field, QString value)
+{
+    bool success = WriteAbstractValue(table, field, value);
+    if (!success) {
+        auto errmsg = QString("Error: Failed to write string value to field '%1' in table '%2'").arg(field).arg(table);
+        Logger::LogMessage(errmsg);
+        mHadError = true;
+        mErrors << errmsg;
+    }
+    return success;
+}
+
+bool Object::WriteKey(QString table, QString field, Key value)
+{
+    QString strval = QString::number(value);
+    bool success = WriteAbstractValue(table, field, strval);
+    if (!success) {
+        auto errmsg = QString("Error: Failed to write key value to field '%1' in table '%2'").arg(field).arg(table);
+        Logger::LogMessage(errmsg);
+        mHadError = true;
+        mErrors << errmsg;
+    }
+    return success;
+}
+
+bool Object::WriteDate(QString table, QString field, Date date)
+{
+    QString strval = date.toString("yyyy-MM-dd");
+    bool success = WriteAbstractValue(table, field, strval);
+    if (!success) {
+        auto errmsg = QString("Error: Failed to write date to field '%1' in table '%2'").arg(field).arg(table);
+        Logger::LogMessage(errmsg);
+        mHadError = true;
+        mErrors << errmsg;
+    }
+    return success;
+}
+
+bool Object::WriteDateTime(QString table, QString field, DateTime dtime)
+{
+    QString strval = dtime.toString("yyyy-MM-dd HH:mm:ss");
+    bool success = WriteAbstractValue(table, field, strval);
+    if (!success) {
+        auto errmsg = QString("Error: Failed to write datetime to field '%1' in table '%2'").arg(field).arg(table);
+        Logger::LogMessage(errmsg);
+        mHadError = true;
+        mErrors << errmsg;
+    }
+    return success;
+}
+
+bool Object::WriteBoolean(QString table, QString field, bool value)
+{
+    QString strval = QString::number((int)value);
+    bool success = WriteAbstractValue(table, field, strval);
+    if (!success) {
+        auto errmsg = QString("Error: Failed to write boolean to field '%1' in table '%2'").arg(field).arg(table);
+        Logger::LogMessage(errmsg);
+        mHadError = true;
+        mErrors << errmsg;
+    }
+    return success;
+}
+
+bool Object::WriteValue(QString table, QString field, QVariant value)
+{
+    QString strval = value.toString();
+    bool success = WriteAbstractValue(table, field, strval);
+    if (!success) {
+        auto errmsg = QString("Error: Failed to write value to field '%1' in table '%2'").arg(field).arg(table);
+        Logger::LogMessage(errmsg);
+        mHadError = true;
+        mErrors << errmsg;
+    }
+    return success;
+}
+
 bool Object::InitializeObject(Key newid)
 {
-    if(newid <= 0)
+    if(newid == 0)
     {
         mObjectIsNull = true;
-        primaryKey = 0;
         mDat = ObjectData();
         return false;
     }
 
     mDat = Nutdb::GetObject(newid);
-    primaryKey = mDat.ObjectId;
     if(mDat.ObjectId == 0)
     {
         mObjectIsNull = true;
@@ -246,76 +369,6 @@ bool Object::InitializeObject(Key newid)
     FetchDocuments();
 
     return true;
-}
-
-#include "logger.h" // Assume this provides Logger::LogMessage(const QString& message)
-
-bool Object::WriteAbstractValue(QString table, QString fieldName, QString value)
-{
-    bool success = Nutdb::UpdateField(table, fieldName, primaryKey, value);
-    if (!success) {
-        Logger::LogMessage(QString("Error: Failed to update field '%1' in table '%2'").arg(fieldName).arg(table));
-    }
-    return success;
-}
-
-bool Object::WriteString(QString table, QString field, QString value)
-{
-    bool success = WriteAbstractValue(table, field, value);
-    if (!success) {
-        Logger::LogMessage(QString("Error: Failed to write string value to field '%1' in table '%2'").arg(field).arg(table));
-    }
-    return success;
-}
-
-bool Object::WriteKey(QString table, QString field, Key value)
-{
-    QString strval = QString::number(value);
-    bool success = WriteAbstractValue(table, field, strval);
-    if (!success) {
-        Logger::LogMessage(QString("Error: Failed to write key value to field '%1' in table '%2'").arg(field).arg(table));
-    }
-    return success;
-}
-
-bool Object::WriteDate(QString table, QString field, Date date)
-{
-    QString strval = date.toString("yyyy-MM-dd");
-    bool success = WriteAbstractValue(table, field, strval);
-    if (!success) {
-        Logger::LogMessage(QString("Error: Failed to write date to field '%1' in table '%2'").arg(field).arg(table));
-    }
-    return success;
-}
-
-bool Object::WriteDateTime(QString table, QString field, DateTime dtime)
-{
-    QString strval = dtime.toString("yyyy-MM-dd HH:mm:ss");
-    bool success = WriteAbstractValue(table, field, strval);
-    if (!success) {
-        Logger::LogMessage(QString("Error: Failed to write datetime to field '%1' in table '%2'").arg(field).arg(table));
-    }
-    return success;
-}
-
-bool Object::WriteBoolean(QString table, QString field, bool value)
-{
-    QString strval = QString::number((int)value);
-    bool success = WriteAbstractValue(table, field, strval);
-    if (!success) {
-        Logger::LogMessage(QString("Error: Failed to write boolean to field '%1' in table '%2'").arg(field).arg(table));
-    }
-    return success;
-}
-
-bool Object::WriteValue(QString table, QString field, QVariant value)
-{
-    QString strval = value.toString();
-    bool success = WriteAbstractValue(table, field, strval);
-    if (!success) {
-        Logger::LogMessage(QString("Error: Failed to write value to field '%1' in table '%2'").arg(field).arg(table));
-    }
-    return success;
 }
 
 } // namespace Nutmeg

@@ -5,7 +5,8 @@ namespace Nutmeg
 
 TrademarkMatter::TrademarkMatter() : Nutmeg::Matter{} {}
 
-TrademarkMatter::TrademarkMatter(Key id) : Nutmeg::Matter(id)
+TrademarkMatter::TrademarkMatter(Key id)
+    : Nutmeg::Matter(id)
 {
     auto& trademarkMatterCache = getCache<TrademarkMatter>();
     if (trademarkMatterCache.contains(id)) {  // Check if TrademarkMatter is already in cache

@@ -5,7 +5,8 @@ namespace Nutmeg
 
 CopyrightMatter::CopyrightMatter() : Nutmeg::Matter{} {}
 
-CopyrightMatter::CopyrightMatter(Key newid) : Matter(newid)
+CopyrightMatter::CopyrightMatter(Key newid)
+    : Matter(newid)
 {
     auto& copyrightMatterCache = getCache<CopyrightMatter>();
     if (copyrightMatterCache.contains(newid)) {  // Check if CopyrightMatter is already in cache

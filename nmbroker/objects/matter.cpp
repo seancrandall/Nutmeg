@@ -5,7 +5,8 @@ namespace Nutmeg
 
 Matter::Matter() : Nutmeg::Object{} {}
 
-Matter::Matter(Key newid) : Nutmeg::Object()
+Matter::Matter(Key newid)
+    : Nutmeg::Object(newid)
 {
     auto& matterCache = getCache<Matter>();
     if (matterCache.contains(newid)) {  // Check if Matter is already in cache
@@ -154,9 +155,12 @@ bool Matter::InitializeMatter(Key newid)
     }
 
     mDat = Nutdb::GetMatter(newid);
-    if(mDat.MatterId == 0) return InitializeMatter(0);
+    if(mDat.MatterId == 0)
+        return InitializeMatter(0);
+    else return true;
 
-    return Object::InitializeObject(mDat.MatterId);
+    //return Object::InitializeObject(mDat.MatterId);
+    //return true;
 }
 
 Key Nutmeg::Matter::getfkParent()
