@@ -24,7 +24,7 @@ class ComboEditAdd : public QWidget
     Property(getKey, setKey) Key key;
     Property(getLabelText, setLabelText) QString labelText;
     Property(getCurrentText, setCurrentText) QString text;
-    Property(getModel, setModel) QSqlTableModel *model;
+    Property(getModel, setModel) TableModel *model;
     Property(getColumn, setColumn) int column;
     Property(getIsNew, setIsNew) bool isNew;
 
@@ -37,7 +37,7 @@ class ComboEditAdd : public QWidget
 
   public slots:
 
-    void setTableModel(QSqlTableModel *newmod) { cCombo->setTableModel(newmod); }
+    void setTableModel(TableModel *newmod) { cCombo->setTableModel(newmod); }
 
     void setToKey(Key newkey) { cCombo->setToKey(newkey); }
 
@@ -55,7 +55,7 @@ class ComboEditAdd : public QWidget
 
     void setCurrentText(QString newtext) { cCombo->setCurrentText(newtext); }
 
-    void setModel(QSqlTableModel *model) { cCombo->setTableModel(model); }
+    void setModel(TableModel *model) { cCombo->setTableModel(model); }
 
   protected:
     QHBoxLayout *layout = nullptr;
