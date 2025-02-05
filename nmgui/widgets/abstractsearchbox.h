@@ -36,9 +36,6 @@ class AbstractSearchBox : public ComboBox
   protected:
     virtual void keyPressEvent(QKeyEvent *event) override; // Override to catch the Return key
 
-    // QSqlTableModel *mod;
-    // Key mSelectedKey;
-
   protected slots:
     virtual void slotAddRecord(const QString &input) = 0;
 

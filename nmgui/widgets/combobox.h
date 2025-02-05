@@ -5,11 +5,11 @@
 #include <QEvent>
 #include <QObject>
 #include <QSqlRecord>
-#include <QSqlTableModel>
 #include <QWidget>
 
 #include "nutmeg.h"
 #include "property.h"
+#include "dbaccess/tablemodel.h"
 
 namespace Nutmeg
 {
@@ -21,7 +21,7 @@ class ComboBox : public QComboBox
     ComboBox(QWidget *parent = nullptr);
 
     Property(getKey, setToKey) Key key;
-    Property(getTableModel, setTableModel) QSqlTableModel *model;
+    Property(getTableModel, setTableModel) TableModel *model;
     Property(getColumn, setColumn) int column;
 
     QSqlTableModel *getTableModel(void) { return mModel; }
@@ -43,7 +43,7 @@ class ComboBox : public QComboBox
     void signalKeyChanged(Key newkey);
 
   protected:
-    QSqlTableModel *mModel;
+    TableModel *mModel;
     // QAbstractItemModel *mModel;
     bool eventFilter(QObject *object, QEvent *event) override;
 

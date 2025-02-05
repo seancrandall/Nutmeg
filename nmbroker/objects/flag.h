@@ -32,8 +32,9 @@ class Flag : public FlagClass
     bool mFlagValue;
     Key mObjectId;
     Key mFlagKey;
+    QString mCamelCase;
 
-    void InitializeFlag(Key flagId);
+    void InitializeFlag(Key flagId, QString camelCase);
 };
 
 } // namespace Nutmeg

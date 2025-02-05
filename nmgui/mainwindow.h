@@ -71,7 +71,7 @@ class MainWindow : public QMainWindow
 
     // Responses Panel
     QList<ResponsePanel *> responsesPanel;
-    viewResponsesIncompleteModel *responses;
+    std::unique_ptr<viewResponsesIncompleteModel> responses;
     QLabel *responsesHeader;
     Nutmeg::AddNewButton *addRespButton;
     QHBoxLayout *responsesHeaderLayout;

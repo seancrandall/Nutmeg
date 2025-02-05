@@ -5,7 +5,9 @@ namespace Nutmeg
 
 Flag::Flag(Key objectId, String camelCase) : FlagClass(camelCase)
 {
-    InitializeFlag(objectId);
+    mCamelCase = camelCase;
+    mObjectId = objectId;
+    InitializeFlag(objectId, camelCase);
 }
 
 Flag::~Flag() {}
@@ -27,10 +29,9 @@ bool Flag::setFlagValue(bool newValue)
     return true;
 }
 
-void Flag::InitializeFlag(Key objectId)
+void Flag::InitializeFlag(Key objectId, QString camelCase)
 {
-    mObjectId = objectId;
-    mFlagValue = Nutdb::GetFlag(mObjectId, mCamelCase);
+    mFlagValue = Nutdb::GetFlag(objectId, camelCase);
 }
 
 } // namespace Nutmeg

@@ -1,7 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "widgets/addnewbutton.h"
-#include "../nmbroker/dbaccess/databaseconnection.h"
+#include "dbaccess/databaseconnection.h"
+#include "dbaccess/models.h"
 
 namespace Nutmeg
 {
@@ -39,7 +40,6 @@ void MainWindow::slotRefresh()
 {
     if (databaseConnectionExists)
     {
-        delete responses;
         delete responsesHeaderLayout;
         delete responseScrollArea;
         delete mainResponseLayout;
@@ -135,8 +135,10 @@ void MainWindow::SetupResponses()
     // Create a layout for the responses container
     responsesLayout = new QVBoxLayout(responsesContainer);
 
-    // Create the responses model
-    responses = new viewResponsesIncompleteModel(this);
+    // Create the global responses model if it hasn't already been loaded
+    // Unique pointers don't get parent pointers
+    if(!responses)
+        responses = std::make_unique<viewResponsesIncompleteModel>();
 #ifdef QT_DEBUG
     qDebug() << "Responses found: " << responses;
 #endif
