@@ -1,5 +1,6 @@
 #include "examinersearchbox.h"
 #include "widgets/informationbox.h"
+#include "dbaccess/models.h"
 
 namespace Nutmeg
 {
@@ -30,7 +31,11 @@ void ExaminerSearchBox::slotAddRecord(const QString &input)
 
 void ExaminerSearchBox::Initialize()
 {
-    setTableModel(new viewPatentExaminersModel(this));
+    if(!gViewPatentExaminersModel)
+        gViewPatentExaminersModel = std::make_unique<viewPatentExaminersModel>();
+    mModel = gViewPatentExaminersModel.get();
+
+    setTableModel(mModel);
     column = 3;
 
     setMinimumWidth(120);

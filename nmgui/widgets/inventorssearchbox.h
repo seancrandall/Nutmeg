@@ -23,6 +23,7 @@ class InventorsSearchBox : public Nutmeg::PersonSearchBox
 
   private:
     InventorCompleter *completer;
+      viewInventorsModel *mModel;
 
     void Initialize(void);
 };

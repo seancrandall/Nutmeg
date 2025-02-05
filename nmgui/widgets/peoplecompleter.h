@@ -18,6 +18,7 @@ class PeopleCompleter : public Nutmeg::Completer
 
   private:
     viewPeopleModel *mod;
+
 };
 
 } // namespace Nutmeg

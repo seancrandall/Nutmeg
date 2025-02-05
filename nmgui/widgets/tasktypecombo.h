@@ -34,13 +34,14 @@ typedef enum
 class TaskTypeCombo : public Nutmeg::ComboBox
 {
     Q_OBJECT
-  public:
+public:
     TaskTypeCombo(std::shared_ptr<Task> task, QWidget *parent = nullptr);
 
-  protected:
+protected:
     std::shared_ptr<Task> mTask;
 
-  protected slots:
+private:
+    void CheckModels(void);
 };
 
 } // namespace Nutmeg

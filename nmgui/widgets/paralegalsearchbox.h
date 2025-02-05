@@ -5,7 +5,7 @@
 #include <QWidget>
 
 #include "personsearchbox.h"
-#include "dbaccess/viewparalegalsmodel.h"
+#include "paralegalcompleter.h"
 
 namespace Nutmeg {
 
@@ -16,8 +16,11 @@ public:
     ParalegalSearchBox(QWidget *parent = nullptr);
     ParalegalSearchBox(Key inikey, QWidget *parent = nullptr);
 
+    virtual void slotAddRecord(const QString& input) override;
+
 private:
-    viewParalegalsModel *paraModel = new viewParalegalsModel(this);
+    ParalegalCompleter *completer;
+    viewParalegalsModel *mModel;
 
     void Initialize(void);
 };

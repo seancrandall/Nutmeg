@@ -1,4 +1,5 @@
 #include "personsearchbox.h"
+#include "dbaccess/models.h"
 
 namespace Nutmeg
 {
@@ -16,6 +17,18 @@ PersonSearchBox::PersonSearchBox(Key initkey, QWidget *parent) : Nutmeg::Abstrac
     // emit signalKeySelected(key);
 }
 
+QString PersonSearchBox::getFirstName()
+{
+    mFirstName = Nutmeg::inferName(currentText())[0];
+    return mFirstName;
+}
+
+QString PersonSearchBox::getLastName()
+{
+    mLastName = Nutmeg::inferName(currentText())[1];
+    return mLastName;
+}
+
 void PersonSearchBox::slotAddRecord(const QString &input)
 {
     Q_UNUSED(input);
@@ -29,7 +42,10 @@ void PersonSearchBox::slotAddRecord(const QString &input)
 
 void PersonSearchBox::Initialize()
 {
-    setTableModel(new viewPeopleModel(this));
+    if(!gViewPeopleModel)
+        gViewPeopleModel = std::make_unique<viewPeopleModel>();
+    mModel = gViewPeopleModel.get();
+    setTableModel(mModel);
     column = 3;
 
     setMinimumWidth(120);

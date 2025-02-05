@@ -26,7 +26,7 @@ class MatterSearchBox : public AbstractSearchBox
 
   private:
     MatterCompleter *completer;
-    // viewMattersModel *mod;
+    viewMattersModel *mModel;
 
     void Initialize(void);
 };

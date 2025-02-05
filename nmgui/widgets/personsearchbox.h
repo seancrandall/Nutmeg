@@ -20,17 +20,8 @@ class PersonSearchBox : public Nutmeg::AbstractSearchBox
     ReadOnlyProperty(getFirstName) QString FirstName;
     ReadOnlyProperty(getLastName) QString LastName;
 
-    QString getFirstName(void)
-    {
-        mFirstName = Nutmeg::inferName(currentText())[0];
-        return mFirstName;
-    }
-
-    QString getLastName(void)
-    {
-        mLastName = Nutmeg::inferName(currentText())[1];
-        return mLastName;
-    }
+    QString getFirstName(void);
+    QString getLastName(void);
 
   public slots:
     virtual void slotAddRecord(const QString &input) override;
@@ -39,6 +30,7 @@ class PersonSearchBox : public Nutmeg::AbstractSearchBox
     QString mFirstName, mLastName;
 
     PeopleCompleter *completer;
+    viewPeopleModel *mModel;
 
     void Initialize(void);
 };

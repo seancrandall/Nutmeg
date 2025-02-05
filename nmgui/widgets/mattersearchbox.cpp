@@ -1,4 +1,5 @@
 #include "mattersearchbox.h"
+#include "dbaccess/models.h"
 
 namespace Nutmeg
 {
@@ -13,7 +14,7 @@ MatterSearchBox::MatterSearchBox(Key initkey, QWidget *parent) : AbstractSearchB
 {
     Initialize();
     key = initkey;
-    emit signalKeySelected(key);
+    emit signalKeySelected(initkey);
 }
 
 void MatterSearchBox::slotAddRecord(const QString &input)
@@ -44,7 +45,10 @@ void MatterSearchBox::slotAddRecord(const QString &input)
 
 void MatterSearchBox::Initialize()
 {
-    setTableModel(new viewMattersModel(this));
+    if(!gViewMattersModel)
+        gViewMattersModel = std::make_unique<viewMattersModel>();
+    mModel = gViewMattersModel.get();
+    setTableModel(mModel);
     column = 4;
 
     setMinimumWidth(120);

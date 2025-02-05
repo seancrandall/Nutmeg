@@ -23,6 +23,7 @@ class EntitiesSearchBox : public Nutmeg::AbstractSearchBox
 
   private:
     EntitiesCompleter *completer;
+    viewEntitiesModel *mModel;
 
     void Initialize(void);
 };

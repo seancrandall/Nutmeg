@@ -18,9 +18,10 @@ class WorkAttorneySearchBox : public Nutmeg::PersonSearchBox
     WorkAttorneySearchBox(Key initkey, QWidget *parent = nullptr);
 
 private:
-    viewWorkAttorneysModel *attyModel = new viewWorkAttorneysModel(this);
+    viewWorkAttorneysModel *attyModel;
 
     void Initialize(void);
+    void CheckModels(void);
 };
 
 } // namespace Nutmeg

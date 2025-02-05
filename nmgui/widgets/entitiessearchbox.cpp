@@ -1,4 +1,5 @@
 #include "entitiessearchbox.h"
+#include "dbaccess/models.h"
 #include "widgets/informationbox.h"
 #include "windows/insertentitydialog.h"
 
@@ -36,7 +37,10 @@ void EntitiesSearchBox::slotAddRecord(const QString &input)
 
 void EntitiesSearchBox::Initialize()
 {
-    setTableModel(new viewEntitiesModel(this));
+    if(!gViewEntitiesModel)
+        gViewEntitiesModel = std::make_unique<viewEntitiesModel>();
+    mModel = gViewEntitiesModel.get();
+    setTableModel(mModel);
     column = 1;
 
     setMinimumWidth(120);

@@ -1,4 +1,5 @@
 #include "inventorssearchbox.h"
+#include "dbaccess/models.h"
 #include "informationbox.h"
 
 namespace Nutmeg
@@ -6,12 +7,14 @@ namespace Nutmeg
 
 InventorsSearchBox::InventorsSearchBox(QWidget *parent) : Nutmeg::PersonSearchBox(parent)
 {
+    completer = new InventorCompleter(this);
     Initialize();
     key = 0;
 }
 
 InventorsSearchBox::InventorsSearchBox(Key initkey, QWidget *parent) : Nutmeg::PersonSearchBox(initkey, parent)
 {
+    completer = new InventorCompleter(this);
     Initialize();
 }
 
@@ -29,7 +32,10 @@ void InventorsSearchBox::slotAddRecord(const QString &input)
 
 void InventorsSearchBox::Initialize()
 {
-    setTableModel(new viewInventorsModel(this));
+    if(!gViewInventorsModel)
+        gViewInventorsModel = std::make_unique<viewInventorsModel>();
+    mModel = gViewInventorsModel.get();
+    setTableModel(mModel);
     column = 3;
 
     setMinimumWidth(120);

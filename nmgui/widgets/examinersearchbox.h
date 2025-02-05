@@ -23,6 +23,7 @@ class ExaminerSearchBox : public Nutmeg::PersonSearchBox
 
   private:
     ExaminerCompleter *completer;
+    viewPatentExaminersModel *mModel;
 
     void Initialize(void);
 };
