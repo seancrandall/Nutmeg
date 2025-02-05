@@ -22,14 +22,14 @@ class DatabaseConnection
     Property(getPort, setPort) uint port;
     Property(getUsername, setUsername) QString username;
     Property(getPassword, setPassword) QString password;
-    Property(getTimeZone, setTimeZone) QTimeZone &timeZone;
+    Property(getTimeZone, setTimeZone) QTimeZone timeZone;
     ReadOnlyProperty(getSuccess) bool success;
-    ReadOnlyProperty(getDatabase) QSqlDatabase& database;
+    ReadOnlyProperty(getDatabase) const QSqlDatabase& database;
     ReadOnlyProperty(getLastError) const QString& lastError;
 
     void setServer(const QString &val) { mServer = val; }
     void setDatabaseName(const QString &val) { mDatabaseName = val; }
-    void setPort(const uint val) { mPort = val; }
+    void setPort(uint val);
     void setUsername(const QString &val) { mUsername = val; }
     void setPassword(const QString &val) { mPassword = val; }
     void setTimeZone(const QTimeZone& newtz);
@@ -41,6 +41,8 @@ class DatabaseConnection
     const QTimeZone& getTimeZone(void) const {return mTimeZone; }
     const QSqlDatabase& getDatabase(void) const { return mDb; }
     const QString &getLastError(void) const {return mLastError;}
+
+    bool Connect(void);
 
 private:
     QSqlDatabase mDb;

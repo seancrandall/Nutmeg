@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "widgets/addnewbutton.h"
+#include "../nmbroker/dbaccess/databaseconnection.h"
 
 namespace Nutmeg
 {
@@ -91,20 +92,19 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 bool MainWindow::SetupDatabase()
 {
-    nut.server = settings.server;
-    nut.databasename = settings.databaseName;
-    nut.port = settings.port;
-    nut.username = settings.username;
-    nut.password = settings.password;
+    dbconn = std::make_shared<DatabaseConnection>();
+    dbconn->server = settings.server;
+    dbconn->databasename = settings.databaseName;
+    dbconn->port = settings.port;
+    dbconn->username = settings.username;
+    dbconn->password = settings.password;
 
-    if (!nut.connect())
+    if (!dbconn->Connect())
     {
         qDebug() << "Failed to connect to database.";
 
-        QString dberror = "Failed to connect to database " + nut.databasename;
-        dberror += " on server " + nut.server + ":" + QString::number(nut.port);
-        dberror += " with username " + nut.username;
-        statusBar()->showMessage(dberror);
+        auto dbError = QString("Database connection failed with error: %1").arg(dbconn->lastError);
+        statusBar()->showMessage(dbError);
         return false;
     }
     return true;

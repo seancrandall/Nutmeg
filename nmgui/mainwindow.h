@@ -9,6 +9,7 @@
 #include <QSplashScreen>
 #include <QPixmap>
 
+#include "dbaccess/databaseconnection.h"
 #include "nutmeg.h"
 #include "settings.h"
 
@@ -104,6 +105,7 @@ class MainWindow : public QMainWindow
     void SetupHeader(void);
 
     bool databaseConnectionExists = false;
+    std::shared_ptr<DatabaseConnection> dbconn;
 
     void ConnectSignalsAndSlots(void);
 };

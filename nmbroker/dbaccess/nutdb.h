@@ -42,14 +42,6 @@ class Nutdb
     static QVariant NullableInteger(Key value);
     static QVariant NullableDate(const QDate date);
 
-
-
-    // QSqlDatabase& getDb(void){return mDb;}
-
-    bool connect(void);
-
-    // const QSqlQuery& getQuery(void){return mQuery;}
-
     static QSqlRecord GetRecord(String table, Key id);
 
     static const QList<QSqlRecord> SearchLike(String table, String fieldName, String searchString);

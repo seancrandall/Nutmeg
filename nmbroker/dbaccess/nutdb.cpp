@@ -250,10 +250,6 @@ bool Nutdb::UpdateField(QString table, QString field, Key key, QString value)
 }
 
 
-bool Nutdb::connect()
-{
-
-}
 
 ///
 /// \brief Nutdb::GetRecord Get a single database record
