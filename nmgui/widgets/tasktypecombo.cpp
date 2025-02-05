@@ -8,6 +8,9 @@ TaskTypeCombo::TaskTypeCombo(std::shared_ptr<Task> task, QWidget *parent)
     : ComboBox(parent), mTask(task)
 {
 
+    //Make sure the global models are populated
+    CheckModels();
+
     //Grab the right model based on the filing type, which is embedded in object:fkObjectType
     //Then set the current key of the combo box to the right value
     switch (task->fkObjectType)
