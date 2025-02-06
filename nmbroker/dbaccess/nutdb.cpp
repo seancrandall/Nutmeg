@@ -1016,9 +1016,9 @@ FlagClassData Nutdb::GetFlagClass(Key id)
 
     params.append(QVariant::fromValue(id));
 
-    // query = CallStoredProcedure("GetFlagClass", params);
-    // if(!mLastOperationSuccessful)
-    //     return dat;
+     query = CallStoredProcedure("GetFlagClass", params);
+     if(!mLastOperationSuccessful)
+         return dat;
 
     dat.FlagClassId = query.record().field("FlagClassId").value().toUInt();
     dat.CamelCase = query.record().field("CamelCase").value().toString();
