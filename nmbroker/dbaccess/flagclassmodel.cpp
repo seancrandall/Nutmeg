@@ -11,6 +11,21 @@ flagClassModel::flagClassModel(QObject *parent)
         mIsLoaded = true;
         IndexLocations();
     }
+
+    mFlagsByCamelCase = QHash<QString, Key>();
+    for(int i = 0; i < rowCount(); ++i){
+        QString camelCase = record(i).value("camelCase").toString();
+        Key flagClassId = record(i).value("FlagClassId").toUInt();
+        mFlagsByCamelCase[camelCase] = flagClassId;
+    }
+}
+
+Key flagClassModel::getFlagByCamelCase(QString cc)
+{
+    if(!mFlagsByCamelCase.contains(cc)){
+        return UINT32_MAX;
+    }
+    return mFlagsByCamelCase[cc];
 }
 
 } // namespace Nutmeg

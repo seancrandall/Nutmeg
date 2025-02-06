@@ -2,6 +2,7 @@
 #define MODELS_H
 
 #include "appointmenttypemodel.h"
+#include "dbaccess/viewobjectflagsmodel.h"
 #include "responsesdashboardtablemodel.h"
 #include "tablemodel.h"
 #include "tasktypemodel.h"
@@ -46,6 +47,7 @@ extern std::unique_ptr<Nutmeg::viewFilingTaskTypesModel> gViewFilingTaskTypesMod
 extern std::unique_ptr<Nutmeg::viewInventorsModel> gViewInventorsModel;
 extern std::unique_ptr<Nutmeg::viewJurisdictionsModel> gViewJurisdictionsModel;
 extern std::unique_ptr<Nutmeg::viewMattersModel> gViewMattersModel;
+extern std::unique_ptr<Nutmeg::viewObjectFlagsModel> gViewObjectFlagsModel;
 extern std::unique_ptr<Nutmeg::viewParalegalsModel> gViewParalegalsModel;
 extern std::unique_ptr<Nutmeg::viewPatentExaminersModel> gViewPatentExaminersModel;
 extern std::unique_ptr<Nutmeg::viewPatentFilingTypesModel> gViewPatentFilingTypesModel;

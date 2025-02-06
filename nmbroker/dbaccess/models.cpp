@@ -16,6 +16,7 @@ std::unique_ptr<Nutmeg::viewFilingTaskTypesModel> gViewFilingTaskTypesModel;
 std::unique_ptr<Nutmeg::viewInventorsModel> gViewInventorsModel;
 std::unique_ptr<Nutmeg::viewJurisdictionsModel> gViewJurisdictionsModel;
 std::unique_ptr<Nutmeg::viewMattersModel> gViewMattersModel;
+std::unique_ptr<Nutmeg::viewObjectFlagsModel> gViewObjectFlagsModel;
 std::unique_ptr<Nutmeg::viewParalegalsModel> gViewParalegalsModel;
 std::unique_ptr<Nutmeg::viewPatentExaminersModel> gViewPatentExaminersModel;
 std::unique_ptr<Nutmeg::viewPatentFilingTypesModel> gViewPatentFilingTypesModel;

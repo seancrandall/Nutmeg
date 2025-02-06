@@ -1016,9 +1016,9 @@ FlagClassData Nutdb::GetFlagClass(Key id)
 
     params.append(QVariant::fromValue(id));
 
-     query = CallStoredProcedure("GetFlagClass", params);
-     if(!mLastOperationSuccessful)
-         return dat;
+    query = CallStoredProcedure("GetFlagClass", params);
+    if(!mLastOperationSuccessful)
+        return dat;
 
     dat.FlagClassId = query.record().field("FlagClassId").value().toUInt();
     dat.CamelCase = query.record().field("CamelCase").value().toString();
@@ -1095,20 +1095,28 @@ void Nutdb::GetAllObjectFlags()
     }
 }
 
-QList<QString> Nutdb::GetObjectFlags(Key objectId)
+QList<FlagClassData> Nutdb::GetObjectFlags(Key objectId)
 {
-    QList<QString> flagList;
+    QList<FlagClassData> flagList;
 
-    // Ensure we have the latest flags by calling GetAllObjectFlags if not already done
-    if (mAllFlags.isEmpty()) {
-        GetAllObjectFlags();
+    if(!gViewObjectFlagsModel)
+        gViewObjectFlagsModel = std::make_unique<viewObjectFlagsModel>();
+
+    //Filter for the given objectId
+    gViewObjectFlagsModel->setFilter(QString("ObjectId = %1").arg(objectId));
+    for(int i=0; i < gViewObjectFlagsModel->rowCount(); ++i)
+    {
+        FlagClassData localdata;
+        QSqlRecord rec = gViewObjectFlagsModel->record(i);
+        localdata.CamelCase = rec.field("CamelCase").value().toString();
+        localdata.Description = rec.field("Description").value().toString();
+        localdata.Label = rec.field("Label").value().toString();
+        localdata.FlagClassId = rec.field("fkFlag").value().toUInt();
+        flagList << localdata;
     }
 
-    for (const auto &flagPair : mAllFlags) {
-        if (flagPair.first == objectId) {
-            flagList.append(flagPair.second);
-        }
-    }
+    //Now clear the filter
+    gViewObjectFlagsModel->setFilter(QString());
 
     return flagList;
 }
