@@ -24,6 +24,7 @@ SOURCES += \
     ../nmbroker/dbaccess/taskmodel.cpp \
     ../nmbroker/dbaccess/viewcopyrightfilingtypesmodel.cpp \
     ../nmbroker/dbaccess/viewfilingsincompletemodel.cpp \
+    ../nmbroker/dbaccess/viewfilingsmodel.cpp \
     ../nmbroker/dbaccess/viewfilingtasktypesmodel.cpp \
     ../nmbroker/dbaccess/viewfilingtypesmodel.cpp \
     ../nmbroker/dbaccess/viewpatentfilingtypesmodel.cpp \
@@ -176,6 +177,7 @@ HEADERS += \
     ../nmbroker/dbaccess/taskmodel.h \
     ../nmbroker/dbaccess/viewcopyrightfilingtypesmodel.h \
     ../nmbroker/dbaccess/viewfilingsincompletemodel.h \
+    ../nmbroker/dbaccess/viewfilingsmodel.h \
     ../nmbroker/dbaccess/viewfilingtasktypesmodel.h \
     ../nmbroker/dbaccess/viewfilingtypesmodel.h \
     ../nmbroker/dbaccess/viewpatentfilingtypesmodel.h \
