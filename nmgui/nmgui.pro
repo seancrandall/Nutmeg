@@ -27,7 +27,9 @@ SOURCES += \
     ../nmbroker/dbaccess/viewfilingtasktypesmodel.cpp \
     ../nmbroker/dbaccess/viewfilingtypesmodel.cpp \
     ../nmbroker/dbaccess/viewpatentfilingtypesmodel.cpp \
+    ../nmbroker/dbaccess/viewresponsesmodel.cpp \
     ../nmbroker/dbaccess/viewresponsetasktypesmodel.cpp \
+    ../nmbroker/dbaccess/viewtasksmodel.cpp \
     ../nmbroker/dbaccess/viewtrademarkfilingtypesmodel.cpp \
     ../nmbroker/logger.cpp \
     ../nmbroker/nutmeg.cpp \
@@ -177,7 +179,9 @@ HEADERS += \
     ../nmbroker/dbaccess/viewfilingtasktypesmodel.h \
     ../nmbroker/dbaccess/viewfilingtypesmodel.h \
     ../nmbroker/dbaccess/viewpatentfilingtypesmodel.h \
+    ../nmbroker/dbaccess/viewresponsesmodel.h \
     ../nmbroker/dbaccess/viewresponsetasktypesmodel.h \
+    ../nmbroker/dbaccess/viewtasksmodel.h \
     ../nmbroker/dbaccess/viewtrademarkfilingtypesmodel.h \
     ../nmbroker/logger.h \
     panels/appointmentpanel.h \
