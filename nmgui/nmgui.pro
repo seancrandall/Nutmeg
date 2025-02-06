@@ -19,6 +19,7 @@ SOURCES += \
     ../nmbroker/cache/deadlinecache.cpp \
     ../nmbroker/dbaccess/appointmenttypemodel.cpp \
     ../nmbroker/dbaccess/databaseconnection.cpp \
+    ../nmbroker/dbaccess/deadlinemodel.cpp \
     ../nmbroker/dbaccess/exception.cpp \
     ../nmbroker/dbaccess/flagclassmodel.cpp \
     ../nmbroker/dbaccess/models.cpp \
@@ -175,6 +176,7 @@ HEADERS += \
     ../nmbroker/cache/deadlinecache.h \
     ../nmbroker/dbaccess/appointmenttypemodel.h \
     ../nmbroker/dbaccess/databaseconnection.h \
+    ../nmbroker/dbaccess/deadlinemodel.h \
     ../nmbroker/dbaccess/exception.h \
     ../nmbroker/dbaccess/flagclassmodel.h \
     ../nmbroker/dbaccess/models.h \
