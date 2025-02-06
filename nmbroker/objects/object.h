@@ -47,8 +47,8 @@ class Object
     Property(getId, slotSetId) Key ObjectId;
     Property(getfkObjectType, setfkObjectType) Key fkObjectType;
     Property(getObjectType, setObjectType) String objectType;
-    ReadOnlyProperty(getFlags) QHash<QString, Flag> flags;
-    ReadOnlyProperty(getTags) QHash<QString, Tag> tags;
+    ReadOnlyProperty(getFlags) QList<FlagClassData> flags;
+    ReadOnlyProperty(getTags) QList<TagData> tags;
     ReadOnlyProperty(getObjectDocuments) QList<Key> docs;
     ReadOnlyProperty(getObjectAppointments) QList<Key> appointments;
     Property(getUpdatePolicy, setUpdatePolicy) int updatePolicy;
@@ -69,8 +69,8 @@ class Object
     void setObjectType(String objectType);
     const QVector<QString>& getErrors(void) const;
 
-    const QHash<QString, Flag> getObjectFlags(void);
-    const QHash<QString, Tag> getObjectTags(void);
+    const QList<FlagClassData> getObjectFlags(void);
+    const QList<TagData> getObjectTags(void);
     const QList<Key> getObjectDocuments(void);
     const QList<Key> getObjectAppointments(void);
 

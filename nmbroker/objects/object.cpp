@@ -114,12 +114,12 @@ const QVector<QString>& Object::getErrors() const {
 }
 
 
-const QHash<QString, Flag> Object::getObjectFlags()
+const QList<FlagClassData> Object::getObjectFlags()
 {
     return mFlags;
 }
 
-const QHash<QString, Tag> Object::getObjectTags()
+const QList<TagData> Object::getObjectTags()
 {
 
     return mTags;
