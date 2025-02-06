@@ -42,7 +42,11 @@ ${TableName}Model::${TableName}Model(QObject *parent)
     : Nutmeg::TableModel{parent}
 {
     setTable("${TableName}");
-    select();
+    if(select())
+    {
+        mIsLoaded = true;
+        IndexLocations();
+    }
 }
 
 } // namespace Nutmeg

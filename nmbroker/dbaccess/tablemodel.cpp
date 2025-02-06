@@ -54,9 +54,9 @@ QSqlRecord TableModel::getRecordByPrimaryKey(Key primaryKey) const
  */
 int TableModel::getRowByPrimaryKey(Key key) const
 {
-    if(mKeyLocations.contains(key))
+    if(mKeyLocations.contains(key)){
         return mKeyLocations[key];
-    else{
+    } else {
         Logger::LogMessage(QString("Tried to get a row number for primary key %1, but the table does not contain the key.").arg(QString::number(key)));
         return -1;
     }
@@ -82,7 +82,7 @@ void TableModel::IndexLocations()
         Key key = this->data(index).toUInt();
 
         // Insert the primary key and its corresponding row index into the hash
-        mKeyLocations.insert(key, static_cast<uint>(row));
+        mKeyLocations.insert(key, row);
     }
 }
 

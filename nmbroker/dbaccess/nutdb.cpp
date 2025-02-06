@@ -1023,16 +1023,22 @@ FlagClassData Nutdb::GetFlagClass(Key id)
 
 }
 
-
-
 MatterData Nutdb::GetMatter(Key id)
 {
     QSqlRecord rec;
     MatterData dat;
 
-    rec = GetRecord("matter", id);
-    if(!mLastOperationSuccessful)
-        return dat;
+    if(!gViewMattersModel)
+        gViewMattersModel = std::make_unique<viewMattersModel>();
+
+    rec = gViewMattersModel->keyRecord[id];
+
+    //If getting the record from the table model failed, try to load directly from the db
+    if(rec == QSqlRecord()){
+        rec = GetRecord("matter", id);
+        if(!mLastOperationSuccessful)
+            return dat;
+    }
 
     dat.MatterId = rec.KeyField("MatterId");
     dat.fkParent = rec.KeyField("fkParent");
@@ -1144,7 +1150,7 @@ QString Nutdb::GetObjectTypeString(Key objectTypeId)
 
     params.append(NullableInteger(objectTypeId));
 
-    return CallStoredReturnProcedure("GetObjectTypeQString", params).toString();
+    return CallStoredReturnProcedure("GetObjectTypeString", params).toString();
 }
 
 Key Nutdb::GetObjectTypeId(QString objectTypeText)

@@ -19,6 +19,8 @@
 #include "structures.h"
 #include "logger.h"
 
+#include "models.h"
+
 #define StringField(x) field(x).value().toString()
 #define UIntField(x) field(x).value().toUInt()
 #define IntField(x) field(x).value().toInt()

@@ -1,5 +1,6 @@
 #include "mattersearchbox.h"
 #include "dbaccess/models.h"
+#include "dbaccess/nutdb.h"
 
 namespace Nutmeg
 {
