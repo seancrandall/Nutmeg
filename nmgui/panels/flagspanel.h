@@ -8,6 +8,7 @@
 #include "frame.h"
 #include "objects/object.h"
 #include "nutmeg.h"
+#include "widgets/flagcheckbox.h"
 
 namespace Nutmeg
 {

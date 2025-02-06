@@ -5,6 +5,8 @@
 #include <QObject>
 #include <QWidget>
 
+#include "objects/object.h"
+
 namespace Nutmeg {
 
 class CheckBox : public QCheckBox

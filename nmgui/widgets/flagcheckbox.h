@@ -6,9 +6,11 @@
 #include <QLabel>
 #include <QGridLayout>
 
-#include "nutmeg.h"
-#include "objects/flag.h"
+#include "objects/object.h"
 #include "property.h"
+#include "panels/frame.h"
+#include "checkbox.h"
+#include "label.h"
 
 namespace Nutmeg {
 
@@ -17,17 +19,19 @@ namespace Nutmeg {
  * Is the label above, below, right, or left
  */
 typedef enum{
-     Top
-    , Bottom
-    , Left
-    , Right
+     CheckLabelTop
+    , CheckLabelBottom
+    , CheckLabelLeft
+    , CheckLabelRight
 } CBoxOrientation;
 
-class FlagCheckbox : public QWidget
+class FlagCheckbox : public Frame
 {
     Q_OBJECT
 public:
-    explicit FlagCheckbox(std::shared_ptr<Flag> flag, QWidget *parent = nullptr);
+    explicit FlagCheckbox(FlagData flag, std::shared_ptr<Object> object, QWidget *parent = nullptr);
+    explicit FlagCheckbox(QString camelCase, Key objectId, QWidget *parent = nullptr);
+    explicit FlagCheckbox();
 
     Property(getValue, setValue) bool value;
     Property(getOrientation, setOrientation) CBoxOrientation orientation;
@@ -41,16 +45,22 @@ public:
     void setOrientation(CBoxOrientation neworientation);
     const QString getLabel(void) const;
     const QString getTooltip(void) const;
+
 signals:
 
 protected:
-    std::shared_ptr<Flag> mFlag;
-    bool mValue;
+    std::shared_ptr<Object> mObject;
+    FlagData mFlag;
     CBoxOrientation mOrientation;
-    QString mLabel;
-    QString mTooltip;
 
     QGridLayout *layout;
+    CheckBox *cBox;
+    Label *cLabel;
+
+    void LayoutCheckbox(void);
+
+protected slots:
+    void UpdateValue(void);
 };
 
 } // namespace Nutmeg
