@@ -2,6 +2,7 @@
 #define MODELS_H
 
 #include "appointmenttypemodel.h"
+#include "deadlinemodel.h"
 #include "dbaccess/viewobjectflagsmodel.h"
 #include "responsesdashboardtablemodel.h"
 #include "tablemodel.h"
@@ -35,6 +36,7 @@
 
 namespace Nutmeg{
 extern std::unique_ptr<Nutmeg::appointmentTypeModel> gAppointmentTypeModel;
+extern std::unique_ptr<Nutmeg::deadlineModel> gDeadlineModel;
 extern std::unique_ptr<Nutmeg::ResponsesDashboardTableModel> gResponsesDashboardTableModel;
 extern std::unique_ptr<Nutmeg::taskTypeModel> gTaskTypeModel;
 extern std::unique_ptr<Nutmeg::viewClientsModel> gViewClientsModel;

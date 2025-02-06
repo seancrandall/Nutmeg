@@ -3,6 +3,7 @@
 namespace Nutmeg{
 
 std::unique_ptr<Nutmeg::appointmentTypeModel> gAppointmentTypeModel;
+std::unique_ptr<Nutmeg::deadlineModel> gDeadlineModel;
 std::unique_ptr<Nutmeg::ResponsesDashboardTableModel> gResponsesDashboardTableModel;
 std::unique_ptr<Nutmeg::taskTypeModel> gTaskTypeModel;
 std::unique_ptr<Nutmeg::viewClientsModel> gViewClientsModel;

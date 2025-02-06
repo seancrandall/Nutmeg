@@ -832,9 +832,18 @@ DeadlineData Nutmeg::Nutdb::GetDeadline(Key id)
 {
     DeadlineData dat;
     QSqlRecord rec;
-    rec = GetRecord("deadline", id);
-    if(!mLastOperationSuccessful)
-        return dat;
+
+    if(!gDeadlineModel)
+        gDeadlineModel = std::make_unique<deadlineModel>();
+
+    rec = gDeadlineModel->keyRecord[id];
+
+    if(rec == QSqlRecord())
+    {
+        rec = GetRecord("deadline", id);
+        if(!mLastOperationSuccessful)
+            return dat;
+    }
 
     dat.DeadlineId = rec.KeyField("DeadlineId");
     dat.TriggerDate = rec.DateField("TriggerDate");
