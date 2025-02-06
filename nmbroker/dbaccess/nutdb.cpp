@@ -1077,24 +1077,6 @@ ObjectData Nutdb::GetObject(Key id)
     return dat;
 }
 
-void Nutdb::GetAllObjectFlags()
-{
-    QSqlQuery query;
-    QString sql = "SELECT ObjectId, CamelCase FROM flag";
-
-    if (query.exec(sql)) {
-        mAllFlags.clear(); // Clear existing data before adding new
-        while (query.next()) {
-            Key objectId = query.value(0).toUInt();
-            QString flag = query.value(1).toString();
-            mAllFlags.append(QPair<Key, QString>(objectId, flag));
-        }
-    } else {
-        qDebug() << "Failed to fetch all flags:" << query.lastError().text();
-        // Handle error, possibly by setting a flag or throwing an exception
-    }
-}
-
 QList<FlagClassData> Nutdb::GetObjectFlags(Key objectId)
 {
     QList<FlagClassData> flagList;
@@ -1123,38 +1105,20 @@ QList<FlagClassData> Nutdb::GetObjectFlags(Key objectId)
 
 QList<Key> Nutdb::GetFlagObjects(const QString &camelCase)
 {
-    QList<Key> objectIds;
+    QList<Key> list;
 
-    // Ensure we have the latest flags by calling GetAllObjectFlags if not already done
-    if (mAllFlags.isEmpty()) {
-        GetAllObjectFlags();
+    if(!gViewObjectFlagsModel)
+        gViewObjectFlagsModel = std::make_unique<viewObjectFlagsModel>();
+
+    gViewObjectFlagsModel->setFilter(QString("CamelCase = %1").arg(camelCase));
+
+    for(int i=0; i < gViewObjectFlagsModel->rowCount(); ++i){
+        list << gViewObjectFlagsModel->record(i).field("ObjectId").value().toUInt();
     }
 
-    for (const auto &flagPair : mAllFlags) {
-        if (flagPair.second == camelCase) {
-            objectIds.append(flagPair.first);
-        }
-    }
+    gViewObjectFlagsModel->setFilter(QString());
 
-    return objectIds;
-}
-
-void Nutdb::GetAllTags()
-{
-    QSqlQuery query;
-    QString sql = "SELECT TagId, TagText FROM tag";
-
-    if (query.exec(sql)) {
-        mAllTags.clear(); // Clear existing data before adding new
-        while (query.next()) {
-            Key tagId = query.value(0).toUInt();
-            QString tagText = query.value(1).toString();
-            mAllTags.append(QPair<Key, QString>(tagId, tagText));
-        }
-    } else {
-        qDebug() << "Failed to fetch all tags:" << query.lastError().text();
-        // Handle error, possibly by setting a flag or throwing an exception
-    }
+    return list;
 }
 
 QString Nutdb::GetObjectTypeString(Key objectTypeId)
@@ -1177,26 +1141,26 @@ Key Nutdb::GetObjectTypeId(QString objectTypeText)
     return CallStoredReturnProcedure("GetObjectTypeId", params).toUInt();
 }
 
-QList<String> Nutdb::GetObjectTags(Key objectId)
+QList<TagData> Nutdb::GetObjectTags(Key objectId)
 {
-    QList<String> tagList;
+    QList<TagData> tagList;
 
-    // // Ensure we have the latest tags by calling GetAllTags if not already done
-    // if (mAllTags.isEmpty()) {
-    //     GetAllTags();
-    // }
+    if(!gViewObjectTagsModel)
+        gViewObjectTagsModel = std::make_unique<viewObjectTagsModel>();
 
-    // for (const auto &objectTag : mAllTags) {
-    //     if (objectTag.first == objectId) {
-    //         for (const auto &tag : mAllTags) {
-    //             if (tag.first == objectTag.second) {
-    //                 tagList.append(tag.second);
-    //                 break; // Assuming one tag per tag ID
-    //             }
-    //         }
-    //     }
-    // }
+    //Filter for the given objectId
+    gViewObjectTagsModel->setFilter(QString("ObjectId = %1").arg(objectId));
 
+    for(int i = 0; i < gViewObjectTagsModel->rowCount(); ++i){
+        TagData localdat;
+        QSqlRecord rec = gViewObjectTagsModel->record(i);
+        localdat.TagId = rec.field("TagId").value().toUInt();
+        localdat.TagText = rec.field("TagText").value().toString();
+        tagList << localdat;
+    }
+
+    //Clear the filter
+    gViewObjectTagsModel->setFilter(QString());
     return tagList;
 }
 

@@ -76,31 +76,12 @@ std::shared_ptr<Object> Object::GetObject(Key id) {
 
 void Object::FetchFlags()
 {
-    mFlags = QHash<QString, Flag>();
-    QStringList flagStrings = Nutdb::GetObjectFlags(mDat.ObjectId);
-
-    if (flagStrings.size() > 0)
-    {
-        // for ( const auto& i : flagStrings )
-        for (auto i = 0; i < flagStrings.size(); i++)
-        {
-            mFlags.insert(flagStrings[i], Flag(mDat.ObjectId, flagStrings[i]));
-        }
-    }
+    mFlags = Nutdb::GetObjectFlags(mDat.ObjectId);
 }
 
 void Object::FetchTags()
 {
-    QStringList tagStrings = Nutdb::GetObjectTags(mDat.ObjectId);
-    mTags = QHash<QString, Tag>();
-
-    if (tagStrings.size() > 0)
-    {
-        for (auto i = 0; i < tagStrings.size(); i++)
-        {
-            mTags.insert(tagStrings[i], Tag(tagStrings[i]));
-        }
-    }
+    mTags = Nutdb::GetObjectTags(mDat.ObjectId);
 }
 
 void Object::FetchAppointments()

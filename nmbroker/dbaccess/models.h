@@ -17,6 +17,7 @@
 #include "viewinventorsmodel.h"
 #include "viewjurisdictionsmodel.h"
 #include "viewmattersmodel.h"
+#include "viewobjecttagsmodel.h"
 #include "viewparalegalsmodel.h"
 #include "viewpatentexaminersmodel.h"
 #include "viewpatentfilingtypesmodel.h"
@@ -48,6 +49,7 @@ extern std::unique_ptr<Nutmeg::viewInventorsModel> gViewInventorsModel;
 extern std::unique_ptr<Nutmeg::viewJurisdictionsModel> gViewJurisdictionsModel;
 extern std::unique_ptr<Nutmeg::viewMattersModel> gViewMattersModel;
 extern std::unique_ptr<Nutmeg::viewObjectFlagsModel> gViewObjectFlagsModel;
+extern std::unique_ptr<Nutmeg::viewObjectTagsModel> gViewObjectTagsModel;
 extern std::unique_ptr<Nutmeg::viewParalegalsModel> gViewParalegalsModel;
 extern std::unique_ptr<Nutmeg::viewPatentExaminersModel> gViewPatentExaminersModel;
 extern std::unique_ptr<Nutmeg::viewPatentFilingTypesModel> gViewPatentFilingTypesModel;

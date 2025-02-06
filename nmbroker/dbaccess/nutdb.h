@@ -185,13 +185,11 @@ class Nutdb
     static MatterData GetMatter(Key id);
     static NoteData GetNote(Key id);
     static ObjectData GetObject(Key id);
-    static void GetAllObjectFlags(void);
     static QList<FlagClassData> GetObjectFlags(Key objectId);
     static QList<Key> GetFlagObjects(const QString &camelCase);
     static Key GetObjectTypeId(QString objectTypeText);
     static QString GetObjectTypeString(Key objectTypeId);
-    static void GetAllTags(void);
-    static QList<QString> GetObjectTags(Key objectId);
+    static QList<TagData> GetObjectTags(Key objectId);
     static QList<Key> GetTagObjects(const QString &tagText);
     static PatentMatterData GetPatentMatter(Key id);
     static PatentResponseData GetPatentResponse(Key id);

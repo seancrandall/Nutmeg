@@ -10,6 +10,7 @@
 #include "property.h"
 #include "tag.h"
 #include "cache/cache.h"
+#include "structures.h"
 
 namespace Nutmeg
 {
@@ -93,8 +94,8 @@ class Object
     ObjectData mDat;
     QString mObjectType;
 
-    QHash<QString, Flag> mFlags;
-    QHash<QString, Tag> mTags;
+    QList<FlagClassData> mFlags;
+    QList<TagData> mTags;
     QList<Key> mDocuments;
     QList<Key> mAppointments;
 
