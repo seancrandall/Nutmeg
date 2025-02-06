@@ -31,7 +31,7 @@ class CopyrightMatter : public Nutmeg::Matter
     Key AddAuthor(String first, String last);
 
     // Getters
-    virtual Key getId(void) override { return mDat.CopyrightMatterId; }
+    virtual Key getId(void) const override { return mDat.CopyrightMatterId; }
     Key getfkAuthor(void) { return mDat.fkAuthor; }
     Date getCreated(void) { return mDat.Created; }
     Date getFiled(void) { return mDat.Filed; }

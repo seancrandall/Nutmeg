@@ -23,7 +23,7 @@ class Enterprise : public Nutmeg::Entity
     Property(getOldOrganizationId, slotSetOldOrganizationId) Key OldOrganizationId;
 
     // Getters
-    virtual Key getId(void) override { return mDat.EnterpriseId; }
+    virtual Key getId(void) const override { return mDat.EnterpriseId; }
     String getEnterpriseName(void) { return mDat.EnterpriseName; }
     Key getfkBusinessJurisdiction(void) { return mDat.fkBusinessJurisdiction; }
     Key getfkStateOfIncorporation(void) { return mDat.fkStateOfIncorporation; }

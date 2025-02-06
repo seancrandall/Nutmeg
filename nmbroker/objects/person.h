@@ -25,7 +25,7 @@ class Person : public Nutmeg::Entity
     Property(getNewRole, slotAssignRole) Key NewRole;
 
     // Getters
-    virtual Key getId(void) override { return mDat.PersonId; }
+    virtual Key getId(void) const override { return mDat.PersonId; }
 
     String getFirstName(void) { return mDat.FirstName; }
 

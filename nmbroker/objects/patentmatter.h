@@ -33,7 +33,7 @@ class PatentMatter : public Nutmeg::Matter
     ReadOnlyProperty(getInventors) QList<Key> inventors;
 
     // Getters
-    virtual Key getId(void) override { return mDat.PatentMatterId; }
+    virtual Key getId(void) const override { return mDat.PatentMatterId; }
     Date getFilingDate(void) { return mDat.FilingDate; }
     String getApplicationSerialNumber(void) { return mDat.ApplicationSerialNumber; }
     String getConfirmationNumber(void) { return mDat.ConfirmationNumber; }

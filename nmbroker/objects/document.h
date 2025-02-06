@@ -26,7 +26,7 @@ class Document : public Nutmeg::Object
     Property(getTitle, slotSetTitle) String Title;
 
     // Getters
-    virtual Key getId(void) override { return mDat.DocumentId; }
+    virtual Key getId(void) const override { return mDat.DocumentId; }
 
     String getFullyQualifiedPath(void) { return mDat.FullyQualifiedPath; }
 

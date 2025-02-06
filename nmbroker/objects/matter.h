@@ -29,7 +29,7 @@ class Matter : public Nutmeg::Object
     Property(getOldMatterId, SetOldMatterId) Key OldMatterId;
 
     // Getters
-    virtual Key getId(void) override { return mDat.MatterId; }
+    virtual Key getId(void) const override { return mDat.MatterId; }
 
     Key getfkParent(void);
     QString getAttorneyDocketNumber(void) { return mDat.AttorneyDocketNumber; }

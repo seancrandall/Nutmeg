@@ -35,7 +35,7 @@ class TrademarkMatter : public Nutmeg::Matter
     Property(getGoodsServices, slotSetGoodsServices) String GoodsServices;
 
     // Getters
-    virtual Key getId(void) override { return mDat.TrademarkMatterId; }
+    virtual Key getId(void) const override { return mDat.TrademarkMatterId; }
     Date getFirstUseInCommerce(void) { return mDat.FirstUseInCommerce; }
     int getInternationalClass(void) { return mDat.InternationalClass; }
     Key getfkStatus(void) { return mDat.fkStatus; }

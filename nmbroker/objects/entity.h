@@ -30,7 +30,7 @@ class Entity : public Nutmeg::Object
     Property(getDocketPrefix, slotSetDocketPrefix) String DocketPrefix;
 
     // Getters
-    virtual Key getId(void) override { return mDat.EntityId; }
+    virtual Key getId(void) const override { return mDat.EntityId; }
     String getEntityName(void) { return mDat.EntityName; }
     String getFullLegalName(void) { return mDat.FullLegalName; }
     String getPrimaryAddress(void) { return mDat.PrimaryAddress; }

@@ -24,7 +24,7 @@ class Response : public Nutmeg::Task
     Property(getfkActionDocument, slotSetfkActionDocument) Key fkActionDocument;
 
     // Getters
-    virtual Key getId(void) override { return mDat.ResponseId; }
+    virtual Key getId(void) const override { return mDat.ResponseId; }
     Key getfkClientOfficeHours(void) { return mDat.fkClientOfficeHours; }
     Key getfkExaminerInterview(void) { return mDat.fkExaminerInterview; }
     Date getMailingDate(void) { return mDat.MailingDate; }

@@ -116,14 +116,18 @@ void Object::holdfkObjectType(Key newfk)
 }
 
 const QVector<QString>& Object::getErrors() const {
-    return mErrors; // Return a const reference to the vector
+    return mErrors;
 }
 
-bool Object::getFlag(const QString &camelCase) const
+bool Object::getFlag(const QString &camelCase)
 {
+    if(!hFlagValues.contains(camelCase)){
+        ClearFlag(camelCase);
+        return false;
+    }
+
     return hFlagValues[camelCase];
 }
-
 
 const QList<FlagData> Object::getObjectFlags() const
 {
@@ -156,7 +160,8 @@ bool Object::SetFlag(QString camelCase)
 
 bool Object::ClearFlag(QString camelCase)
 {
-    bool result = (bool) Nutdb::ClearFlag(mDat.ObjectId, camelCase); getObjectFlags();
+    bool result = (bool) Nutdb::ClearFlag(mDat.ObjectId, camelCase);
+    getObjectFlags();
     return result;
 }
 

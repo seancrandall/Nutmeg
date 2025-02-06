@@ -48,7 +48,7 @@ class Object
     Property(getfkObjectType, setfkObjectType) Key fkObjectType;
     Property(getObjectType, setObjectType) String objectType;
     ReadOnlyProperty(getObjectFlags) QList<FlagData> flags;
-    ReadOnlyProperty(getFlag) bool flag[];
+    Property(getFlag, setFlagValue) bool flag[];
     ReadOnlyProperty(getTags) QList<TagData> tags;
     ReadOnlyProperty(getObjectDocuments) QList<Key> docs;
     ReadOnlyProperty(getObjectAppointments) QList<Key> appointments;
@@ -71,7 +71,7 @@ class Object
     const QVector<QString>& getErrors(void) const;
 
     const QList<FlagData> getObjectFlags(void) const;
-    bool getFlag(const QString& camelCase) const;
+    bool getFlag(const QString& camelCase);
     const QList<TagData> getObjectTags(void) const;
     const QList<Key> getObjectDocuments(void) const;
     const QList<Key> getObjectAppointments(void) const;

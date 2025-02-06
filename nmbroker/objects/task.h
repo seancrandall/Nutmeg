@@ -39,7 +39,7 @@ class Task : public Nutmeg::Object
     Property(getWithParalegal, SetWithParalegal) bool WithParalegal;
 
     // Getters
-    virtual Key getId(void) override { return mDat.TaskId; }
+    virtual Key getId(void) const override { return mDat.TaskId; }
 
     Key getfkMatter(void) { return mDat.fkMatter; }
     Date getDateAssigned(void) { return mDat.DateAssigned; }

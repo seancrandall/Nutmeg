@@ -30,7 +30,7 @@ class Appointment : public Nutmeg::Object
     Property(setfkAppointmentType, SetfkAppointmentType) Key type;
 
     // Overrides
-    virtual Key getId(void) override { return mDat.AppointmentId; }
+    virtual Key getId(void) const override { return mDat.AppointmentId; }
 
     bool Update(AppointmentData dat);
     virtual bool SetId(Key newid) override;

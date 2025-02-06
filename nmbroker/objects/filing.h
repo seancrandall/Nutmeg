@@ -19,7 +19,7 @@ class Filing : public Nutmeg::Task
     Property(getfkAsFiledDocument, slotSetfkAsFiledDocument) Key fkAsFiledDocument;
 
     // Getters
-    virtual Key getId(void) override { return mDat.FilingId; }
+    virtual Key getId(void) const override { return mDat.FilingId; }
     Key getfkFilingStatus(void) { return mDat.fkFilingStatus; }
     Key getfkAsFiledDocument(void) { return mDat.fkAsFiledDocument; }
 
