@@ -32,11 +32,12 @@ class Task : public Nutmeg::Object
     Property(getOldTaskId, SetOldTaskId) Key OldTaskId;
     Property(getfkTaskType, SetfkTaskType) Key fkTaskType;
     ReadOnlyProperty(getTaskTypeString) QString TaskTypeString;
+    ReadOnlyProperty(FindNeedsExaminerInterview) bool NeedsExaminerInterview;
 
     // Flag Properties
-    Property(getNeedsExaminerInterview, SetNeedsExaminerInterview) bool NeedsExaminerInterview;
-    Property(getExaminerInterviewScheduled, SetExaminerInterviewScheduled) bool ExaminerInterviewScheduled;
-    Property(getWithParalegal, SetWithParalegal) bool WithParalegal;
+    // Property(getNeedsExaminerInterview, SetNeedsExaminerInterview) bool NeedsExaminerInterview;
+    // Property(getExaminerInterviewScheduled, SetExaminerInterviewScheduled) bool ExaminerInterviewScheduled;
+    // Property(getWithParalegal, SetWithParalegal) bool WithParalegal;
 
     // Getters
     virtual Key getId(void) const override { return mDat.TaskId; }
@@ -54,9 +55,9 @@ class Task : public Nutmeg::Object
     Key getAuthorizationDocument(void) { return mDat.fkAuthorizationDocument; }
     Key getOldTaskId(void) { return mDat.OldTaskId; }
     Key getfkTaskType(void) { return mDat.fkTaskType; }
-    bool getNeedsExaminerInterview(void) { return bNeedsExaminerInterview; }
-    bool getExaminerInterviewScheduled(void) { return bExaminerInterviewScheduled; }
-    bool getWithParalegal(void) { return bWithParalegal; }
+    bool getNeedsExaminerInterview(void);
+    bool getExaminerInterviewScheduled(void);
+    bool getWithParalegal(void);
     const QString getTaskTypeString(void);
 
     //Hold properties
@@ -73,9 +74,9 @@ class Task : public Nutmeg::Object
     void holdfkAuthorizationDocument(Key newkey) {mDat.fkAuthorizationDocument = newkey; dirty["fkAuthorizationDocument"] = true;}
     void holdOldTaskId(Key newkey) {mDat.TaskId = newkey; dirty["TaskId"] = true;}
     void holdfkTaskType(Key newkey) {mDat.fkTaskType = newkey; dirty["fkTaskType"] = true;}
-    void holdNeedsExaminerInterview(bool newval) {bNeedsExaminerInterview = newval; dirty["bNeedsExaminerInterview"] = true;}
-    void holdExaminerInterviewScheduled(bool newval) {bExaminerInterviewScheduled = newval; dirty["bWithParalegal"] = true;}
-    void holdWithParalegal(bool newval) {bWithParalegal = newval;}
+    //void holdNeedsExaminerInterview(bool newval) {flag["NeedsExaminerInterview"] = newval;}
+    //void holdExaminerInterviewScheduled(bool newval) {flag["ExaminerInterviewScheduled"] = newval;}
+    //void holdWithParalegal(bool newval) {flag["WithParalegal"] = newval;}
 
     bool InsertWithMatter(Key matterid);
     bool InsertWithMatter(Key matterid, Date triggerDate);
@@ -97,19 +98,19 @@ class Task : public Nutmeg::Object
     bool SetfkAuthorizationDocument(Key newfk);
     bool SetOldTaskId(Key newfk);
     bool SetfkTaskType(Key newfk);
-    bool SetNeedsExaminerInterview(bool newval);
-    bool SetExaminerInterviewScheduled(bool newval);
-    bool SetWithParalegal(bool newval);
+    bool FindNeedsExaminerInterview(void);
+    //bool SetNeedsExaminerInterview(bool newval);
+    //bool SetExaminerInterviewScheduled(bool newval);
+    //bool SetWithParalegal(bool newval);
 
   protected:
     bool InitializeTask(Key id);
 
     TaskData mDat;
-    bool bNeedsExaminerInterview;
-    bool bExaminerInterviewScheduled;
-    bool bWithParalegal;
+    // bool bNeedsExaminerInterview;
+    // bool bExaminerInterviewScheduled;
+    // bool bWithParalegal;
 
-    void FindNeedsExaminerInterview(void);
 private:
     static Task* GetTask(Key id);
 

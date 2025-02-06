@@ -12,7 +12,7 @@ EIButton::EIButton(std::shared_ptr<Response> response, QWidget *parent)
     if (!mResponse->NeedsExaminerInterview)
         hide();
 
-    if (mResponse->ExaminerInterviewScheduled)
+    if (mResponse->flag["ExaminerInterviewScheduled"])
         hide();
 }
 

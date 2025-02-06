@@ -21,6 +21,8 @@ Task::Task(Key newid) : Object(newid)
     InitializeTask(newid);
 }
 
+//bool Task::getNeedsExaminerInterview() { return bNeedsExaminerInterview; }
+
 const QString Task::getTaskTypeString()
 {
     return TaskNames[mDat.fkTaskType];
@@ -193,29 +195,23 @@ bool Task::SetfkTaskType(Key newfk)
     return result;
 }
 
-bool Task::SetNeedsExaminerInterview(bool newval)
-{
-    bool result = SetFlagValue("NeedsExaminerInterview", newval);
-    if(result)
-        bNeedsExaminerInterview = newval;
-    return result;
-}
 
-bool Task::SetExaminerInterviewScheduled(bool newval)
-{
-    bool result = SetFlagValue("ExaminerInterviewScheduled", newval);
-    if(result)
-        bExaminerInterviewScheduled = newval;
-    return result;
-}
 
-bool Task::SetWithParalegal(bool newval)
-{
-    bool result = SetFlagValue("WithParalegal", newval);
-    if(result)
-        bWithParalegal = newval;
-    return result;
-}
+// bool Task::SetExaminerInterviewScheduled(bool newval)
+// {
+//     // bool result = SetFlagValue("ExaminerInterviewScheduled", newval);
+//     // if(result)
+//     //     bExaminerInterviewScheduled = newval;
+//     // return result;
+// }
+
+// bool Task::SetWithParalegal(bool newval)
+// {
+//     bool result = SetFlagValue("WithParalegal", newval);
+//     if(result)
+//         bWithParalegal = newval;
+//     return result;
+// }
 
 bool Task::InitializeTask(Key initid)
 {
@@ -233,9 +229,9 @@ bool Task::InitializeTask(Key initid)
     }
 
     // Initialize Flags
-    bNeedsExaminerInterview = Nutdb::GetFlag(initid, "NeedsExaminerInterview");
-    bExaminerInterviewScheduled = Nutdb::GetFlag(initid, "ExaminerInterviewScheduled");
-    bWithParalegal = Nutdb::GetFlag(initid, "WithParalegal");
+    // bNeedsExaminerInterview = Nutdb::GetFlag(initid, "NeedsExaminerInterview");
+    // bExaminerInterviewScheduled = Nutdb::GetFlag(initid, "ExaminerInterviewScheduled");
+    // bWithParalegal = Nutdb::GetFlag(initid, "WithParalegal");
 
     //If we don't have an assigned paralegal and work attorney, grab
     //the defaults from the parent case
@@ -252,7 +248,7 @@ bool Task::InitializeTask(Key initid)
     return Object::InitializeObject(mDat.TaskId);
 }
 
-void Task::FindNeedsExaminerInterview()
+bool Task::FindNeedsExaminerInterview()
 {
     switch (fkTaskType)
     {
@@ -262,14 +258,28 @@ void Task::FindNeedsExaminerInterview()
     case 14:
     case 48:
     {
-        NeedsExaminerInterview = true;
-        break;
+        flag["NeedsExaminerInterview"] = true;
+        return true;
+        break; //unnecessary
     }
     default:
     {
-        NeedsExaminerInterview = false;
+        flag["NeedsExaminerInterview"] = false;
     }
     }
+
+    return false;
 }
+
+// bool Nutmeg::Task::getExaminerInterviewScheduled()
+// {
+//     return flag["ExaminerInterviewScheduled"];
+//     //return bExaminerInterviewScheduled;
+// }
+
+// bool Task::getWithParalegal()
+// {
+//     return flag["WithParalegal"];
+// }
 
 } // namespace Nutmeg

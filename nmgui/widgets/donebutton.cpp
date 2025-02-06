@@ -7,7 +7,7 @@ DoneButton::DoneButton(std::shared_ptr<Task> task, QWidget *parent)
     : Nutmeg::PushButton(parent)
     , mTask(task)
 {
-    if (task->WithParalegal == false)
+    if (task->flag["WithParalegal"] == false)
     {
         setText("Send to\nParalegal");
     }
@@ -20,9 +20,9 @@ DoneButton::DoneButton(std::shared_ptr<Task> task, QWidget *parent)
 
 void DoneButton::slotHandleClicked()
 {
-    if (mTask->WithParalegal == false)
+    if (mTask->flag["WithParalegal"] == false)
     {
-        mTask->WithParalegal = true;
+        mTask->flag["WithParalegal"] = true;
         setText("Done");
     }
     else

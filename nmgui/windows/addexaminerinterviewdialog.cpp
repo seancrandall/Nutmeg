@@ -92,7 +92,7 @@ void AddExaminerInterviewDialog::slotGather()
     builder->description = Description;
 
     builder->openIcsFile();
-    mTask->NeedsExaminerInterview = false;
+    mTask->flag["ExaminerInterviewScheduled"] = true;
 }
 
 

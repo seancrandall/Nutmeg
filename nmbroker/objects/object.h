@@ -48,7 +48,7 @@ class Object
     Property(getfkObjectType, setfkObjectType) Key fkObjectType;
     Property(getObjectType, setObjectType) String objectType;
     ReadOnlyProperty(getObjectFlags) QList<FlagData> flags;
-    Property(getFlag, setFlagValue) bool flag[];
+    Property(getFlag, SetFlagValue) bool flag[];
     ReadOnlyProperty(getTags) QList<TagData> tags;
     ReadOnlyProperty(getObjectDocuments) QList<Key> docs;
     ReadOnlyProperty(getObjectAppointments) QList<Key> appointments;
