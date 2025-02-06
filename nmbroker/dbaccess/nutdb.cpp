@@ -45,7 +45,7 @@ QSqlQuery Nutdb::CallStoredProcedure(QString procName, QVariantList parameters, 
     QSqlDatabase db = QSqlDatabase::database();
     QSqlQuery query;
 
-           // Escape procName for safety
+    // Escape procName for safety
     procName = db.driver()->escapeIdentifier(procName, QSqlDriver::FieldName);
 
     QStringList stringParameters;
@@ -54,7 +54,7 @@ QSqlQuery Nutdb::CallStoredProcedure(QString procName, QVariantList parameters, 
         stringParameters << FormatParameter(param);
     }
 
-           // Append the out parameter if provided
+    // Append the out parameter if provided
     if (!outParamName.isEmpty())
     {
         stringParameters << QString("%1").arg(outParamName);//.replace("'", "''"));
@@ -62,7 +62,7 @@ QSqlQuery Nutdb::CallStoredProcedure(QString procName, QVariantList parameters, 
 
     QString paramlist = stringParameters.join(", ");
 
-           // Construct the CALL statement
+    // Construct the CALL statement
     QString sql = QString("CALL %1(%2);")
                       .arg(procName,
                            paramlist);
@@ -71,7 +71,7 @@ QSqlQuery Nutdb::CallStoredProcedure(QString procName, QVariantList parameters, 
     qDebug() << "Executing query: " << sql;
 #endif
 
-           // Execute the query
+    // Execute the query
     bool result = query.exec(sql);
     if (!result)
     {
@@ -136,10 +136,10 @@ QString Nutdb::FormatParameter(const QVariant parameter)
         break;
     }
 
-           // Escape single quotes in strings
+    // Escape single quotes in strings
     formattedParam = formattedParam.replace("'", "''");
 
-           // For non-NULL values, wrap the result in single quotes
+    // For non-NULL values, wrap the result in single quotes
     return QString("'%1'").arg(formattedParam);
 }
 
@@ -192,10 +192,10 @@ Key Nutdb::CallStoredKeyProcedure(QString procName, QVariantList parameters)
 {
     QVariant result = CallStoredReturnProcedure(procName, parameters);
 
-	//if(mLastOperationSuccessful)
-        return result.toUInt();
-	//else
-		//return 0;
+    //if(mLastOperationSuccessful)
+    return result.toUInt();
+    //else
+    //return 0;
 }
 
 bool Nutdb::UpdateField(QString table, QString field, Key key, QString value)
@@ -211,13 +211,13 @@ bool Nutdb::UpdateField(QString table, QString field, Key key, QString value)
     QString primaryKeyName = GetPrimaryKeyName(table);
     QSqlQuery query;
 
-           // Construct the SQL UPDATE query with escaped identifiers
+    // Construct the SQL UPDATE query with escaped identifiers
     QString sql = QString("UPDATE %1 SET %2 = :value WHERE %3 = :key")
                       .arg(table,
                            field,
                            primaryKeyName);
 
-           // Prepare the SQL query
+    // Prepare the SQL query
     //mLastOperationSuccessful = query.prepare(sql);
     bool result = query.prepare(sql);
     if (!result)
@@ -232,11 +232,11 @@ bool Nutdb::UpdateField(QString table, QString field, Key key, QString value)
         return false;
     }
 
-           // Bind the parameters to the query
+    // Bind the parameters to the query
     query.bindValue(":value", value);
     query.bindValue(":key", static_cast<quint64>(key));
 
-           // Execute the query
+    // Execute the query
     result = query.exec();
     if (!result)
     {
@@ -266,14 +266,14 @@ QSqlRecord Nutdb::GetRecord(QString table, Key id)
 
     primaryKeyName = GetPrimaryKeyName(table);
 
-           // Build the SQL query with table and primary key name directly
+    // Build the SQL query with table and primary key name directly
     QString sqlQuery = QString("SELECT * FROM %1 WHERE %2 = :id").arg(table).arg(primaryKeyName);
 
-           // Prepare and bind values
+    // Prepare and bind values
     query.prepare(sqlQuery);
     query.bindValue(":id", NullableInteger(id));
 
-           // Execute the query
+    // Execute the query
     if (query.exec() && query.next())
     {
         record = query.record();
@@ -295,7 +295,7 @@ const QList<QSqlRecord> Nutdb::SearchLike(QString table, QString fieldName, QStr
 {
     QList<QSqlRecord> resultList;
 
-           // Check if the table and field names are valid
+    // Check if the table and field names are valid
     if (table.isEmpty() || fieldName.isEmpty())
     {
         QString msg = QString("Tried to 'Search Like' for table %1 and field %2, but one of them was empty. Weird.")
@@ -305,7 +305,7 @@ const QList<QSqlRecord> Nutdb::SearchLike(QString table, QString fieldName, QStr
         return resultList; // Return an empty list if invalid
     }
 
-           // Construct the SQL query
+    // Construct the SQL query
     QString sql = QString("SELECT * FROM %1 WHERE %2 LIKE :searchQString").arg(table, fieldName);
 
     QSqlQuery query(QSqlDatabase::database());
@@ -317,10 +317,10 @@ const QList<QSqlRecord> Nutdb::SearchLike(QString table, QString fieldName, QStr
         .arg(sql);
         Nutdb::AddErrorMessage(errmsg);
     }
-      // Set the search parameter with wildcard
+    // Set the search parameter with wildcard
     query.bindValue(":searchQString", QString("%%1%").arg(searchQString));
 
-           // Execute the query
+    // Execute the query
     mLastOperationSuccessful = query.exec();
     if (!mLastOperationSuccessful)
     {
@@ -331,7 +331,7 @@ const QList<QSqlRecord> Nutdb::SearchLike(QString table, QString fieldName, QStr
         return resultList; // Return an empty list on error
     }
 
-           // Add all returned records to the resultList
+    // Add all returned records to the resultList
     while (query.next())
     {
         resultList.append(query.record());
@@ -782,7 +782,7 @@ QList<Key> Nutdb::GetObjectAppointments(Key id)
 
 CopyrightFilingData Nutdb::GetCopyrightFiling(Key id)
 {
-  CopyrightFilingData dat = CopyrightFilingData();
+    CopyrightFilingData dat = CopyrightFilingData();
     QSqlRecord rec;
     rec = GetRecord("copyrightFiling", id);
     if(!mLastOperationSuccessful)
@@ -954,11 +954,17 @@ EntityData Nutdb::GetEntity(Key id)
 FilingData Nutdb::GetFiling(Key id)
 {
     FilingData dat;
-
     QSqlRecord rec;
-    rec = GetRecord("filing", id);
-    if(!mLastOperationSuccessful)
-        return dat;
+
+    if(!gViewFilingsModel)
+        gViewFilingsModel = std::make_unique<viewFilingsModel>();
+    rec = gViewFilingsModel->keyRecord[id];
+
+    if(rec == QSqlRecord()){
+        rec = GetRecord("filing", id);
+        if(!mLastOperationSuccessful)
+            return dat;
+    }
 
     dat.FilingId = rec.KeyField("FilingId");
     dat.fkFilingStatus = rec.KeyField("fkFilingStatus");
@@ -1256,9 +1262,15 @@ ResponseData Nutdb::GetResponse(Key id)
     QSqlRecord rec;
     ResponseData dat;
 
-    rec = GetRecord("response", id);
-    if(!mLastOperationSuccessful)
-        return dat;
+    if(!gViewResponsesModel)
+        gViewResponsesModel = std::make_unique<viewResponsesModel>();
+    rec = gViewResponsesModel->keyRecord[id];
+
+    if(rec == QSqlRecord()){
+        rec = GetRecord("response", id);
+        if(!mLastOperationSuccessful)
+            return dat;
+    }
 
     dat.ResponseId = rec.KeyField("ResponseId");
     dat.fkClientOfficeHours = rec.KeyField("fkClientOfficeHours");
@@ -1300,10 +1312,10 @@ TaskData Nutdb::GetTask(Key id)
     TaskData dat;
     QSqlRecord rec;
 
-    if(!gTaskModel)
-        gTaskModel = std::make_unique<taskModel>();
+    if(!gViewTasksModel)
+        gViewTasksModel = std::make_unique<viewTasksModel>();
 
-    rec = gTaskModel->keyRecord[id];
+    rec = gViewTasksModel->keyRecord[id];
 
     if(rec == QSqlRecord()){
         rec = GetRecord("task", id);
@@ -2000,11 +2012,11 @@ QString Nutdb::GetPrimaryKeyName(QString table)
     QSqlQuery query(db);
     QString primaryKey;
 
-           // Prepare the SQL query
+    // Prepare the SQL query
     QString sql = QString("SHOW KEYS FROM %1 WHERE Key_name = 'PRIMARY'").arg(table);
     query.prepare(sql);
 
-           // Execute the query
+    // Execute the query
     mLastOperationSuccessful = query.exec();
     if (mLastOperationSuccessful)
     {
