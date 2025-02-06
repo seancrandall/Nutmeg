@@ -43,6 +43,7 @@ protected:
 
     //Controls
     QGridLayout *grid;
+    LineDisplayId *cId;
     DateEdit *cDateAssigned = new DateEdit();
     CheckBox *cComplete = new CheckBox();
     DoubleSpinBox *cExpectedFee = new DoubleSpinBox();
@@ -53,6 +54,7 @@ protected:
     TaskTypeCombo *cTaskType;
 
     //Layouts
+    LabeledWidgetLeft *lId;
     LabeledWidgetLeft *lDateAssigned = new LabeledWidgetLeft("Date Assigned", cDateAssigned);
     LabeledWidgetLeft *lComplete = new LabeledWidgetLeft("Complete", cComplete);
     LabeledWidgetLeft *lExpectedFee = new LabeledWidgetLeft("Expected Fee $", cExpectedFee);
