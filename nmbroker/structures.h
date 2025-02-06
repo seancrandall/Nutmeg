@@ -136,6 +136,15 @@ typedef struct
 
 typedef struct
 {
+    Key FlagClassId;
+    QString CamelCase;
+    QString Label;
+    QString Description;
+    bool FlagValue;
+} FlagData;
+
+typedef struct
+{
     Key GeneralMatterId;
 } GeneralMatterData;
 

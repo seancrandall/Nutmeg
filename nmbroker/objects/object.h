@@ -47,7 +47,8 @@ class Object
     Property(getId, slotSetId) Key ObjectId;
     Property(getfkObjectType, setfkObjectType) Key fkObjectType;
     Property(getObjectType, setObjectType) String objectType;
-    ReadOnlyProperty(getFlags) QList<FlagClassData> flags;
+    ReadOnlyProperty(getObjectFlags) QList<FlagData> flags;
+    ReadOnlyProperty(getFlag) bool flag[];
     ReadOnlyProperty(getTags) QList<TagData> tags;
     ReadOnlyProperty(getObjectDocuments) QList<Key> docs;
     ReadOnlyProperty(getObjectAppointments) QList<Key> appointments;
@@ -58,21 +59,22 @@ class Object
     ReadOnlyProperty(getHadError) bool hadError;
 
     // Getters
-    virtual Key getId(void) { return mDat.ObjectId; }
-    Key getfkObjectType(void) { return mDat.fkObjectType; }
+    virtual Key getId(void) const { return mDat.ObjectId; }
+    Key getfkObjectType(void) const { return mDat.fkObjectType; }
 
     bool setfkObjectType(Key newfk);
     void holdfkObjectType(Key newfk);
 
-    QString getObjectType(void) { return mObjectType; }
+    QString getObjectType(void) const { return mObjectType; }
 
     void setObjectType(String objectType);
     const QVector<QString>& getErrors(void) const;
 
-    const QList<FlagClassData> getObjectFlags(void);
-    const QList<TagData> getObjectTags(void);
-    const QList<Key> getObjectDocuments(void);
-    const QList<Key> getObjectAppointments(void);
+    const QList<FlagData> getObjectFlags(void) const;
+    bool getFlag(const QString& camelCase) const;
+    const QList<TagData> getObjectTags(void) const;
+    const QList<Key> getObjectDocuments(void) const;
+    const QList<Key> getObjectAppointments(void) const;
 
     bool SetFlag(QString camelCase);
     bool ClearFlag(QString camelCase);
@@ -94,10 +96,6 @@ class Object
     ObjectData mDat;
     QString mObjectType;
 
-    QList<FlagClassData> mFlags;
-    QList<TagData> mTags;
-    QList<Key> mDocuments;
-    QList<Key> mAppointments;
 
     // QList<Document> mDocuments;
     bool InitializeObject(Key id);
@@ -129,6 +127,12 @@ private:
     void FetchTags(void);
     void FetchAppointments(void);
     void FetchDocuments(void);
+
+    QList<FlagData> mFlags;
+    QHash<QString, bool> hFlagValues;
+    QList<TagData> mTags;
+    QList<Key> mDocuments;
+    QList<Key> mAppointments;
 };
 
 } // namespace Nutmeg

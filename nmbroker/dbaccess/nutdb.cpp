@@ -1086,9 +1086,9 @@ ObjectData Nutdb::GetObject(Key id)
     return dat;
 }
 
-QList<FlagClassData> Nutdb::GetObjectFlags(Key objectId)
+QList<FlagData> Nutdb::GetObjectFlags(Key objectId)
 {
-    QList<FlagClassData> flagList;
+    QList<FlagData> flagList;
 
     if(!gViewObjectFlagsModel)
         gViewObjectFlagsModel = std::make_unique<viewObjectFlagsModel>();
@@ -1097,12 +1097,13 @@ QList<FlagClassData> Nutdb::GetObjectFlags(Key objectId)
     gViewObjectFlagsModel->setFilter(QString("ObjectId = %1").arg(objectId));
     for(int i=0; i < gViewObjectFlagsModel->rowCount(); ++i)
     {
-        FlagClassData localdata;
+        FlagData localdata;
         QSqlRecord rec = gViewObjectFlagsModel->record(i);
         localdata.CamelCase = rec.field("CamelCase").value().toString();
         localdata.Description = rec.field("Description").value().toString();
         localdata.Label = rec.field("Label").value().toString();
         localdata.FlagClassId = rec.field("fkFlag").value().toUInt();
+        localdata.FlagValue = rec.field("FlagValue").value().toBool();
         flagList << localdata;
     }
 

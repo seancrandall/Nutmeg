@@ -77,6 +77,12 @@ std::shared_ptr<Object> Object::GetObject(Key id) {
 void Object::FetchFlags()
 {
     mFlags = Nutdb::GetObjectFlags(mDat.ObjectId);
+
+    for(int i = 0; i < mFlags.size(); ++i){
+        QString cc = mFlags[i].CamelCase;
+        bool val = mFlags[i].FlagValue;
+        hFlagValues[cc] = val;
+    }
 }
 
 void Object::FetchTags()
@@ -113,24 +119,29 @@ const QVector<QString>& Object::getErrors() const {
     return mErrors; // Return a const reference to the vector
 }
 
+bool Object::getFlag(const QString &camelCase) const
+{
+    return hFlagValues[camelCase];
+}
 
-const QList<FlagClassData> Object::getObjectFlags()
+
+const QList<FlagData> Object::getObjectFlags() const
 {
     return mFlags;
 }
 
-const QList<TagData> Object::getObjectTags()
+const QList<TagData> Object::getObjectTags() const
 {
 
     return mTags;
 }
 
-const QList<Key> Object::getObjectDocuments()
+const QList<Key> Object::getObjectDocuments() const
 {
     return mDocuments;
 }
 
-const QList<Key> Object::getObjectAppointments()
+const QList<Key> Object::getObjectAppointments() const
 {
     return mAppointments;
 }
@@ -231,8 +242,6 @@ void Object::populate(QSqlRecord &record)
     mDat.ObjectId = record.value("ObjectId").toUInt();
     mDat.fkObjectType = record.value("fkObjectType").toUInt();
 }
-
-#include "logger.h" // Assume this provides Logger::LogMessage(const QString& message)
 
 bool Object::WriteAbstractValue(QString table, QString fieldName, QString value)
 {
