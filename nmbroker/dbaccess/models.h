@@ -4,6 +4,7 @@
 #include "appointmenttypemodel.h"
 #include "responsesdashboardtablemodel.h"
 #include "tablemodel.h"
+#include "taskmodel.h"
 #include "tasktypemodel.h"
 #include "viewclientsmodel.h"
 #include "viewcontractingfirmsmodel.h"
@@ -31,6 +32,7 @@
 namespace Nutmeg{
 extern std::unique_ptr<Nutmeg::appointmentTypeModel> gAppointmentTypeModel;
 extern std::unique_ptr<Nutmeg::ResponsesDashboardTableModel> gResponsesDashboardTableModel;
+extern std::unique_ptr<Nutmeg::taskModel> gTaskModel;
 extern std::unique_ptr<Nutmeg::taskTypeModel> gTaskTypeModel;
 extern std::unique_ptr<Nutmeg::viewClientsModel> gViewClientsModel;
 extern std::unique_ptr<Nutmeg::viewContractingFirmsModel> gViewContractingFirmsModel;

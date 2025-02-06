@@ -4,6 +4,7 @@ namespace Nutmeg{
 
 std::unique_ptr<Nutmeg::appointmentTypeModel> gAppointmentTypeModel;
 std::unique_ptr<Nutmeg::ResponsesDashboardTableModel> gResponsesDashboardTableModel;
+std::unique_ptr<Nutmeg::taskModel> gTaskModel;
 std::unique_ptr<Nutmeg::taskTypeModel> gTaskTypeModel;
 std::unique_ptr<Nutmeg::viewClientsModel> gViewClientsModel;
 std::unique_ptr<Nutmeg::viewContractingFirmsModel> gViewContractingFirmsModel;

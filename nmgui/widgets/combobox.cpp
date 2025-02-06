@@ -25,14 +25,6 @@ void ComboBox::setTableModel(TableModel *newmod)
 // void ComboBox::setToKey(QSqlTableModel *model, unsigned int key)
 void ComboBox::setToKey(Key key)
 {
-    // int newindex = mModel->rowByPrimaryKey[key];
-    // if(newindex < 0){
-    //     Logger::LogMessage(QString("Tried to set a ComboBox to primary key %1, but that key was not found in the table.").arg(QString::number(key)));
-    //     return;
-    // }
-
-    // setCurrentIndex(newindex);
-
     // Find the index of the key in the model and set the combo box to it
     for (int row = 0; row < mModel->rowCount(); ++row)
     {

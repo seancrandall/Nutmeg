@@ -1298,11 +1298,18 @@ Key Nutdb::GetTagId(QString tagText)
 TaskData Nutdb::GetTask(Key id)
 {
     TaskData dat;
-
     QSqlRecord rec;
-    rec = GetRecord("task", id);
-    if(!mLastOperationSuccessful)
-        return dat;
+
+    if(!gTaskModel)
+        gTaskModel = std::make_unique<taskModel>();
+
+    rec = gTaskModel->keyRecord[id];
+
+    if(rec == QSqlRecord()){
+        rec = GetRecord("task", id);
+        if(!mLastOperationSuccessful)
+            return dat;
+    }
 
     dat.TaskId = rec.KeyField("TaskId");
     dat.fkMatter = rec.KeyField("fkMatter");
