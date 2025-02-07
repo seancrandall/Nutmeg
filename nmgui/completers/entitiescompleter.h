@@ -2,10 +2,9 @@
 #define NUTMEG_ENTITIESCOMPLETER_H
 
 #include <QObject>
-#include <QWidget>
 
 #include "dbaccess/viewentitiesmodel.h"
-#include "widgets/completer.h"
+#include "completer.h"
 
 namespace Nutmeg
 {

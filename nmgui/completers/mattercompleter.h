@@ -4,7 +4,7 @@
 #include <QObject>
 
 #include "dbaccess/viewmattersmodel.h"
-#include "widgets/completer.h"
+#include "completers/completer.h"
 
 namespace Nutmeg
 {
