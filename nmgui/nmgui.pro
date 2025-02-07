@@ -23,6 +23,7 @@ SOURCES += \
     ../nmbroker/dbaccess/exception.cpp \
     ../nmbroker/dbaccess/flagclassmodel.cpp \
     ../nmbroker/dbaccess/models.cpp \
+    ../nmbroker/dbaccess/tagmodel.cpp \
     ../nmbroker/dbaccess/taskmodel.cpp \
     ../nmbroker/dbaccess/viewcopyrightfilingtypesmodel.cpp \
     ../nmbroker/dbaccess/viewfilingsincompletemodel.cpp \
@@ -36,6 +37,7 @@ SOURCES += \
     ../nmbroker/dbaccess/viewresponsetasktypesmodel.cpp \
     ../nmbroker/dbaccess/viewtasksmodel.cpp \
     ../nmbroker/dbaccess/viewtrademarkfilingtypesmodel.cpp \
+    ../nmbroker/dbaccess/viewtrademarkmattersmodel.cpp \
     ../nmbroker/logger.cpp \
     ../nmbroker/nutmeg.cpp \
     panels/appointmentpanel.cpp \
@@ -180,6 +182,7 @@ HEADERS += \
     ../nmbroker/dbaccess/exception.h \
     ../nmbroker/dbaccess/flagclassmodel.h \
     ../nmbroker/dbaccess/models.h \
+    ../nmbroker/dbaccess/tagmodel.h \
     ../nmbroker/dbaccess/taskmodel.h \
     ../nmbroker/dbaccess/viewcopyrightfilingtypesmodel.h \
     ../nmbroker/dbaccess/viewfilingsincompletemodel.h \
@@ -193,6 +196,7 @@ HEADERS += \
     ../nmbroker/dbaccess/viewresponsetasktypesmodel.h \
     ../nmbroker/dbaccess/viewtasksmodel.h \
     ../nmbroker/dbaccess/viewtrademarkfilingtypesmodel.h \
+    ../nmbroker/dbaccess/viewtrademarkmattersmodel.h \
     ../nmbroker/logger.h \
     panels/appointmentpanel.h \
     panels/appointmentpanelfull.h \

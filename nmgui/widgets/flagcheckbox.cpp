@@ -8,7 +8,7 @@ FlagCheckbox::FlagCheckbox(FlagData flag, std::shared_ptr<Object> object, QWidge
     , mFlag(flag)
     , mOrientation(CheckLabelLeft)
 {
-
+    LayoutCheckbox();
 }
 
 FlagCheckbox::FlagCheckbox(QString camelCase, Key objectId, QWidget *parent)
@@ -16,7 +16,7 @@ FlagCheckbox::FlagCheckbox(QString camelCase, Key objectId, QWidget *parent)
     , mObject(std::make_shared<Object>(objectId))
     , mFlag(mObject->flag[camelCase])
 {
-
+    LayoutCheckbox();
 }
 
 FlagCheckbox::FlagCheckbox()
@@ -25,7 +25,7 @@ FlagCheckbox::FlagCheckbox()
     , mFlag(FlagData())
     , mOrientation(CheckLabelLeft)
 {
-
+    LayoutCheckbox();
 }
 
 void FlagCheckbox::LayoutCheckbox()

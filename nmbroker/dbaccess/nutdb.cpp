@@ -1225,9 +1225,16 @@ PersonData Nutdb::GetPerson(Key id)
     QSqlRecord rec;
     PersonData dat;
 
-    rec = GetRecord("person", id);
-    if(!mLastOperationSuccessful)
-        return dat;
+    if(!gViewPeopleModel)
+        gViewPeopleModel = std::make_unique<viewPeopleModel>();
+
+    rec = gViewPeopleModel->keyRecord[id];
+
+    if(rec == QSqlRecord()){
+        rec = GetRecord("person", id);
+        if(!mLastOperationSuccessful)
+            return dat;
+    }
 
     dat.PersonId = rec.UIntField("PersonId");
     dat.FirstName = rec.StringField("FirstName");
@@ -1268,11 +1275,18 @@ ResponseData Nutdb::GetResponse(Key id)
 TagData Nutdb::GetTag(Key id)
 {
     TagData dat;
-
     QSqlRecord rec;
-    rec = GetRecord("tag", id);
-    if(!mLastOperationSuccessful)
-        return dat;
+
+    if(!gTagModel)
+        gTagModel = std::make_unique<tagModel>();
+
+    rec = gTagModel->keyRecord[id];
+
+    if(rec == QSqlRecord()){
+        rec = GetRecord("tag", id);
+        if(!mLastOperationSuccessful)
+            return dat;
+    }
 
     dat.TagId = rec.UIntField("TagId");
     dat.TagText = rec.StringField("TagText");
@@ -1326,11 +1340,18 @@ TaskData Nutdb::GetTask(Key id)
 TrademarkMatterData Nutdb::GetTrademarkMatter(Key id)
 {
     TrademarkMatterData dat;
-
     QSqlRecord rec;
-    rec = GetRecord("trademarkMatter", id);
-    if(!mLastOperationSuccessful)
-        return dat;
+
+    if(!gViewTrademarkMattersModel)
+        gViewTrademarkMattersModel = std::make_unique<viewTrademarkMattersModel>();
+
+    rec = gViewTrademarkMattersModel->keyRecord[id];
+
+    if(rec == QSqlRecord()){
+        rec = GetRecord("trademarkMatter", id);
+        if(!mLastOperationSuccessful)
+            return dat;
+    }
 
     dat.TrademarkMatterId = rec.KeyField("TrademarkMatterId");
     dat.FirstUseInCommerce = rec.DateField("FirstUseInCommerce");

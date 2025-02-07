@@ -2,10 +2,12 @@
 #define MODELS_H
 
 #include "appointmenttypemodel.h"
+#include "dbaccess/viewtrademarkmattersmodel.h"
 #include "deadlinemodel.h"
 #include "dbaccess/viewobjectflagsmodel.h"
 #include "responsesdashboardtablemodel.h"
 #include "tablemodel.h"
+#include "tagmodel.h"
 #include "tasktypemodel.h"
 #include "viewclientsmodel.h"
 #include "viewcontractingfirmsmodel.h"
@@ -38,6 +40,7 @@ namespace Nutmeg{
 extern std::unique_ptr<Nutmeg::appointmentTypeModel> gAppointmentTypeModel;
 extern std::unique_ptr<Nutmeg::deadlineModel> gDeadlineModel;
 extern std::unique_ptr<Nutmeg::ResponsesDashboardTableModel> gResponsesDashboardTableModel;
+extern std::unique_ptr<Nutmeg::tagModel> gTagModel;
 extern std::unique_ptr<Nutmeg::taskTypeModel> gTaskTypeModel;
 extern std::unique_ptr<Nutmeg::viewClientsModel> gViewClientsModel;
 extern std::unique_ptr<Nutmeg::viewContractingFirmsModel> gViewContractingFirmsModel;
@@ -63,6 +66,7 @@ extern std::unique_ptr<Nutmeg::viewResponseTaskTypesModel> gViewResponseTaskType
 extern std::unique_ptr<Nutmeg::viewTaskClassModel> gViewTaskClassModel;
 extern std::unique_ptr<Nutmeg::viewTaskTypesModel> gViewTaskTypesModel;
 extern std::unique_ptr<Nutmeg::viewTrademarkFilingTypesModel> gViewTrademarkFilingTypesModel;
+extern std::unique_ptr<Nutmeg::viewTrademarkMattersModel> gViewTrademarkMattersModel;
 extern std::unique_ptr<Nutmeg::viewTasksModel> gViewTasksModel;
 extern std::unique_ptr<Nutmeg::viewTrademarkTaskTypesModel> gViewTrademarkTaskTypesModel;
 extern std::unique_ptr<Nutmeg::viewWorkAttorneysModel> gViewWorkAttorneysModel;

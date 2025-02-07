@@ -131,7 +131,7 @@ bool Object::getFlag(const QString &camelCase)
 
 const QList<FlagData> Object::getObjectFlags() const
 {
-    return mFlags;
+    return Nutdb::GetObjectFlags(mDat.ObjectId);
 }
 
 const QList<TagData> Object::getObjectTags() const

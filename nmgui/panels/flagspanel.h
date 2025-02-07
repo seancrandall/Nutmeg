@@ -20,7 +20,10 @@ class FlagsPanel : public Nutmeg::Frame
     FlagsPanel(Key objectid, QWidget *parent=nullptr);
 
   protected:
-    Nutmeg::Object object;
+    std::shared_ptr<Object> mObject;
+
+  private:
+    void SetupPanel(void);
 };
 
 } // namespace Nutmeg
