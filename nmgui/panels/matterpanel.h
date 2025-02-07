@@ -39,17 +39,14 @@ public:
     MatterPanel(Key matterid, QWidget *parent = nullptr);
 
 public slots:
-    void slotScatter(void);
-    void slotGather(void);
+    void scatter(void);
+    void gather(void);
 
 protected:
-    void setupDisplay(void);
-    void connectSignalsAndSlots(void);
     void initializeObjects(void);
     void setupLayouts(void);
 
     // Layouts
-
     QVBoxLayout *vone = new QVBoxLayout();
     QGridLayout *grid, *fullLayout;
 
@@ -57,11 +54,7 @@ protected:
     LabeledWidgetLeft *lId, *lDocketNumber, *lParent, *lClientDocket, *lClient, *lTitle, *lAssigningFirm,
         *lDefaultWorkAttorney, *lDefaultParalegal, *lJurisdiction;
 
-    // Models
-    viewParalegalsModel *modParalegals = new viewParalegalsModel(this);
-
     // Controls
-    //GroupBox *groupGeneralMatter;
     LineDisplayId *cId;
     LineEdit *cDocketNumber;
     MatterSearchBox *cParent;
@@ -76,7 +69,6 @@ protected:
     std::shared_ptr<Matter> matter;
 
 private:
-    //void SetupDisplay(void);
     void ConnectSignalsAndSlots(void);
 };
 

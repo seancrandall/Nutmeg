@@ -32,12 +32,12 @@ void MatterDialog::connectSignalsAndSlots(void)
 
 void MatterDialog::slotScatter(void)
 {
-    mPanel->slotScatter();
+    mPanel->scatter();
 }
 
 void MatterDialog::slotGather(void)
 {
-    mPanel->slotGather();
+    mPanel->gather();
 }
 
 void MatterDialog::layoutWorkspace()

@@ -6,6 +6,7 @@
 #include <QWidget>
 
 #include "nutmeg.h"
+#include "property.h"
 
 namespace Nutmeg
 {
@@ -13,8 +14,13 @@ namespace Nutmeg
 class TextEdit : public QTextEdit
 {
     Q_OBJECT
-  public:
+public:
     TextEdit(QWidget *parent = nullptr);
+
+    Property(getText, setText) QString text;
+
+    const QString getText(void) const;
+    void setText(const QString& newtext);
 };
 
 } // namespace Nutmeg

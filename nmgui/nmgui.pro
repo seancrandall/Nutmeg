@@ -53,6 +53,7 @@ SOURCES += \
     panels/appointmentpanelfull.cpp \
     panels/deadlinespanel.cpp \
     panels/entitiespanel.cpp \
+    panels/entitypanel.cpp \
     panels/filingpanel.cpp \
     panels/filingtaskpanel.cpp \
     panels/flagspanel.cpp \
@@ -162,6 +163,7 @@ SOURCES += \
     windows/dialog.cpp \
     widgets/lineedit.cpp \
     widgets/groupbox.cpp \
+    windows/entitydialog.cpp \
     windows/insertdialog.cpp \
     windows/insertentitydialog.cpp \
     windows/insertinventordialog.cpp \
@@ -213,6 +215,7 @@ HEADERS += \
     panels/appointmentpanelfull.h \
     panels/deadlinespanel.h \
     panels/entitiespanel.h \
+    panels/entitypanel.h \
     panels/filingpanel.h \
     panels/filingtaskpanel.h \
     panels/flagspanel.h \
@@ -325,6 +328,7 @@ HEADERS += \
     windows/dialog.h \
     widgets/lineedit.h \
     widgets/groupbox.h \
+    windows/entitydialog.h \
     windows/insertdialog.h \
     windows/insertentitydialog.h \
     windows/insertinventordialog.h \

@@ -8,7 +8,7 @@ MatterPanel::MatterPanel(std::shared_ptr<Matter> matterin, QWidget *parent)
 {
     initializeObjects();
     setupLayouts();
-    slotScatter();
+    scatter();
     ConnectSignalsAndSlots();
 }
 
@@ -18,7 +18,7 @@ MatterPanel::MatterPanel(Key matterid, QWidget *parent)
 {
     initializeObjects();
     setupLayouts();
-    slotScatter();
+    scatter();
     ConnectSignalsAndSlots();
 }
 
@@ -27,7 +27,7 @@ void MatterPanel::ConnectSignalsAndSlots()
 
 }
 
-void MatterPanel::slotScatter()
+void MatterPanel::scatter()
 {
     cDocketNumber->text = matter->AttorneyDocketNumber;
     cParent->key = matter->fkParent;
@@ -39,7 +39,7 @@ void MatterPanel::slotScatter()
     cJurisdiction->key = matter->fkMatterJurisdiction;
 }
 
-void MatterPanel::slotGather()
+void MatterPanel::gather()
 {
     // matter.id is not editable
 #ifdef QT_DEBUG
@@ -59,6 +59,21 @@ void MatterPanel::slotGather()
 
 void MatterPanel::initializeObjects()
 {
+    if(!gViewParalegalsModel)
+        gViewParalegalsModel = std::make_unique<viewParalegalsModel>();
+
+    if(!gViewContractingFirmsModel)
+        gViewContractingFirmsModel = std::make_unique<viewContractingFirmsModel>();
+
+    if(!gViewClientsModel)
+        gViewClientsModel = std::make_unique<viewClientsModel>();
+
+    if(!gViewWorkAttorneysModel)
+        gViewWorkAttorneysModel = std::make_unique<viewWorkAttorneysModel>();
+
+    if(!gViewJurisdictionsModel)
+        gViewJurisdictionsModel = std::make_shared<viewJurisdictionsModel>();
+
     grid = new QGridLayout();
     fullLayout = new QGridLayout();
 
@@ -71,13 +86,13 @@ void MatterPanel::initializeObjects()
     cClientDocket = new LineEdit();
 
     cClient = new ComboBox();
-    cClient->model = new viewClientsModel();
+    cClient->model = gViewClientsModel.get();
     cClient->column = 3;
 
     cTitle = new TitleEdit(matter);
 
     cAssigningFirm = new ComboBox();
-    cAssigningFirm->model = new viewContractingFirmsModel();
+    cAssigningFirm->model = gViewContractingFirmsModel.get();
     cAssigningFirm->column = 1;
 
     cDefaultWorkAttorney = new WorkAttorneySearchBox();
@@ -85,7 +100,7 @@ void MatterPanel::initializeObjects()
     cDefaultParalegal = new ParalegalSearchBox();
 
     cJurisdiction = new ComboBox();
-    cJurisdiction->model = new viewJurisdictionsModel();
+    cJurisdiction->model = gViewJurisdictionsModel.get();
     cJurisdiction->column = 1;
 }
 

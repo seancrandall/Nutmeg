@@ -45,7 +45,7 @@ Entity::Entity(String entityName) : Nutmeg::Object()
     InitializeEntity(id);
 }
 
-bool Entity::slotUpdate(EntityData dat)
+bool Entity::update(EntityData dat)
 {
     bool result = Nutdb::UpdateEntity(dat);
     if(!result) return false;
@@ -63,7 +63,7 @@ bool Entity::SetId(Key newval)
 
 bool Entity::Commit()
 {
-    return slotUpdate(mDat);
+    return update(mDat);
 }
 
 bool Entity::slotSetEntityName(String newval)

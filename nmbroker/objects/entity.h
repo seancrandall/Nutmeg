@@ -44,7 +44,7 @@ class Entity : public Nutmeg::Object
     Key getfkJurisdiction(void) { return mDat.fkJurisdiction; }
     String getDocketPrefix(void) { return mDat.DocketPrefix; }
 
-    bool slotUpdate(EntityData dat);
+    bool update(EntityData dat);
     virtual bool SetId(Key newval) override;
     virtual bool Commit(void) override;
 
@@ -61,18 +61,18 @@ class Entity : public Nutmeg::Object
     bool slotSetfkJurisdiction(Key newval);
     bool slotSetDocketPrefix(String newval);
 
-    void holdSetEntityName(String newval){mDat.EntityName = newval; dirty["EntityName"] = true;}
-    void holdSetFullLegalName(String newval){mDat.FullLegalName = newval; dirty["FullLegalName"] = true;}
-    void holdSetPrimaryAddress(String newval){mDat.PrimaryAddress = newval; dirty["PrimaryAddress"] = true;}
-    void holdSetSecondaryAddress(String newval){mDat.SecondaryAddress = newval; dirty["SecondaryAddress"] = true;}
-    void holdSetWebsite(String newval){mDat.Website = newval; dirty["Website"] = true;}
-    void holdSetPrimaryPhone(String newval){mDat.PrimaryPhone = newval; dirty["PrimaryPhone"] = true;}
-    void holdSetSecondaryPhone(String newval){mDat.SecondaryPhone = newval; dirty["SecondaryPhone"] = true;}
-    void holdSetFaxNumber(String newval){mDat.FaxNumber = newval; dirty["FaxNumber"] = true;}
-    void holdSetPrimaryEmail(String newval){mDat.PrimaryEmail = newval; dirty["PrimaryEmail"] = true;}
-    void holdSetSecondaryEmail(String newval){mDat.SecondaryEmail = newval; dirty["SecondaryEmail"] = true;}
-    void holdSetfkJurisdiction(Key newval){mDat.fkJurisdiction = newval; dirty["fkJurisdiction"] = true;}
-    void holdSetDocketPrefix(String newval){mDat.DocketPrefix = newval; dirty["DocketPrefix"] = true;}
+    void holdEntityName(String newval){mDat.EntityName = newval; dirty["EntityName"] = true;}
+    void holdFullLegalName(String newval){mDat.FullLegalName = newval; dirty["FullLegalName"] = true;}
+    void holdPrimaryAddress(String newval){mDat.PrimaryAddress = newval; dirty["PrimaryAddress"] = true;}
+    void holdSecondaryAddress(String newval){mDat.SecondaryAddress = newval; dirty["SecondaryAddress"] = true;}
+    void holdWebsite(String newval){mDat.Website = newval; dirty["Website"] = true;}
+    void holdPrimaryPhone(String newval){mDat.PrimaryPhone = newval; dirty["PrimaryPhone"] = true;}
+    void holdSecondaryPhone(String newval){mDat.SecondaryPhone = newval; dirty["SecondaryPhone"] = true;}
+    void holdFaxNumber(String newval){mDat.FaxNumber = newval; dirty["FaxNumber"] = true;}
+    void holdPrimaryEmail(String newval){mDat.PrimaryEmail = newval; dirty["PrimaryEmail"] = true;}
+    void holdSecondaryEmail(String newval){mDat.SecondaryEmail = newval; dirty["SecondaryEmail"] = true;}
+    void holdfkJurisdiction(Key newval){mDat.fkJurisdiction = newval; dirty["fkJurisdiction"] = true;}
+    void holdDocketPrefix(String newval){mDat.DocketPrefix = newval; dirty["DocketPrefix"] = true;}
 
     virtual bool slotAssignRole(Key roleid);
 
