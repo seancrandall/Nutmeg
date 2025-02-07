@@ -2,6 +2,7 @@
 #define MODELS_H
 
 #include "appointmenttypemodel.h"
+#include "dbaccess/viewpatentmattersmodel.h"
 #include "dbaccess/viewtrademarkmattersmodel.h"
 #include "deadlinemodel.h"
 #include "dbaccess/viewobjectflagsmodel.h"
@@ -57,6 +58,7 @@ extern std::unique_ptr<Nutmeg::viewObjectFlagsModel> gViewObjectFlagsModel;
 extern std::unique_ptr<Nutmeg::viewObjectTagsModel> gViewObjectTagsModel;
 extern std::unique_ptr<Nutmeg::viewParalegalsModel> gViewParalegalsModel;
 extern std::unique_ptr<Nutmeg::viewPatentExaminersModel> gViewPatentExaminersModel;
+extern std::unique_ptr<Nutmeg::viewPatentMattersModel> gViewPatentMattersModel;
 extern std::unique_ptr<Nutmeg::viewPatentFilingTypesModel> gViewPatentFilingTypesModel;
 extern std::unique_ptr<Nutmeg::viewPatentTaskTypesModel> gViewPatentTaskTypesModel;
 extern std::unique_ptr<Nutmeg::viewPeopleModel> gViewPeopleModel;

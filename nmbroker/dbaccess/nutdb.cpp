@@ -912,9 +912,14 @@ EnterpriseData Nutdb::GetEnterprise(Key id)
     QSqlRecord rec;
     EnterpriseData dat;
 
-    rec = GetRecord("enterprise", id);
-    if(!mLastOperationSuccessful)
-        return dat;
+    if(!gViewEntitiesModel)
+        gViewEntitiesModel = std::make_unique<viewEntitiesModel>();
+
+    if(rec == QSqlRecord()){
+        rec = GetRecord("enterprise", id);
+        if(!mLastOperationSuccessful)
+            return dat;
+    }
 
     dat.EnterpriseId = rec.KeyField("EnterpriseId");
     dat.EnterpriseName = rec.StringField("EnterpriseName");
@@ -940,9 +945,18 @@ EntityData Nutdb::GetEntity(Key id)
     QSqlRecord rec;
     EntityData dat;
 
-    rec = GetRecord("entity", id);
-    if(!mLastOperationSuccessful)
-        return dat;
+    if(!gViewEntitiesModel)
+        gViewEntitiesModel = std::make_unique<viewEntitiesModel>();
+
+    rec = gViewEntitiesModel->keyRecord[id];
+
+    //If for whatever reason, getting from the QSqlTableModel failed
+    //Try to read directly from the db instead.
+    if(rec == QSqlRecord()){
+        rec = GetRecord("entity", id);
+        if(!mLastOperationSuccessful)
+            return dat;
+    }
 
     dat.EntityId = rec.UIntField("EntityId");
     dat.EntityName = rec.StringField("EntityName");
@@ -984,17 +998,41 @@ FilingData Nutdb::GetFiling(Key id)
 
 bool Nutdb::GetFlag(Key objectId, QString camelCase)
 {
-    QVariantList params;
+    if(!gViewObjectFlagsModel)
+        gViewObjectFlagsModel = std::make_unique<viewObjectFlagsModel>();
 
-    params.append(NullableInteger(objectId));
-    params.append(camelCase);
+    bool flagValue = false
+        , found = false;
+    QSqlRecord rec;
 
-    QVariant flagval;
-    QVariant result = CallStoredReturnProcedure("GetFlag", params);
-    if(!mLastOperationSuccessful)
-        return false;
+    gViewObjectFlagsModel->setFilter(QString("fkObject = %1").arg(objectId));
 
-    return result.toBool();
+    for(auto i=0; i < gViewObjectFlagsModel->rowCount(); ++i){
+        QString camel;
+        camel = gViewObjectFlagsModel->record(i).field("CamelCase").value().toString();
+        if(camel == camelCase){
+            found = true;
+            flagValue = gViewObjectFlagsModel->record(i).field("FlagValue").value().toBool();
+            break;
+        }
+    }
+
+    //If we couldn't find it in the loaded table, try a native database call
+    //as a backup
+    if(!found){
+        QVariantList params;
+
+        params.append(NullableInteger(objectId));
+        params.append(camelCase);
+
+        QVariant flagval;
+        QVariant result = CallStoredReturnProcedure("GetFlag", params);
+        if(!mLastOperationSuccessful)
+            return false;
+        else
+            flagValue = result.toBool();
+    }
+    return flagValue;
 }
 
 FlagClassData Nutdb::GetFlagClass(QString camelCase)
@@ -1197,9 +1235,16 @@ PatentMatterData Nutdb::GetPatentMatter(Key id)
     QSqlRecord rec;
     PatentMatterData dat;
 
-    rec = GetRecord("patentMatter", id);
-    if(!mLastOperationSuccessful)
-        return dat;
+    if(!gViewPatentMattersModel)
+        gViewPatentMattersModel = std::make_unique<viewPatentMattersModel>();
+
+    rec = gViewPatentMattersModel->keyRecord[id];
+
+    if(rec == QSqlRecord()){
+        rec = GetRecord("patentMatter", id);
+        if(!mLastOperationSuccessful)
+            return dat;
+    }
 
     dat.PatentMatterId = rec.KeyField("PatentMatterId");
     dat.FilingDate = rec.field("FilingDate").value().toDate();
@@ -1296,11 +1341,25 @@ TagData Nutdb::GetTag(Key id)
 
 Key Nutdb::GetTagId(QString tagText)
 {
-    QVariantList params;
+    // Use default database connection
+    QSqlDatabase db = QSqlDatabase::database();
+    Key tagId = 0;
 
-    params.append(tagText);
+    if (db.isValid() && db.isOpen()) {
+        QSqlQuery query(db);
+        query.prepare("SELECT TagId FROM tag WHERE TagText = :tagText");
+        query.bindValue(":tagText", tagText);
 
-    return CallStoredReturnProcedure("GetTagId", params).toUInt();
+        if (query.exec() && query.next()) {
+            tagId = query.value(0).toUInt();
+        } else {
+            qWarning() << "Failed to execute query or no results found:" << query.lastError().text();
+        }
+    } else {
+        qWarning() << "Database not valid or not open.";
+    }
+
+    return tagId;
 }
 
 TaskData Nutdb::GetTask(Key id)

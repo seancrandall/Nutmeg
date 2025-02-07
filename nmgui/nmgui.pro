@@ -33,6 +33,7 @@ SOURCES += \
     ../nmbroker/dbaccess/viewobjectflagsmodel.cpp \
     ../nmbroker/dbaccess/viewobjecttagsmodel.cpp \
     ../nmbroker/dbaccess/viewpatentfilingtypesmodel.cpp \
+    ../nmbroker/dbaccess/viewpatentmattersmodel.cpp \
     ../nmbroker/dbaccess/viewresponsesmodel.cpp \
     ../nmbroker/dbaccess/viewresponsetasktypesmodel.cpp \
     ../nmbroker/dbaccess/viewtasksmodel.cpp \
@@ -192,6 +193,7 @@ HEADERS += \
     ../nmbroker/dbaccess/viewobjectflagsmodel.h \
     ../nmbroker/dbaccess/viewobjecttagsmodel.h \
     ../nmbroker/dbaccess/viewpatentfilingtypesmodel.h \
+    ../nmbroker/dbaccess/viewpatentmattersmodel.h \
     ../nmbroker/dbaccess/viewresponsesmodel.h \
     ../nmbroker/dbaccess/viewresponsetasktypesmodel.h \
     ../nmbroker/dbaccess/viewtasksmodel.h \

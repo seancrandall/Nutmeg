@@ -23,6 +23,7 @@ std::unique_ptr<Nutmeg::viewObjectTagsModel> gViewObjectTagsModel;
 std::unique_ptr<Nutmeg::viewParalegalsModel> gViewParalegalsModel;
 std::unique_ptr<Nutmeg::viewPatentExaminersModel> gViewPatentExaminersModel;
 std::unique_ptr<Nutmeg::viewPatentFilingTypesModel> gViewPatentFilingTypesModel;
+std::unique_ptr<Nutmeg::viewPatentMattersModel> gViewPatentMattersModel;
 std::unique_ptr<Nutmeg::viewPatentTaskTypesModel> gViewPatentTaskTypesModel;
 std::unique_ptr<Nutmeg::viewPeopleModel> gViewPeopleModel;
 std::unique_ptr<Nutmeg::viewResponsesModel> gViewResponsesModel;
