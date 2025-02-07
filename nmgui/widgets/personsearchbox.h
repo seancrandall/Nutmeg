@@ -2,7 +2,7 @@
 #define NUTMEG_PERSONSEARCHBOX_H
 
 #include "abstractsearchbox.h"
-#include "widgets/peoplecompleter.h"
+#include "completers/peoplecompleter.h"
 #include "windows/insertpersondialog.h"
 #include <QObject>
 #include <QWidget>

@@ -41,6 +41,14 @@ SOURCES += \
     ../nmbroker/dbaccess/viewtrademarkmattersmodel.cpp \
     ../nmbroker/logger.cpp \
     ../nmbroker/nutmeg.cpp \
+    completers/completer.cpp \
+    completers/entitiescompleter.cpp \
+    completers/examinercompleter.cpp \
+    completers/inventorcompleter.cpp \
+    completers/mattercompleter.cpp \
+    completers/paralegalcompleter.cpp \
+    completers/peoplecompleter.cpp \
+    completers/tagcompleter.cpp \
     panels/appointmentpanel.cpp \
     panels/appointmentpanelfull.cpp \
     panels/deadlinespanel.cpp \
@@ -74,9 +82,7 @@ SOURCES += \
     widgets/flagcheckbox.cpp \
     widgets/inventorbutton.cpp \
     widgets/inventoreditadd.cpp \
-    widgets/paralegalcompleter.cpp \
     widgets/paralegalsearchbox.cpp \
-    widgets/peoplecompleter.cpp \
     widgets/personsearchbox.cpp \
     widgets/spinbox.cpp \
     widgets/timeedit.cpp \
@@ -121,7 +127,6 @@ SOURCES += \
     ../nmbroker/objects/task.cpp \
     ../nmbroker/objects/trademarkmatter.cpp \
     ../nmbroker/settings.cpp \
-    widgets/completer.cpp \
     main.cpp \
     mainwindow.cpp \
     widgets/abstractsearchbox.cpp \
@@ -133,18 +138,14 @@ SOURCES += \
     widgets/docketnumberbutton.cpp \
     widgets/donebutton.cpp \
     widgets/eibutton.cpp \
-    widgets/entitiescompleter.cpp \
     widgets/entitiessearchbox.cpp \
-    widgets/examinercompleter.cpp \
     widgets/examinersearchbox.cpp \
     widgets/filingsview.cpp \
     widgets/informationbox.cpp \
-    widgets/inventorcompleter.cpp \
     widgets/inventorssearchbox.cpp \
     widgets/label.cpp \
     widgets/labeledwidgetleft.cpp \
     widgets/linedisplayid.cpp \
-    widgets/mattercompleter.cpp \
     widgets/mattersearchbox.cpp \
     widgets/messagebox.cpp \
     widgets/plusbutton.cpp \
@@ -200,6 +201,14 @@ HEADERS += \
     ../nmbroker/dbaccess/viewtrademarkfilingtypesmodel.h \
     ../nmbroker/dbaccess/viewtrademarkmattersmodel.h \
     ../nmbroker/logger.h \
+    completers/completer.h \
+    completers/entitiescompleter.h \
+    completers/examinercompleter.h \
+    completers/inventorcompleter.h \
+    completers/mattercompleter.h \
+    completers/paralegalcompleter.h \
+    completers/peoplecompleter.h \
+    completers/tagcompleter.h \
     panels/appointmentpanel.h \
     panels/appointmentpanelfull.h \
     panels/deadlinespanel.h \
@@ -233,9 +242,7 @@ HEADERS += \
     widgets/flagcheckbox.h \
     widgets/inventorbutton.h \
     widgets/inventoreditadd.h \
-    widgets/paralegalcompleter.h \
     widgets/paralegalsearchbox.h \
-    widgets/peoplecompleter.h \
     widgets/personsearchbox.h \
     widgets/spinbox.h \
     widgets/timeedit.h \
@@ -284,7 +291,6 @@ HEADERS += \
     ../nmbroker/property.h \
     ../nmbroker/settings.h \
     ../nmbroker/structures.h \
-    widgets/completer.h \
     mainwindow.h \
     widgets/abstractsearchbox.h \
     widgets/addnewbutton.h \
@@ -295,18 +301,14 @@ HEADERS += \
     widgets/docketnumberbutton.h \
     widgets/donebutton.h \
     widgets/eibutton.h \
-    widgets/entitiescompleter.h \
     widgets/entitiessearchbox.h \
-    widgets/examinercompleter.h \
     widgets/examinersearchbox.h \
     widgets/filingsview.h \
     widgets/informationbox.h \
-    widgets/inventorcompleter.h \
     widgets/inventorssearchbox.h \
     widgets/label.h \
     widgets/labeledwidgetleft.h \
     widgets/linedisplayid.h \
-    widgets/mattercompleter.h \
     widgets/mattersearchbox.h \
     widgets/messagebox.h \
     widgets/plusbutton.h \

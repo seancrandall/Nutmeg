@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QWidget>
 
-#include "widgets/inventorcompleter.h"
+#include "completers/inventorcompleter.h"
 #include "widgets/personsearchbox.h"
 
 namespace Nutmeg

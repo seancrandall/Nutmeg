@@ -5,7 +5,7 @@
 #include <QWidget>
 
 #include "personsearchbox.h"
-#include "paralegalcompleter.h"
+#include "completers/paralegalcompleter.h"
 
 namespace Nutmeg {
 

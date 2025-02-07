@@ -2,7 +2,7 @@
 #define NUTMEG_ENTITIESSEARCHBOX_H
 
 #include "abstractsearchbox.h"
-#include "widgets/entitiescompleter.h"
+#include "completers/entitiescompleter.h"
 #include <QObject>
 #include <QWidget>
 

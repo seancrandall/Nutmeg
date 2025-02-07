@@ -1,7 +1,7 @@
 #ifndef NUTMEG_EXAMINERSEARCHBOX_H
 #define NUTMEG_EXAMINERSEARCHBOX_H
 
-#include "widgets/examinercompleter.h"
+#include "completers/examinercompleter.h"
 #include "widgets/personsearchbox.h"
 #include <QObject>
 #include <QWidget>

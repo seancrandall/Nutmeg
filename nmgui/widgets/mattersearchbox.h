@@ -6,7 +6,7 @@
 #include <QWidget>
 
 #include "widgets/abstractsearchbox.h"
-#include "widgets/mattercompleter.h"
+#include "completers/mattercompleter.h"
 
 namespace Nutmeg
 {
