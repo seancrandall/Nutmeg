@@ -51,7 +51,6 @@ void MatterDialog::Initialize()
     connectSignalsAndSlots();
     slotScatter();
     layoutWorkspace();
-    connectSignalsAndSlots();
 }
 
 } // namespace Nutmeg
