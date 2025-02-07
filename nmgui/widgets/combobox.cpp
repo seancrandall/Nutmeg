@@ -52,11 +52,15 @@ bool ComboBox::eventFilter(QObject *object, QEvent *event)
 Key ComboBox::getKey(void)
 {
     int row = currentIndex();
-    QSqlRecord record = mModel->record(row);
-    Key foundkey = record.value(0).toULongLong();
-    emit signalKeyChanged(foundkey);
-    //qDebug() << "Emitting modelKeyChanged with key:" << foundkey;
-    return foundkey;
+    if (row != -1 && mModel) // Check if we have a valid selection and a model
+    {
+        QSqlRecord record = mModel->record(row);
+        if (!record.isEmpty())
+        {
+            return record.value(0).toUInt(); // Primary key is in the first column (index 0)
+        }
+    }
+    return 0;
 }
 
 } // namespace Nutmeg

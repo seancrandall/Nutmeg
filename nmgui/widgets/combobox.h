@@ -44,7 +44,6 @@ class ComboBox : public QComboBox
 
   protected:
     TableModel *mModel;
-    // QAbstractItemModel *mModel;
     bool eventFilter(QObject *object, QEvent *event) override;
 
   protected slots:
