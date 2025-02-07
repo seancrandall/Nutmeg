@@ -49,6 +49,7 @@ class Object
     Property(getObjectType, setObjectType) String objectType;
     ReadOnlyProperty(getObjectFlags) QList<FlagData> flags;
     Property(getFlag, SetFlagValue) bool flag[];
+    Property(getFlagData, setFlagData) FlagData flagData[];
     ReadOnlyProperty(getTags) QList<TagData> tags;
     ReadOnlyProperty(getObjectDocuments) QList<Key> docs;
     ReadOnlyProperty(getObjectAppointments) QList<Key> appointments;
@@ -72,11 +73,13 @@ class Object
 
     const QList<FlagData> getObjectFlags(void) const;
     bool getFlag(const QString& camelCase);
+    FlagData getFlagData(const QString& camelCase);
     const QList<TagData> getObjectTags(void) const;
     const QList<Key> getObjectDocuments(void) const;
     const QList<Key> getObjectAppointments(void) const;
 
     bool SetFlag(QString camelCase);
+    bool setFlagData(QString camelCase, bool value);
     bool ClearFlag(QString camelCase);
     bool SetFlagValue(QString camelCase, bool value);
     bool TagObject(QString tagText);

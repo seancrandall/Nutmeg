@@ -51,7 +51,7 @@ signals:
 protected:
     std::shared_ptr<Object> mObject;
     FlagData mFlag;
-    CBoxOrientation mOrientation;
+    CBoxOrientation mOrientation = CheckLabelLeft;
 
     QGridLayout *layout;
     CheckBox *cBox;
@@ -60,7 +60,7 @@ protected:
     void LayoutCheckbox(void);
 
 protected slots:
-    void UpdateValue(void);
+    void UpdateValue(bool newValue);
 };
 
 } // namespace Nutmeg

@@ -129,6 +129,24 @@ bool Object::getFlag(const QString &camelCase)
     return hFlagValues[camelCase];
 }
 
+FlagData Object::getFlagData(const QString &camelCase)
+{
+    FlagData dat;
+    bool found = false;
+
+    for(int i=0; i < mFlags.size(); ++i){
+        if(mFlags[i].CamelCase == camelCase){
+            dat = mFlags[i];
+            found = true;
+            break;
+        }
+    }
+    if(found)
+        return dat;
+    else
+        return FlagData();
+}
+
 const QList<FlagData> Object::getObjectFlags() const
 {
     return Nutdb::GetObjectFlags(mDat.ObjectId);
@@ -155,6 +173,19 @@ bool Object::SetFlag(QString camelCase)
     bool result = (bool) Nutdb::SetFlag(mDat.ObjectId, camelCase);
     if(result)
         getObjectFlags();
+    return result;
+}
+
+
+bool Object::setFlagData(QString camelCase, bool value)
+{
+    bool result = false;
+    if(value){
+        result = (bool) Nutdb::SetFlag(mDat.ObjectId, camelCase);
+    } else {
+        result = (bool) Nutdb::ClearFlag(mDat.ObjectId, camelCase);
+    }
+
     return result;
 }
 

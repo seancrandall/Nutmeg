@@ -6,16 +6,15 @@ FlagCheckbox::FlagCheckbox(FlagData flag, std::shared_ptr<Object> object, QWidge
     : Frame(parent)
     , mObject(object)
     , mFlag(flag)
-    , mOrientation(CheckLabelLeft)
 {
     LayoutCheckbox();
 }
 
 FlagCheckbox::FlagCheckbox(QString camelCase, Key objectId, QWidget *parent)
     : Frame(parent)
-    , mObject(std::make_shared<Object>(objectId))
-    , mFlag(mObject->flag[camelCase])
 {
+    mObject = std::make_shared<Object>(objectId);
+    mFlag = mObject->flagData[camelCase];
     LayoutCheckbox();
 }
 
@@ -23,7 +22,6 @@ FlagCheckbox::FlagCheckbox()
     : Frame(nullptr)
     , mObject(nullptr)
     , mFlag(FlagData())
-    , mOrientation(CheckLabelLeft)
 {
     LayoutCheckbox();
 }
@@ -60,10 +58,11 @@ void FlagCheckbox::LayoutCheckbox()
                      this, &FlagCheckbox::UpdateValue);
 }
 
-void FlagCheckbox::UpdateValue()
+void FlagCheckbox::UpdateValue(bool newValue)
 {
+    mFlag.FlagValue = newValue;
     if(mObject)
-        mObject->flag[mFlag.CamelCase] = mFlag.FlagValue;
+        mObject->flag[mFlag.CamelCase] = newValue;
 }
 
 } // namespace Nutmeg
