@@ -21,12 +21,12 @@ ExaminerSearchBox::ExaminerSearchBox(Key initkey, QWidget *parent) : Nutmeg::Per
 void ExaminerSearchBox::slotAddRecord(const QString &input)
 {
     Q_UNUSED(input);
-    if (isNew)
-    {
-        InsertPersonDialog diag(FirstName, LastName, this);
-        key = diag.exec();
-        emit signalKeySelected(key);
-    }
+    // if (isNew)
+    // {
+    //     InsertPersonDialog diag(FirstName, LastName, this);
+    //     key = diag.exec();
+    //     emit signalKeySelected(key);
+    // }
 }
 
 void ExaminerSearchBox::Initialize()

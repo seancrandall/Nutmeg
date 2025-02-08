@@ -19,6 +19,8 @@ public:
     explicit InventorsPanel(Key patentMatterId, QWidget *parent=nullptr);
     explicit InventorsPanel(std::shared_ptr<PatentMatter> patentMatter, QWidget *parent=nullptr);
 
+signals:
+    void inventorsChanged(void);
 
 protected:
     std::shared_ptr<PatentMatter> mPatentMatter;
@@ -38,6 +40,7 @@ private:
     void LayoutWidgets(void);
     void ConnectSignalsAndSlots(void);
     QList<Key> mInventorList;
+    void clearLayout(void);
 };
 
 } // namespace Nutmeg

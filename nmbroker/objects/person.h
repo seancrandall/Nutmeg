@@ -11,7 +11,7 @@ class Person : public Nutmeg::Entity
 {
   public:
     explicit Person();
-      explicit Person(Key id);
+    explicit Person(Key id);
     explicit Person(String first, String last);
 
     // Properties

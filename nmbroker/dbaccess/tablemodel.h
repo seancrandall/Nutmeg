@@ -7,6 +7,7 @@
 #include <QSqlError>
 #include <QSqlRelationalTableModel>
 #include <QHash>
+#include <QPersistentModelIndex>
 
 #include "nutmeg.h"
 #include "property.h"
@@ -22,7 +23,7 @@ namespace Nutmeg
 class TableModel : public QSqlRelationalTableModel
 {
     Q_OBJECT
-  public:
+public:
     explicit TableModel(QObject *parent = nullptr);
 
     ReadOnlyProperty(getLastError) QSqlError lastError; //! The last database error
@@ -35,9 +36,11 @@ class TableModel : public QSqlRelationalTableModel
     QSqlRecord getRecordByPrimaryKey(Key primaryKey) const;
     int getRowByPrimaryKey(Key key) const;
 
+    virtual bool select(void) override;
+
 protected:
     void IndexLocations(void);
-    QHash<Key, int> mKeyLocations; //! Contains an indexed list of primary keys found in the table.
+    QHash<Key, QPersistentModelIndex> mKeyLocations; //! Contains an indexed list of primary keys found in the table with persistent indices.
     bool mIsLoaded = false; //! Child classes should set this to true after loading the model into memory
 };
 

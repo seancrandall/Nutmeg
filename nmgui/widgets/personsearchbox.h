@@ -24,7 +24,7 @@ class PersonSearchBox : public Nutmeg::AbstractSearchBox
     QString getLastName(void);
 
   public slots:
-    //virtual void slotAddRecord(const QString &input) override;
+    virtual void slotAddRecord(const QString &input) override;
 
   protected:
     QString mFirstName, mLastName;

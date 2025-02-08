@@ -3,14 +3,18 @@
 namespace Nutmeg
 {
 
-InventorButton::InventorButton(QWidget *parent) : AbstractRemovableButton{parent}, inventor(new Person())
+InventorButton::InventorButton(QWidget *parent) : AbstractRemovableButton{parent}
+
 {
+    mInventor = std::make_shared<Person>(0);
     mKey = 0;
     setupInventorDisplay();
 }
 
-InventorButton::InventorButton(Key id, QWidget *parent) : AbstractRemovableButton(parent), inventor(new Person(id))
+InventorButton::InventorButton(Key id, QWidget *parent)
+    : AbstractRemovableButton(parent)
 {
+    mInventor = std::make_shared<Person>(id);
     mKey = id;
     setupInventorDisplay();
 }
@@ -18,14 +22,12 @@ InventorButton::InventorButton(Key id, QWidget *parent) : AbstractRemovableButto
 void InventorButton::setKey(Key newkey)
 {
     mKey = newkey;
-    if (inventor != nullptr)
-        delete inventor;
-    inventor = new Person(mKey);
+    mInventor = std::make_shared<Person>(newkey);
 }
 
 void InventorButton::setupInventorDisplay()
 {
-    cObject->setText(inventor->EntityName);
+    cObject->setText(mInventor->EntityName);
 
     QObject::connect(this,  &AbstractRemovableButton::signalOpenObject,
                      this,   &InventorButton::slotReceiveOpenAction);
@@ -36,12 +38,12 @@ void InventorButton::setupInventorDisplay()
 
 void InventorButton::slotReceiveOpenAction()
 {
-    emit signalOpenInventor(inventor->PersonId);
+    emit signalOpenInventor(mInventor->PersonId);
 }
 
 void InventorButton::slotReceiveRemoveAction()
 {
-    emit signalRemoveInventor(inventor->PersonId);
+    emit signalRemoveInventor(mInventor->PersonId);
 }
 
 } // namespace Nutmeg

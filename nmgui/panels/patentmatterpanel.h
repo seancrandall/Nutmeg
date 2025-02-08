@@ -76,6 +76,7 @@ protected slots:
     void slotInsertSupervisoryExaminer(void);
     void slotInsertFirstInventor(void);
     void slotInsertApplicant(void);
+    void updateInventorsPanel(void);
 
 private:
     std::shared_ptr<PatentMatter> patMatter;

@@ -559,7 +559,13 @@ Key Nutdb::InsertPerson(QString firstName, QString lastName)
     params.append(firstName);
     params.append(lastName);
 
-    return CallStoredKeyProcedure("InsertPerson", params);
+    Key result = CallStoredKeyProcedure("InsertPerson", params);
+    if(result){
+        gViewPeopleModel = std::make_unique<viewPeopleModel>();
+        gViewInventorsModel = std::make_unique<viewInventorsModel>();
+        gViewPatentExaminersModel = std::make_unique<viewPatentExaminersModel>();
+    }
+    return result;
 }
 
 Nutmeg::Key Nutdb::InsertResponse(Key matterId, Date triggerDate)
@@ -747,17 +753,24 @@ AppointmentData Nutdb::GetAppointment(Key input)
 QList<Key> Nutdb::GetCaseInventors(Key id)
 {
     QList<Key> resultList;
+    QSqlDatabase db = QSqlDatabase::database(); // Use the default connection
+    QSqlQuery query(db);
 
-    QVariantList params;
-    params.append(NullableInteger(id));
+    // Prepare the SQL query
+    query.prepare("SELECT fkPerson FROM patentMatter_inventor WHERE fkPatentMatter = :id");
+    query.bindValue(":id", QVariant::fromValue(id));
 
-    QSqlQuery query;
-    query = CallStoredProcedure("GetCaseInventors", params);
-    if(!mLastOperationSuccessful)
-        return resultList;
+    // Execute the query
+    if (!query.exec()) {
+        qWarning() << "Failed to execute query:" << query.lastError().text();
+        return resultList; // Return empty list on failure
+    }
 
-    while (query.next())
-        resultList.append(query.record().field(0).value().toUInt());
+    // Fetch results
+    while (query.next()) {
+        // Append each fkPerson value to the result list
+        resultList.append(query.value(0).toUInt());
+    }
 
     return resultList;
 }
@@ -1849,12 +1862,40 @@ bool Nutdb::UpdateTrademarkResponse(TrademarkResponseData dat)
 
 bool Nutdb::RemoveCaseInventor(Key patentMatterId, Key personId)
 {
-    QVariantList params;
-    params.append(QVariant::fromValue(patentMatterId));
-    params.append(QVariant::fromValue(personId));
+    QSqlDatabase db = QSqlDatabase::database(); // Assuming you're using the default connection
+    QSqlQuery query(db);
 
-    CallStoredProcedure("RemoveCaseInventor", params);
-    return mLastOperationSuccessful;
+    // Start transaction
+    if (!db.transaction()) {
+        qWarning() << "Failed to start transaction:" << db.lastError().text();
+        return false;
+    }
+
+    // Prepare the SQL query for deletion
+    query.prepare("DELETE FROM patentMatter_inventor WHERE fkPatentMatter = :patentMatterId AND fkPerson = :personId");
+    query.bindValue(":patentMatterId", QVariant::fromValue(patentMatterId));
+    query.bindValue(":personId", QVariant::fromValue(personId));
+
+    // Execute the query
+    if (!query.exec()) {
+        qWarning() << "Failed to execute delete query:" << query.lastError().text();
+        db.rollback(); // Rollback transaction if there's an error
+        return false;
+    }
+
+    // Check if any rows were affected
+    if (query.numRowsAffected() == 0) {
+        qWarning() << "No rows were affected; the inventor might not have been associated with the case.";
+    }
+
+    // Commit transaction
+    if (!db.commit()) {
+        qWarning() << "Failed to commit transaction:" << db.lastError().text();
+        return false;
+    }
+
+    // Operation was successful
+    return true;
 }
 
 bool Nutdb::RemoveRoleFromPerson(Key personId, Key roleId)
@@ -1880,12 +1921,57 @@ bool Nutdb::RemoveRoleFromEntity(Key entityId, Key roleId)
 
 Key Nutdb::AssignCaseInventor(Key personId, Key patentCaseId)
 {
-    QVariantList params;
+    QSqlDatabase db = QSqlDatabase::database(); // Using the default connection
+    QSqlQuery query(db);
 
-    params.append(QVariant::fromValue(personId));
-    params.append(QVariant::fromValue(patentCaseId));
+    Key insertedId = 0; // Default to 0 if no insertion happens
 
-    return CallStoredKeyProcedure("AssignCaseInventor", params);
+    // Begin transaction
+    if (!db.transaction()) {
+        qWarning() << "Transaction start failed:" << db.lastError().text();
+        return insertedId;
+    }
+
+    // Check if there's already a matching entry
+    query.prepare("SELECT patentMatter_inventorId FROM patentMatter_inventor WHERE fkPerson = :personId AND fkPatentMatter = :patentCaseId");
+    query.bindValue(":personId", QVariant::fromValue(personId));
+    query.bindValue(":patentCaseId", QVariant::fromValue(patentCaseId));
+
+    if (!query.exec()) {
+        qWarning() << "Query failed:" << query.lastError().text();
+        db.rollback();
+        return insertedId;
+    }
+
+    if (query.next()) {
+        // Matching entry found, return the existing ID
+        insertedId = query.value(0).toUInt();
+    } else {
+        // No matching entry, insert a new one
+        query.prepare("INSERT INTO patentMatter_inventor (fkPerson, fkPatentMatter) VALUES (:personId, :patentCaseId)");
+        query.bindValue(":personId", QVariant::fromValue(personId));
+        query.bindValue(":patentCaseId", QVariant::fromValue(patentCaseId));
+
+        if (!query.exec()) {
+            qWarning() << "Insert failed:" << query.lastError().text();
+            db.rollback();
+            return insertedId;
+        }
+
+        // Get the last inserted ID
+        insertedId = query.lastInsertId().toUInt();
+
+        Logger::LogMessage(QString("Assigned person %1 as an inventor to case %2 and got insert ID %3.")
+                .arg(personId).arg(patentCaseId).arg(insertedId));
+    }
+
+    // Commit transaction
+    if (!db.commit()) {
+        qWarning() << "Commit failed:" << db.lastError().text();
+        return insertedId;
+    }
+
+    return insertedId;
 }
 
 Key Nutdb::AssignMatterParalegal(Key matterId, Key personId)

@@ -66,6 +66,8 @@ void PatentMatterPanel::ConnectSignalsAndSlots()
                      &PatentMatterPanel::slotInsertSupervisoryExaminer, Qt::UniqueConnection);
 
     QObject::connect(cpbInsertApplicant, &QPushButton::clicked, this, &PatentMatterPanel::slotInsertApplicant);
+
+    connect(cInventorsPanel, &InventorsPanel::inventorsChanged, this, &PatentMatterPanel::updateInventorsPanel);
 }
 
 void PatentMatterPanel::slotInsertPatentExaminer()
@@ -98,6 +100,25 @@ void PatentMatterPanel::slotInsertApplicant()
     Key kApp = app.exec();
     cApplicant->refresh();
     cApplicant->key = kApp;
+}
+
+void PatentMatterPanel::updateInventorsPanel()
+{
+    // Remove old panel
+    delete cInventorsPanel;
+
+    // Create a new panel
+    cInventorsPanel = new InventorsPanel(patMatter, this);
+
+    // Re-layout the widgets. Assuming 'pmgrid' is the layout containing the panel
+    QGridLayout *pmgrid = dynamic_cast<QGridLayout*>(layout());
+    if (pmgrid) {
+        pmgrid->removeWidget(cInventorsPanel); // Remove the old widget from layout
+        pmgrid->addWidget(cInventorsPanel, 4, 1); // Add new widget at the same position
+
+        // Reconnect signals if needed
+        connect(cInventorsPanel, &InventorsPanel::inventorsChanged, this, &PatentMatterPanel::updateInventorsPanel);
+    }
 }
 
 void PatentMatterPanel::LayoutWidgets()

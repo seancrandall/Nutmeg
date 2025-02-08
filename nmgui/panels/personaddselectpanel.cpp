@@ -29,6 +29,11 @@ void PersonAddSelectPanel::setLastName(const QString &lastName)
     cInsertPerson->LastName = lastName;
 }
 
+void PersonAddSelectPanel::setFocus()
+{
+    cSearchPerson->setFocus(Qt::ActiveWindowFocusReason);
+}
+
 Key PersonAddSelectPanel::accepted()
 {
     Key returnkey = 0;
@@ -74,6 +79,7 @@ void PersonAddSelectPanel::Layout()
 
     cInsertPerson->hide();
     setLayout(layout);
+
 }
 
 void PersonAddSelectPanel::ConnectSignalsAndSlots()
@@ -88,10 +94,12 @@ void PersonAddSelectPanel::toggleNewPerson()
         makeNew = false;
         cInsertPerson->hide();
         cPlusButton->setText("+");
+        cSearchPerson->setEnabled(true);
     }  else {              //Switch to a new person
         makeNew = true;
         cInsertPerson->show();
         cPlusButton->setText("-");
+        cSearchPerson->setEnabled(false);
     }
 }
 

@@ -24,6 +24,7 @@
 #include "widgets/tasktypecombo.h"
 
 #include "objects/task.h"
+#include "objects/matter.h"
 
 namespace Nutmeg {
 

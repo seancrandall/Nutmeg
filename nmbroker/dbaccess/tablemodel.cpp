@@ -28,23 +28,21 @@ const QSqlError TableModel::getLastError(void)
  */
 QSqlRecord TableModel::getRecordByPrimaryKey(Key primaryKey) const
 {
-    if(!mIsLoaded) return QSqlRecord();
+    if (!mIsLoaded) return QSqlRecord();
 
-    //Do we have that key in the table?
     if (!mKeyLocations.contains(primaryKey)) {
         Logger::LogMessage(QString("Tried to get a record for key %1, but it wasn't found in the table.").arg(QString::number(primaryKey)));
         return QSqlRecord();
     }
 
-    int rownum = mKeyLocations[primaryKey];
-
-    // Check if the row number is valid within the current model
-    if (rownum < 0 || rownum >= rowCount()) {
-        Logger::LogMessage(QString("Found key %1 at row %2, but the row number is invalid.").arg(QString::number(primaryKey).arg(QString::number(rownum))));
+    QPersistentModelIndex persistentIndex = mKeyLocations[primaryKey];
+    if (!persistentIndex.isValid()) {
+        Logger::LogMessage(QString("The persistent index for key %1 is no longer valid.").arg(QString::number(primaryKey)));
         return QSqlRecord();
     }
 
-    return record(rownum);
+    QModelIndex modelIndex = persistentIndex;
+    return record(modelIndex.row());
 }
 
 /**
@@ -54,12 +52,26 @@ QSqlRecord TableModel::getRecordByPrimaryKey(Key primaryKey) const
  */
 int TableModel::getRowByPrimaryKey(Key key) const
 {
-    if(mKeyLocations.contains(key)){
-        return mKeyLocations[key];
+    if (mKeyLocations.contains(key)) {
+        QPersistentModelIndex persistentIndex = mKeyLocations[key];
+        if (persistentIndex.isValid()) {
+            return persistentIndex.row();
+        } else {
+            Logger::LogMessage(QString("The persistent index for key %1 is no longer valid.").arg(QString::number(key)));
+        }
     } else {
         Logger::LogMessage(QString("Tried to get a row number for primary key %1, but the table does not contain the key.").arg(QString::number(key)));
-        return -1;
     }
+    return -1;
+}
+
+bool TableModel::select()
+{
+    bool result = QSqlTableModel::select();
+    if(result)
+        IndexLocations();
+
+    return result;
 }
 
 /**
@@ -67,6 +79,10 @@ int TableModel::getRowByPrimaryKey(Key key) const
  * index of which locations in the table correspond to which primary key values.
  *
  * Child classes should call this from their constructors after loading the actual table into memory
+ *
+ * Result is that mKeyLocations should be indexable by primary key. For example, if
+ * you call mKeyLocations[74] and it returns a valid QPersistentModelIndex,
+ * using the row() of that index should give you the record with primary key 74.
  */
 void TableModel::IndexLocations()
 {
@@ -76,13 +92,17 @@ void TableModel::IndexLocations()
         return;
     }
 
-    for (int row = 0; row < rowCount(); ++row) {
-        // For Nutmeg database, first field is always the primary key
+    for (int row = 0; row < rowCount(); row++) {
         QModelIndex index = this->index(row, 0);
-        Key key = this->data(index).toUInt();
+        bool ok;
+        Key key = this->data(index).toUInt(&ok);
+        if (!ok) {
+            Logger::LogMessage("Failed to convert key to unsigned int.");
+            continue; // or handle this failure more gracefully
+        }
 
-        // Insert the primary key and its corresponding row index into the hash
-        mKeyLocations.insert(key, row);
+        // Insert the primary key and its corresponding persistent index into the hash
+        mKeyLocations.insert(key, QPersistentModelIndex(index));
     }
 }
 

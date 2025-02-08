@@ -22,11 +22,11 @@ void ParalegalSearchBox::slotAddRecord(const QString &input)
 {
     Q_UNUSED(input);
 
-    if (isNew)
-    {
-        InsertPersonDialog *diag = new InsertPersonDialog(FirstName, LastName, this);
-        key = diag->exec();
-    }
+    // if (isNew)
+    // {
+    //     InsertPersonDialog *diag = new InsertPersonDialog(FirstName, LastName, this);
+    //     key = diag->exec();
+    // }
 }
 
 void ParalegalSearchBox::Initialize()

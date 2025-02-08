@@ -25,6 +25,8 @@ public:
     void setFirstName(const QString& newName);
     void setLastName(const QString& lastName);
 
+    void setFocus(void);
+
 signals:
     void PersonSelected(Key selection);
 
@@ -32,6 +34,7 @@ public slots:
     Key accepted(void);
     void rejected(void);
 
+protected:
     InsertPersonPanel *cInsertPerson;
     PersonSearchBox *cSearchPerson;
     PlusButton *cPlusButton;

@@ -24,9 +24,9 @@ void InventorsSearchBox::slotAddRecord(const QString &input)
 
     if (isNew)
     {
-        InsertPersonDialog *diag = new InsertPersonDialog(FirstName, LastName);
-        key = diag->exec();
-        emit signalKeyChanged(key);
+        // InsertPersonDialog *diag = new InsertPersonDialog(FirstName, LastName);
+        // key = diag->exec();
+        // emit signalKeyChanged(key);
     }
 }
 

@@ -27,7 +27,7 @@ class InventorButton : public AbstractRemovableButton
     void signalOpenInventor(Key inventorId);
 
   protected:
-    Person *inventor;
+    std::shared_ptr<Person> mInventor;
 
     void setupInventorDisplay(void);
     void ConnectSignalsAndSlots(void);

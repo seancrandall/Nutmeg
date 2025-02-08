@@ -6,16 +6,20 @@ namespace Nutmeg
 
 InsertPersonDialog::InsertPersonDialog(QWidget *parent) : InsertDialog(parent)
 {
+    ppanel = new PersonAddSelectPanel(this);
     this->setupDisplay();
     connectSignalsAndSlots();
+    ppanel->setFocus();
 }
 
 InsertPersonDialog::InsertPersonDialog(QString firstName, QString LastName, QWidget *parent) : InsertDialog(parent)
 {
+    ppanel = new PersonAddSelectPanel(this);
     ppanel->FirstName = firstName;
     ppanel->LastName = LastName;
     this->setupDisplay();
     connectSignalsAndSlots();
+    ppanel->setFocus();
 }
 
 void InsertPersonDialog::slotHandleAccepted()
