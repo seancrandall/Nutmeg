@@ -24,28 +24,33 @@ Nutmeg::TaskPanel::TaskPanel(PushButton *xtra, std::shared_ptr<Task>task, QWidge
 
 void Nutmeg::TaskPanel::ConnectSigalsAndSlots()
 {
-    QObject::connect(docketNumberButton, &QPushButton::clicked, this, &Nutmeg::TaskPanel::slotOpenMatterWindow,
-                     Qt::UniqueConnection);
+    QObject::connect(docketNumberButton, &QPushButton::clicked,
+                    this,                &Nutmeg::TaskPanel::slotOpenMatterWindow);
 
-    QObject::connect(titleEdit, &QTextEdit::textChanged, this, &Nutmeg::TaskPanel::slotUpdateTitle,
-                     Qt::UniqueConnection);
+    QObject::connect(titleEdit, &QTextEdit::textChanged,
+                     this,   &Nutmeg::TaskPanel::slotUpdateTitle);
 
-    QObject::connect(taskTypeCombo, &Nutmeg::TaskTypeCombo::signalKeyChanged, this,
-                     &Nutmeg::TaskPanel::slotUpdateTaskType, Qt::UniqueConnection);
+    QObject::connect(taskTypeCombo, &Nutmeg::TaskTypeCombo::signalKeyChanged,
+                     this,          &Nutmeg::TaskPanel::slotUpdateTaskType);
 
-    QObject::connect(extraButton, &QAbstractButton::clicked, this, &Nutmeg::TaskPanel::slotExtraButtonAction,
-                     Qt::UniqueConnection);
+    QObject::connect(extraButton, &QAbstractButton::clicked,
+                     this, &Nutmeg::TaskPanel::slotExtraButtonAction);
 
     QObject::connect(openTaskButton,    &ArrowButton::clicked,
-                     this,              &TaskPanel::slotOpenTaskWindow,
-                    Qt::UniqueConnection);
+                     this,              &TaskPanel::slotOpenTaskWindow);
 
 
 }
 
-void Nutmeg::TaskPanel::slotUpdateTitle() { mMatter->Title = titleEdit->toPlainText(); }
+void Nutmeg::TaskPanel::slotUpdateTitle()
+{
+    mMatter->Title = titleEdit->toPlainText();
+}
 
-void Nutmeg::TaskPanel::slotUpdateTaskType(Key newval) { mTask->fkTaskType = newval; }
+void Nutmeg::TaskPanel::slotUpdateTaskType(Key newval)
+{
+    mTask->fkTaskType = newval;
+}
 
 void TaskPanel::slotOpenTaskWindow()
 {

@@ -23,11 +23,18 @@ class InventorButton : public AbstractRemovableButton
     virtual void setKey(Key newkey) override;
 
   signals:
+    void signalRemoveInventor(Key inventorId);
+    void signalOpenInventor(Key inventorId);
 
   protected:
     Person *inventor;
 
     void setupInventorDisplay(void);
+    void ConnectSignalsAndSlots(void);
+
+protected slots:
+    void slotReceiveOpenAction(void);
+    void slotReceiveRemoveAction(void);
 };
 
 } // namespace Nutmeg

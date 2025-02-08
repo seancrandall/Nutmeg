@@ -20,11 +20,18 @@ InsertPersonDialog::InsertPersonDialog(QString firstName, QString LastName, QWid
 
 void InsertPersonDialog::slotHandleAccepted()
 {
-    mNewkey = Nutdb::InsertPerson(ppanel->FirstName, ppanel->LastName);
+    //mNewkey = Nutdb::InsertPerson(ppanel->FirstName, ppanel->LastName);
+    //setResult(mNewkey);
+    mNewkey = ppanel->accepted();
+    setResult(mNewkey);
     InsertDialog::slotHandleAccepted();
 }
 
-void InsertPersonDialog::slotHandleRejected() { InsertDialog::slotHandleRejected(); }
+void InsertPersonDialog::slotHandleRejected()
+{
+    setResult(0);
+    InsertDialog::slotHandleRejected();
+}
 
 void InsertPersonDialog::connectSignalsAndSlots() { InsertDialog::connectSignalsAndSlots(); }
 

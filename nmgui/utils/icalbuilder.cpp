@@ -233,7 +233,7 @@ QString IcalBuilder::getIcsString()
         // Handle multi-line description by folding lines at 75 characters
         QStringList lines = mDescription.split('\n');
         stream << "DESCRIPTION:";
-        for (int i = 0; i < lines.size(); ++i) {
+        for (int i = 0; i < lines.size(); i++) {
             if (i > 0) {
                 stream << " "; // Space for continuation
             }

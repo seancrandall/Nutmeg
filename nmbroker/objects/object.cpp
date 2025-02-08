@@ -78,7 +78,7 @@ void Object::FetchFlags()
 {
     mFlags = Nutdb::GetObjectFlags(mDat.ObjectId);
 
-    for(int i = 0; i < mFlags.size(); ++i){
+    for(int i = 0; i < mFlags.size(); i++){
         QString cc = mFlags[i].CamelCase;
         bool val = mFlags[i].FlagValue;
         hFlagValues[cc] = val;
@@ -134,7 +134,7 @@ FlagData Object::getFlagData(const QString &camelCase)
     FlagData dat;
     bool found = false;
 
-    for(int i=0; i < mFlags.size(); ++i){
+    for(int i=0; i < mFlags.size(); i++){
         if(mFlags[i].CamelCase == camelCase){
             dat = mFlags[i];
             found = true;

@@ -12,7 +12,8 @@ ComboBox::ComboBox(QWidget *parent) : QComboBox(parent)
     // Quash the hover scroll
     this->installEventFilter(this);
 
-    connect(this, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &Nutmeg::ComboBox::getKey);
+    connect(this, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &Nutmeg::ComboBox::getKey);
 }
 
 void ComboBox::setTableModel(TableModel *newmod)
@@ -57,7 +58,9 @@ Key ComboBox::getKey(void)
         QSqlRecord record = mModel->record(row);
         if (!record.isEmpty())
         {
-            return record.value(0).toUInt(); // Primary key is in the first column (index 0)
+            Key val = record.value(0).toUInt();
+            emit signalKeyChanged(val);
+            return val;
         }
     }
     return 0;

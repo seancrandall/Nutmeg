@@ -109,21 +109,6 @@ void PatentMatterPanel::LayoutWidgets()
     datev->addLayout(lFilingDate);
     dateGroup->setLayout(datev);
 
-    // // Layout the inventors box
-    // iblayout->addWidget(canInsertInventor);
-    // // For each inventor, add a link or whatever
-    // iblayout->addWidget(new InventorButton(167));
-    // iblayout->addWidget(new InventorButton(135));
-    // iblayout->addWidget(new InventorButton(92));
-    // iblayout->addWidget(new InventorButton(84));
-    // iblayout->addWidget(new InventorButton(68));
-    // iblayout->addWidget(new InventorButton(124));
-    // ibFrame->setLayout(iblayout);
-    // QScrollArea *inventorScroll = new QScrollArea();
-    // inventorScroll->setWidget(ibFrame);
-    // QVBoxLayout *scrollLayout = new QVBoxLayout();
-    // scrollLayout->addWidget(inventorScroll);
-    // inventorBox->setLayout(scrollLayout);
     cInventorsPanel = new InventorsPanel(patMatter, this);
 
     QGridLayout *pmgrid = new QGridLayout(this);

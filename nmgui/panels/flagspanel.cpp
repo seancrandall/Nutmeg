@@ -20,7 +20,7 @@ void FlagsPanel::SetupPanel()
     int columns = static_cast<int>(std::sqrt(count));
     //int rows = (count + columns - 1) / columns; // Ceiling division
 
-    for (int i = 0; i < count; ++i) {
+    for (int i = 0; i < count; i++) {
         FlagCheckbox *checkBox = new FlagCheckbox(flagList[i].CamelCase, mObject->getId());
         // Add checkbox to the grid
         layout->addWidget(checkBox, i / columns, i % columns);

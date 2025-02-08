@@ -12,7 +12,10 @@ void InsertDialog::slotHandleAccepted()
     // Dialog::slotHandleAccepted();
 }
 
-void InsertDialog::slotHandleRejected() { Dialog::slotHandleRejected(); }
+void InsertDialog::slotHandleRejected()
+{
+    Dialog::slotHandleRejected();
+}
 
 void InsertDialog::connectSignalsAndSlots() { Dialog::connectSignalsAndSlots(); }
 

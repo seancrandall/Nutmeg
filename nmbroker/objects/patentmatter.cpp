@@ -153,6 +153,16 @@ bool PatentMatter::AddInventor(QString first, QString last)
     return Nutdb::InsertCaseInventor(first, last, mDat.PatentMatterId);
 }
 
+bool PatentMatter::AssignInventor(Key personId)
+{
+    return Nutdb::AssignCaseInventor(personId, mDat.PatentMatterId);
+}
+
+bool PatentMatter::RemoveInventor(Key personId)
+{
+    return Nutdb::RemoveCaseInventor(mDat.PatentMatterId, personId);
+}
+
 bool PatentMatter::AddInventors(QList<PersonData> inventors)
 {
     for (auto i = 0; i < inventors.length(); i++)

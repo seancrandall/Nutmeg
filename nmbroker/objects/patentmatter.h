@@ -52,6 +52,8 @@ class PatentMatter : public Nutmeg::Matter
     QList<Key> getInventors(void);
 
     bool AddInventor(QString first, QString last);
+    bool AssignInventor(Key personId);
+    bool RemoveInventor(Key personId);
     bool AddInventors(QList<PersonData> inventors);
     bool AddExaminer(String first, String last);
     bool AddSupervisoryExaminer(String first, String last);

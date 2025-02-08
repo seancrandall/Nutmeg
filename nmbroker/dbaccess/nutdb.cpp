@@ -1009,7 +1009,8 @@ bool Nutdb::GetFlag(Key objectId, QString camelCase)
 
     gViewObjectFlagsModel->setFilter(QString("fkObject = %1").arg(objectId));
 
-    for(auto i=0; i < gViewObjectFlagsModel->rowCount(); ++i){
+    //++i
+    for(auto i=0; i < gViewObjectFlagsModel->rowCount(); i++){
         QString camel;
         camel = gViewObjectFlagsModel->record(i).field("CamelCase").value().toString();
         if(camel == camelCase){
@@ -1135,7 +1136,8 @@ QList<FlagData> Nutdb::GetObjectFlags(Key objectId)
 
     //Filter for the given objectId
     gViewObjectFlagsModel->setFilter(QString("ObjectId = %1").arg(objectId));
-    for(int i=0; i < gViewObjectFlagsModel->rowCount(); ++i)
+    //++i
+    for(int i=0; i < gViewObjectFlagsModel->rowCount(); i++)
     {
         FlagData localdata;
         QSqlRecord rec = gViewObjectFlagsModel->record(i);
@@ -1162,7 +1164,7 @@ QList<Key> Nutdb::GetFlagObjects(const QString &camelCase)
 
     gViewObjectFlagsModel->setFilter(QString("CamelCase = %1").arg(camelCase));
 
-    for(int i=0; i < gViewObjectFlagsModel->rowCount(); ++i){
+    for(int i=0; i < gViewObjectFlagsModel->rowCount(); i++){
         list << gViewObjectFlagsModel->record(i).field("ObjectId").value().toUInt();
     }
 
@@ -1201,7 +1203,7 @@ QList<TagData> Nutdb::GetObjectTags(Key objectId)
     //Filter for the given objectId
     gViewObjectTagsModel->setFilter(QString("ObjectId = %1").arg(objectId));
 
-    for(int i = 0; i < gViewObjectTagsModel->rowCount(); ++i){
+    for(int i = 0; i < gViewObjectTagsModel->rowCount(); i++){
         TagData localdat;
         QSqlRecord rec = gViewObjectTagsModel->record(i);
         localdat.TagId = rec.field("TagId").value().toUInt();

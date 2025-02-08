@@ -7,7 +7,7 @@
 #include "dialog.h"
 #include "windows/insertdialog.h"
 
-#include "panels/insertpersonpanel.h"
+#include "panels/personaddselectpanel.h"
 
 namespace Nutmeg
 {
@@ -15,17 +15,18 @@ namespace Nutmeg
 class InsertPersonDialog : public Nutmeg::InsertDialog
 {
     Q_OBJECT
-  public:
+public:
     explicit InsertPersonDialog(QWidget *parent = nullptr);
     explicit InsertPersonDialog(QString firstName, QString LastName, QWidget *parent = nullptr);
 
-    InsertPersonPanel *ppanel = new InsertPersonPanel(this);
+    //InsertPersonPanel *ppanel = new InsertPersonPanel(this);
+    PersonAddSelectPanel *ppanel;
 
-  public slots:
+public slots:
     virtual void slotHandleAccepted(void) override;
     virtual void slotHandleRejected(void) override;
 
-  protected:
+protected:
     virtual void connectSignalsAndSlots(void) override;
     virtual void setupDisplay(void) override;
 };

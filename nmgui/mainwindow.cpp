@@ -29,14 +29,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     databaseConnectionExists = SetupDatabase();
 
-#ifdef QT_DEBUG
-    //Open a test window
-    EntityDialog *diag = new EntityDialog((Key)15, this);
-    diag->setModal(true);
-    int result = diag->exec();
-    qDebug() << "Result was: " + QString::number(result);
-#endif
-
     if (databaseConnectionExists)
     {
         SetupResponses();
@@ -157,7 +149,7 @@ void MainWindow::SetupResponses()
 
     // Populate the responses container with ResponsePanels
     //auto tmpcount = responses->rowCount();
-    for (auto i = 0; i < responses->rowCount(); ++i)
+    for (auto i = 0; i < responses->rowCount(); i++)
     {
         Key id = responses->record(i).field(0).value().toUInt();
         ResponsePanel *rpanel = new ResponsePanel(id, responsesContainer);

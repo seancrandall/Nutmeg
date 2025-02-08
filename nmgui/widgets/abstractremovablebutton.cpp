@@ -11,17 +11,17 @@ AbstractRemovableButton::AbstractRemovableButton(QWidget *parent) : QWidget{pare
 
 void AbstractRemovableButton::slotRemove()
 {
-    InformationBox infoBox;
-    infoBox.text = "Remove object " + QString::number(mKey);
-    infoBox.exec();
+    // InformationBox infoBox;
+    // infoBox.text = "Remove object " + QString::number(mKey);
+    // infoBox.exec();
     emit signalRemoveObject(mKey);
 }
 
 void AbstractRemovableButton::slotOpen()
 {
-    InformationBox infoBox;
-    infoBox.text = "Open Object " + QString::number(mKey);
-    infoBox.exec();
+    // InformationBox infoBox;
+    // infoBox.text = "Open Object " + QString::number(mKey);
+    // infoBox.exec();
     emit signalOpenObject(mKey);
 }
 

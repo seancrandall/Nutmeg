@@ -26,12 +26,17 @@ protected:
     AddNewButton *cAddInventor;
     QList<InventorButton *> cInventorButtons;
 
+protected slots:
+    void AddInventor();
+    void RemoveInventor(Key inventorId);
+    void OpenInventor(Key inventorId);
 
 private:
     void Initialize(void);
     void LoadInventors(void);
     void InitializeObjects(void);
     void LayoutWidgets(void);
+    void ConnectSignalsAndSlots(void);
     QList<Key> mInventorList;
 };
 

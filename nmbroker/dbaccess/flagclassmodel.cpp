@@ -13,7 +13,8 @@ flagClassModel::flagClassModel(QObject *parent)
     }
 
     mFlagsByCamelCase = QHash<QString, Key>();
-    for(int i = 0; i < rowCount(); ++i){
+    //++i
+    for(int i = 0; i < rowCount(); i++){
         QString camelCase = record(i).value("camelCase").toString();
         Key flagClassId = record(i).value("FlagClassId").toUInt();
         mFlagsByCamelCase[camelCase] = flagClassId;

@@ -1,7 +1,10 @@
+#include <QGroupBox>
+#include <QScrollArea>
+
 #include "inventorspanel.h"
 #include "objects/person.h"
-#include "qgroupbox.h"
-#include "qscrollarea.h"
+#include "windows/entitydialog.h"
+#include "windows/insertinventordialog.h"
 
 namespace Nutmeg {
 
@@ -26,11 +29,32 @@ InventorsPanel::InventorsPanel(std::shared_ptr<PatentMatter> patentMatter, QWidg
     Initialize();
 }
 
+void InventorsPanel::AddInventor()
+{
+    InsertInventorDialog *diag = new InsertInventorDialog(this);
+    Key newkey = diag->exec();
+    if(newkey)
+        mPatentMatter->AssignInventor(newkey);
+}
+
+void InventorsPanel::RemoveInventor(Key inventorId)
+{
+    mPatentMatter->RemoveInventor(inventorId);
+}
+
+void InventorsPanel::OpenInventor(Key inventorId)
+{
+    EntityDialog diag(inventorId);
+    diag.setModal(true);
+    diag.exec();
+}
+
 void InventorsPanel::Initialize()
 {
     LoadInventors();
     InitializeObjects();
     LayoutWidgets();
+    ConnectSignalsAndSlots();
 }
 
 void InventorsPanel::LoadInventors()
@@ -70,6 +94,22 @@ void InventorsPanel::LayoutWidgets()
     QGridLayout *frameLayout = new QGridLayout();
     frameLayout->addWidget(groupBox, 0, 0);
     setLayout(frameLayout);
+}
+
+void InventorsPanel::ConnectSignalsAndSlots()
+{
+    QObject::connect(cAddInventor,  &AddNewButton::clicked,
+                     this,           &InventorsPanel::AddInventor);
+
+    for(int i=0; i < cInventorButtons.size(); i++){
+        QObject::connect(cInventorButtons[i],   &InventorButton::signalOpenInventor,
+                         this,                   &InventorsPanel::OpenInventor);
+    }
+
+    for(int i=0; i < cInventorButtons.size(); i++){
+        QObject::connect(cInventorButtons[i],   &InventorButton::signalRemoveInventor,
+                        this,                   &InventorsPanel::RemoveInventor);
+    }
 }
 
 } // namespace Nutmeg

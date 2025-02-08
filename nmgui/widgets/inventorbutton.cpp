@@ -26,6 +26,22 @@ void InventorButton::setKey(Key newkey)
 void InventorButton::setupInventorDisplay()
 {
     cObject->setText(inventor->EntityName);
+
+    QObject::connect(this,  &AbstractRemovableButton::signalOpenObject,
+                     this,   &InventorButton::slotReceiveOpenAction);
+
+    QObject::connect(this,  &AbstractRemovableButton::signalRemoveObject,
+                     this,   &InventorButton::slotReceiveRemoveAction);
+}
+
+void InventorButton::slotReceiveOpenAction()
+{
+    emit signalOpenInventor(inventor->PersonId);
+}
+
+void InventorButton::slotReceiveRemoveAction()
+{
+    emit signalRemoveInventor(inventor->PersonId);
 }
 
 } // namespace Nutmeg

@@ -66,6 +66,7 @@ SOURCES += \
     panels/optionsdisplaypanel.cpp \
     panels/optionsdocumentpanel.cpp \
     panels/patentmatterpanel.cpp \
+    panels/personaddselectpanel.cpp \
     panels/responsepanel.cpp \
     panels/responsetaskpanel.cpp \
     panels/taskpanel.cpp \
@@ -229,6 +230,7 @@ HEADERS += \
     panels/optionsdisplaypanel.h \
     panels/optionsdocumentpanel.h \
     panels/patentmatterpanel.h \
+    panels/personaddselectpanel.h \
     panels/responsepanel.h \
     panels/responsetaskpanel.h \
     panels/taskpanel.h \

@@ -3,7 +3,7 @@
 
 #include "abstractsearchbox.h"
 #include "completers/peoplecompleter.h"
-#include "windows/insertpersondialog.h"
+//#include "windows/insertpersondialog.h"
 #include <QObject>
 #include <QWidget>
 
@@ -14,7 +14,7 @@ class PersonSearchBox : public Nutmeg::AbstractSearchBox
 {
     Q_OBJECT
   public:
-    explicit PersonSearchBox(QWidget *parent);
+    explicit PersonSearchBox(QWidget *parent=nullptr);
     explicit PersonSearchBox(Key initkey, QWidget *parent = nullptr);
 
     ReadOnlyProperty(getFirstName) QString FirstName;
@@ -24,7 +24,7 @@ class PersonSearchBox : public Nutmeg::AbstractSearchBox
     QString getLastName(void);
 
   public slots:
-    virtual void slotAddRecord(const QString &input) override;
+    //virtual void slotAddRecord(const QString &input) override;
 
   protected:
     QString mFirstName, mLastName;
