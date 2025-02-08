@@ -965,6 +965,8 @@ EntityData Nutdb::GetEntity(Key id)
     dat.PrimaryPhone = rec.StringField("PrimaryPhone");
     dat.SecondaryPhone = rec.StringField("SecondaryPhone");
     dat.FaxNumber = rec.StringField("FaxNumber");
+    dat.PrimaryAddress = rec.StringField("PrimaryAddress");
+    dat.SecondaryAddress = rec.StringField("SecondaryAddress");
     dat.PrimaryEmail = rec.StringField("PrimaryEmail");
     dat.SecondaryEmail = rec.StringField("SecondaryEmail");
     dat.Website = rec.StringField("Website");

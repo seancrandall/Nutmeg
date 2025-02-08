@@ -7,6 +7,7 @@
 
 #include "nutmeg.h"
 #include "frame.h"
+#include "panels/inventorspanel.h"
 #include "widgets/groupbox.h"
 #include "widgets/examinereditadd.h"
 #include "widgets/lineedit.h"
@@ -58,10 +59,11 @@ protected:
     DateEdit *cDateIssued = new DateEdit(nullptr);
 
     // Inventor Box
-    QGroupBox *inventorBox = new QGroupBox("Inventor");
-    QWidget *ibFrame = new QWidget();
-    QVBoxLayout *iblayout = new QVBoxLayout();
-    AddNewButton *canInsertInventor = new AddNewButton();
+    // QGroupBox *inventorBox = new QGroupBox("Inventor");
+    // QWidget *ibFrame = new QWidget();
+    // QVBoxLayout *iblayout = new QVBoxLayout();
+    // AddNewButton *canInsertInventor = new AddNewButton();
+    InventorsPanel *cInventorsPanel;
 
     // Labeling
     LabeledWidgetLeft *lApplicationSearialNumber =

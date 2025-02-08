@@ -23,6 +23,9 @@ void InventorButton::setKey(Key newkey)
     inventor = new Person(mKey);
 }
 
-void InventorButton::setupInventorDisplay() { cObject->setText(inventor->EntityName); }
+void InventorButton::setupInventorDisplay()
+{
+    cObject->setText(inventor->EntityName);
+}
 
 } // namespace Nutmeg

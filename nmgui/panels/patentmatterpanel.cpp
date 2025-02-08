@@ -1,4 +1,5 @@
 #include "patentmatterpanel.h"
+#include "panels/inventorspanel.h"
 
 namespace Nutmeg {
 
@@ -75,7 +76,13 @@ void PatentMatterPanel::slotInsertPatentExaminer()
     cExaminer->refresh();
 }
 
-void PatentMatterPanel::slotInsertSupervisoryExaminer() {}
+void PatentMatterPanel::slotInsertSupervisoryExaminer()
+{
+    InsertPatentExaminerDialog diag(this);
+    Key kExaminer = diag.exec();
+    cSupervisoryExaminer->key = kExaminer;
+    cSupervisoryExaminer->refresh();
+}
 
 void PatentMatterPanel::slotInsertFirstInventor()
 {
@@ -102,21 +109,22 @@ void PatentMatterPanel::LayoutWidgets()
     datev->addLayout(lFilingDate);
     dateGroup->setLayout(datev);
 
-    // Layout the inventors box
-    iblayout->addWidget(canInsertInventor);
-    // For each inventor, add a link or whatever
-    iblayout->addWidget(new InventorButton(167));
-    iblayout->addWidget(new InventorButton(135));
-    iblayout->addWidget(new InventorButton(92));
-    iblayout->addWidget(new InventorButton(84));
-    iblayout->addWidget(new InventorButton(68));
-    iblayout->addWidget(new InventorButton(124));
-    ibFrame->setLayout(iblayout);
-    QScrollArea *inventorScroll = new QScrollArea();
-    inventorScroll->setWidget(ibFrame);
-    QVBoxLayout *scrollLayout = new QVBoxLayout();
-    scrollLayout->addWidget(inventorScroll);
-    inventorBox->setLayout(scrollLayout);
+    // // Layout the inventors box
+    // iblayout->addWidget(canInsertInventor);
+    // // For each inventor, add a link or whatever
+    // iblayout->addWidget(new InventorButton(167));
+    // iblayout->addWidget(new InventorButton(135));
+    // iblayout->addWidget(new InventorButton(92));
+    // iblayout->addWidget(new InventorButton(84));
+    // iblayout->addWidget(new InventorButton(68));
+    // iblayout->addWidget(new InventorButton(124));
+    // ibFrame->setLayout(iblayout);
+    // QScrollArea *inventorScroll = new QScrollArea();
+    // inventorScroll->setWidget(ibFrame);
+    // QVBoxLayout *scrollLayout = new QVBoxLayout();
+    // scrollLayout->addWidget(inventorScroll);
+    // inventorBox->setLayout(scrollLayout);
+    cInventorsPanel = new InventorsPanel(patMatter, this);
 
     QGridLayout *pmgrid = new QGridLayout(this);
     // Layout the rest of the group box
@@ -129,7 +137,7 @@ void PatentMatterPanel::LayoutWidgets()
     pmgrid->addWidget(cExaminer, 3, 0);
     pmgrid->addWidget(cSupervisoryExaminer, 3, 1);
     pmgrid->addWidget(dateGroup, 4, 0);
-    pmgrid->addWidget(inventorBox, 4, 1);
+    pmgrid->addWidget(cInventorsPanel, 4, 1);
 
     setLayout(pmgrid);
     //workLayout->addWidget(gb, 1, 0);

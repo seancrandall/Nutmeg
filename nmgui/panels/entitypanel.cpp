@@ -36,8 +36,9 @@ void EntityPanel::scatter()
     cPrimaryEmail->text = mEntity->PrimaryEmail;
     cSecondaryEmail->text = mEntity->SecondaryEmail;
     cDocketPrefix->text = mEntity->DocketPrefix;
-    cPrimaryAddress->text = mEntity->PrimaryAddress;
-    cSecondaryAddress->text = mEntity->SecondaryAddress;
+
+    cPrimaryAddress->setText(mEntity->PrimaryAddress);
+    cSecondaryAddress->setText(mEntity->SecondaryAddress);
 }
 
 void EntityPanel::gather()
@@ -56,16 +57,10 @@ void EntityPanel::gather()
     mEntity->Commit();
 }
 
-void EntityPanel::Initialize(void)
-{
-    InitializeObjects();
-    LayoutControls();
-    scatter();
-}
-
 void EntityPanel::InitializeObjects()
 {
     cId = new LineDisplayId(mEntity->EntityId);
+    cName = new LineEdit();
     cFullLegalName = new LineEdit();
     cWebsite = new LineEdit();
     cPrimaryPhone = new LineEdit();
@@ -106,7 +101,16 @@ void EntityPanel::LayoutControls()
     grid->addLayout(lPrimaryEmail, 4, 0);
     grid->addLayout(lSecondaryEmail, 4, 1);
     grid->addLayout(lPrimaryAddress, 5, 0);
-    grid->addLayout(lSecondaryAddress, 5, 0);
+    grid->addLayout(lSecondaryAddress, 5, 1);
+
+    setLayout(grid);
+}
+
+void EntityPanel::Initialize(void)
+{
+    InitializeObjects();
+    LayoutControls();
+    scatter();
 }
 
 } // namespace Nutmeg

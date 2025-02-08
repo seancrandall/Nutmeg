@@ -39,10 +39,12 @@ void EntityDialog::slotScatter()
 void EntityDialog::LayoutWorkspace()
 {
     workLayout->addWidget(mPanel, 0, 0);
+    updateLayout();
 }
 
 void EntityDialog::Initialize()
 {
+    mPanel = new EntityPanel(mEntity);
     setupDisplay();
     connectSignalsAndSlots();
     slotScatter();

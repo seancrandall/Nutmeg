@@ -21,13 +21,13 @@ TaskDialog::TaskDialog(Key taskid, QWidget *parent)
 void TaskDialog::slotScatter()
 {
     taskPanel->Scatter();
-    matterPanel->slotScatter();
+    matterPanel->scatter();
 }
 
 void TaskDialog::slotGather()
 {
     taskPanel->Gather();
-    matterPanel->slotGather();
+    matterPanel->gather();
 }
 
 void TaskDialog::slotHandleRejected()

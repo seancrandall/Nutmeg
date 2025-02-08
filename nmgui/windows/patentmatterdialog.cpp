@@ -28,13 +28,13 @@ PatentMatterDialog::PatentMatterDialog(std::shared_ptr<PatentMatter> matter, QWi
 
 void PatentMatterDialog::slotScatter()
 {
-    mPanel->slotScatter();
+    mPanel->scatter();
     pmPanel->slotScatter();
 }
 
 void PatentMatterDialog::slotGather()
 {
-    mPanel->slotGather();
+    mPanel->gather();
     pmPanel->slotGather();
 }
 

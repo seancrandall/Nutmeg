@@ -15,7 +15,7 @@ const QString TextEdit::getText() const
 
 void TextEdit::setText(const QString &newtext)
 {
-    QTextEdit::setText(newtext);
+    QTextEdit::setPlainText(newtext);
 }
 
 } // namespace Nutmeg

@@ -4,12 +4,16 @@
 #include "dbaccess/databaseconnection.h"
 #include "dbaccess/models.h"
 
+#include "windows/entitydialog.h"
+
 namespace Nutmeg
 {
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), settings(new Nutmeg::Settings(this)), nut(Nutmeg::Nutdb())
+
 {
+
     // Restore splitter geometry
     ui->setupUi(this);
     ui->splitter->restoreState(settings.value("geometry/spliiter_state").toByteArray());
@@ -24,6 +28,14 @@ MainWindow::MainWindow(QWidget *parent)
     FontSize = settings.fontSize;
 
     databaseConnectionExists = SetupDatabase();
+
+#ifdef QT_DEBUG
+    //Open a test window
+    EntityDialog *diag = new EntityDialog((Key)15, this);
+    diag->setModal(true);
+    int result = diag->exec();
+    qDebug() << "Result was: " + QString::number(result);
+#endif
 
     if (databaseConnectionExists)
     {

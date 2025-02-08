@@ -60,6 +60,7 @@ SOURCES += \
     panels/frame.cpp \
     panels/insertenterprisepanel.cpp \
     panels/insertpersonpanel.cpp \
+    panels/inventorspanel.cpp \
     panels/matterpanel.cpp \
     panels/optionsdatabasepanel.cpp \
     panels/optionsdisplaypanel.cpp \
@@ -222,6 +223,7 @@ HEADERS += \
     panels/frame.h \
     panels/insertenterprisepanel.h \
     panels/insertpersonpanel.h \
+    panels/inventorspanel.h \
     panels/matterpanel.h \
     panels/optionsdatabasepanel.h \
     panels/optionsdisplaypanel.h \

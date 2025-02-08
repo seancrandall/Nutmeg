@@ -72,7 +72,7 @@ void MatterPanel::initializeObjects()
         gViewWorkAttorneysModel = std::make_unique<viewWorkAttorneysModel>();
 
     if(!gViewJurisdictionsModel)
-        gViewJurisdictionsModel = std::make_shared<viewJurisdictionsModel>();
+        gViewJurisdictionsModel = std::make_unique<viewJurisdictionsModel>();
 
     grid = new QGridLayout();
     fullLayout = new QGridLayout();
