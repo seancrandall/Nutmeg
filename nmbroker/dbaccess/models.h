@@ -2,11 +2,14 @@
 #define MODELS_H
 
 #include "appointmenttypemodel.h"
+#include "dbaccess/flagclassmodel.h"
+#include "dbaccess/taskmodel.h"
+#include "dbaccess/viewfilingtypesmodel.h"
 #include "dbaccess/viewpatentmattersmodel.h"
 #include "dbaccess/viewtrademarkmattersmodel.h"
 #include "deadlinemodel.h"
 #include "dbaccess/viewobjectflagsmodel.h"
-#include "responsesdashboardtablemodel.h"
+#include "flagclassmodel.h"
 #include "tablemodel.h"
 #include "tagmodel.h"
 #include "tasktypemodel.h"
@@ -38,40 +41,42 @@
 #include "viewworkattorneysmodel.h"
 
 namespace Nutmeg{
-extern std::unique_ptr<Nutmeg::appointmentTypeModel> gAppointmentTypeModel;
-extern std::unique_ptr<Nutmeg::deadlineModel> gDeadlineModel;
-extern std::unique_ptr<Nutmeg::ResponsesDashboardTableModel> gResponsesDashboardTableModel;
-extern std::unique_ptr<Nutmeg::tagModel> gTagModel;
-extern std::unique_ptr<Nutmeg::taskTypeModel> gTaskTypeModel;
-extern std::unique_ptr<Nutmeg::viewClientsModel> gViewClientsModel;
-extern std::unique_ptr<Nutmeg::viewContractingFirmsModel> gViewContractingFirmsModel;
-extern std::unique_ptr<Nutmeg::viewFilingsModel> gViewFilingsModel;
-extern std::unique_ptr<Nutmeg::viewCopyrightFilingTypesModel> gViewCopyrightFilingTypesModel;
-extern std::unique_ptr<Nutmeg::viewCopyrightTaskTypesModel> gViewCopyrightTaskTypesModel;
-extern std::unique_ptr<Nutmeg::viewEntitiesModel> gViewEntitiesModel;
-extern std::unique_ptr<Nutmeg::viewFilingsIncompleteModel> gViewFilingsIncompleteModel;
-extern std::unique_ptr<Nutmeg::viewFilingTaskTypesModel> gViewFilingTaskTypesModel;
-extern std::unique_ptr<Nutmeg::viewInventorsModel> gViewInventorsModel;
-extern std::unique_ptr<Nutmeg::viewJurisdictionsModel> gViewJurisdictionsModel;
-extern std::unique_ptr<Nutmeg::viewMattersModel> gViewMattersModel;
-extern std::unique_ptr<Nutmeg::viewObjectFlagsModel> gViewObjectFlagsModel;
-extern std::unique_ptr<Nutmeg::viewObjectTagsModel> gViewObjectTagsModel;
-extern std::unique_ptr<Nutmeg::viewParalegalsModel> gViewParalegalsModel;
-extern std::unique_ptr<Nutmeg::viewPatentExaminersModel> gViewPatentExaminersModel;
-extern std::unique_ptr<Nutmeg::viewPatentMattersModel> gViewPatentMattersModel;
-extern std::unique_ptr<Nutmeg::viewPatentFilingTypesModel> gViewPatentFilingTypesModel;
-extern std::unique_ptr<Nutmeg::viewPatentTaskTypesModel> gViewPatentTaskTypesModel;
-extern std::unique_ptr<Nutmeg::viewPeopleModel> gViewPeopleModel;
-extern std::unique_ptr<Nutmeg::viewResponsesModel> gViewResponsesModel;
-extern std::unique_ptr<Nutmeg::viewResponsesIncompleteModel> gViewResponsesIncompleteModel;
-extern std::unique_ptr<Nutmeg::viewResponseTaskTypesModel> gViewResponseTaskTypesModel;
-extern std::unique_ptr<Nutmeg::viewTaskClassModel> gViewTaskClassModel;
-extern std::unique_ptr<Nutmeg::viewTaskTypesModel> gViewTaskTypesModel;
-extern std::unique_ptr<Nutmeg::viewTrademarkFilingTypesModel> gViewTrademarkFilingTypesModel;
-extern std::unique_ptr<Nutmeg::viewTrademarkMattersModel> gViewTrademarkMattersModel;
-extern std::unique_ptr<Nutmeg::viewTasksModel> gViewTasksModel;
-extern std::unique_ptr<Nutmeg::viewTrademarkTaskTypesModel> gViewTrademarkTaskTypesModel;
-extern std::unique_ptr<Nutmeg::viewWorkAttorneysModel> gViewWorkAttorneysModel;
+extern std::unique_ptr<appointmentTypeModel> gAppointmentTypeModel;
+extern std::unique_ptr<deadlineModel> gDeadlineModel;
+extern std::unique_ptr<flagClassModel> gFlagClassModel;
+extern std::unique_ptr<tagModel> gTagModel;
+extern std::unique_ptr<taskModel> gTaskModel;
+extern std::unique_ptr<taskTypeModel> gTaskTypeModel;
+extern std::unique_ptr<viewClientsModel> gViewClientsModel;
+extern std::unique_ptr<viewContractingFirmsModel> gViewContractingFirmsModel;
+extern std::unique_ptr<viewFilingsModel> gViewFilingsModel;
+extern std::unique_ptr<viewCopyrightFilingTypesModel> gViewCopyrightFilingTypesModel;
+extern std::unique_ptr<viewCopyrightTaskTypesModel> gViewCopyrightTaskTypesModel;
+extern std::unique_ptr<viewEntitiesModel> gViewEntitiesModel;
+extern std::unique_ptr<viewFilingsIncompleteModel> gViewFilingsIncompleteModel;
+extern std::unique_ptr<viewFilingTaskTypesModel> gViewFilingTaskTypesModel;
+extern std::unique_ptr<viewFilingTypesModel> gViewFilingTypesModel;
+extern std::unique_ptr<viewInventorsModel> gViewInventorsModel;
+extern std::unique_ptr<viewJurisdictionsModel> gViewJurisdictionsModel;
+extern std::unique_ptr<viewMattersModel> gViewMattersModel;
+extern std::unique_ptr<viewObjectFlagsModel> gViewObjectFlagsModel;
+extern std::unique_ptr<viewObjectTagsModel> gViewObjectTagsModel;
+extern std::unique_ptr<viewParalegalsModel> gViewParalegalsModel;
+extern std::unique_ptr<viewPatentExaminersModel> gViewPatentExaminersModel;
+extern std::unique_ptr<viewPatentMattersModel> gViewPatentMattersModel;
+extern std::unique_ptr<viewPatentFilingTypesModel> gViewPatentFilingTypesModel;
+extern std::unique_ptr<viewPatentTaskTypesModel> gViewPatentTaskTypesModel;
+extern std::unique_ptr<viewPeopleModel> gViewPeopleModel;
+extern std::unique_ptr<viewResponsesModel> gViewResponsesModel;
+extern std::unique_ptr<viewResponsesIncompleteModel> gViewResponsesIncompleteModel;
+extern std::unique_ptr<viewResponseTaskTypesModel> gViewResponseTaskTypesModel;
+extern std::unique_ptr<viewTaskClassModel> gViewTaskClassModel;
+extern std::unique_ptr<viewTaskTypesModel> gViewTaskTypesModel;
+extern std::unique_ptr<viewTrademarkFilingTypesModel> gViewTrademarkFilingTypesModel;
+extern std::unique_ptr<viewTrademarkMattersModel> gViewTrademarkMattersModel;
+extern std::unique_ptr<viewTasksModel> gViewTasksModel;
+extern std::unique_ptr<viewTrademarkTaskTypesModel> gViewTrademarkTaskTypesModel;
+extern std::unique_ptr<viewWorkAttorneysModel> gViewWorkAttorneysModel;
 
 } //namespace Nutmeg
 

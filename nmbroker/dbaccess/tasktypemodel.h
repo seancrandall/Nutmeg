@@ -1,17 +1,19 @@
 #ifndef NUTMEG_TASKTYPEMODEL_H
 #define NUTMEG_TASKTYPEMODEL_H
 
-#include "tablemodel.h"
 #include <QObject>
+#include <QSqlRecord>
+#include "tablemodel.h"
 
-namespace Nutmeg
-{
+namespace Nutmeg {
 
 class taskTypeModel : public Nutmeg::TableModel
 {
     Q_OBJECT
-  public:
+public:
     explicit taskTypeModel(QObject *parent = nullptr);
+    
+    static QSqlRecord record(Key primaryKey);
 };
 
 } // namespace Nutmeg

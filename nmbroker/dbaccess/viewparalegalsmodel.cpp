@@ -1,14 +1,24 @@
 #include "viewparalegalsmodel.h"
+#include "models.h"
+#include "record.h"
 
-namespace Nutmeg
-{
+namespace Nutmeg {
 
-viewParalegalsModel::viewParalegalsModel(QObject *parent) : Nutmeg::TableModel{parent}
+viewParalegalsModel::viewParalegalsModel(QObject *parent)
+    : Nutmeg::TableModel{parent}
 {
     setTable("viewParalegals");
-    select();
-    mIsLoaded = true;
-    IndexLocations();
+    if(select())
+    {
+        mIsLoaded = true;
+        IndexLocations();
+    }
+}
+
+QSqlRecord viewParalegalsModel::record(Key primaryKey)
+{
+	//gViewParalegals is already globally defined. 
+	return Nutmeg::record<viewParalegalsModel>(primaryKey, gViewParalegalsModel);
 }
 
 } // namespace Nutmeg

@@ -1,14 +1,24 @@
 #include "viewpatenttasktypesmodel.h"
+#include "models.h"
+#include "record.h"
 
-namespace Nutmeg
-{
+namespace Nutmeg {
 
-viewPatentTaskTypesModel::viewPatentTaskTypesModel(QObject *parent) : Nutmeg::TableModel{parent}
+viewPatentTaskTypesModel::viewPatentTaskTypesModel(QObject *parent)
+    : Nutmeg::TableModel{parent}
 {
     setTable("viewPatentTaskTypes");
-    select();
-    mIsLoaded = true;
-    IndexLocations();
+    if(select())
+    {
+        mIsLoaded = true;
+        IndexLocations();
+    }
+}
+
+QSqlRecord viewPatentTaskTypesModel::record(Key primaryKey)
+{
+	//gViewPatentTaskTypes is already globally defined. 
+	return Nutmeg::record<viewPatentTaskTypesModel>(primaryKey, gViewPatentTaskTypesModel);
 }
 
 } // namespace Nutmeg

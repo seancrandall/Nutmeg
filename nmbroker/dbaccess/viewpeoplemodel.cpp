@@ -1,14 +1,24 @@
 #include "viewpeoplemodel.h"
+#include "models.h"
+#include "record.h"
 
-namespace Nutmeg
-{
+namespace Nutmeg {
 
-viewPeopleModel::viewPeopleModel(QObject *parent) : Nutmeg::TableModel{parent}
+viewPeopleModel::viewPeopleModel(QObject *parent)
+    : Nutmeg::TableModel{parent}
 {
     setTable("viewPeople");
-    select();
-    mIsLoaded = true;
-    IndexLocations();
+    if(select())
+    {
+        mIsLoaded = true;
+        IndexLocations();
+    }
+}
+
+QSqlRecord viewPeopleModel::record(Key primaryKey)
+{
+	//gViewPeople is already globally defined. 
+	return Nutmeg::record<viewPeopleModel>(primaryKey, gViewPeopleModel);
 }
 
 } // namespace Nutmeg

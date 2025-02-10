@@ -1,4 +1,6 @@
 #include "viewtrademarkmattersmodel.h"
+#include "models.h"
+#include "record.h"
 
 namespace Nutmeg {
 
@@ -11,6 +13,12 @@ viewTrademarkMattersModel::viewTrademarkMattersModel(QObject *parent)
         mIsLoaded = true;
         IndexLocations();
     }
+}
+
+QSqlRecord viewTrademarkMattersModel::record(Key primaryKey)
+{
+	//gViewTrademarkMatters is already globally defined. 
+	return Nutmeg::record<viewTrademarkMattersModel>(primaryKey, gViewTrademarkMattersModel);
 }
 
 } // namespace Nutmeg

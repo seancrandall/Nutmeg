@@ -1,14 +1,24 @@
 #include "viewfilingtasktypesmodel.h"
+#include "models.h"
+#include "record.h"
 
-namespace Nutmeg
-{
+namespace Nutmeg {
 
-viewFilingTaskTypesModel::viewFilingTaskTypesModel(QObject *parent) : Nutmeg::TableModel{parent}
+viewFilingTaskTypesModel::viewFilingTaskTypesModel(QObject *parent)
+    : Nutmeg::TableModel{parent}
 {
     setTable("viewFilingTaskTypes");
-    select();
-    mIsLoaded = true;
-    IndexLocations();
+    if(select())
+    {
+        mIsLoaded = true;
+        IndexLocations();
+    }
+}
+
+QSqlRecord viewFilingTaskTypesModel::record(Key primaryKey)
+{
+	//gViewFilingTaskTypes is already globally defined. 
+	return Nutmeg::record<viewFilingTaskTypesModel>(primaryKey, gViewFilingTaskTypesModel);
 }
 
 } // namespace Nutmeg

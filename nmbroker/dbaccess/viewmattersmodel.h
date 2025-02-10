@@ -1,17 +1,19 @@
 #ifndef NUTMEG_VIEWMATTERSMODEL_H
 #define NUTMEG_VIEWMATTERSMODEL_H
 
-#include "tablemodel.h"
 #include <QObject>
+#include <QSqlRecord>
+#include "tablemodel.h"
 
-namespace Nutmeg
-{
+namespace Nutmeg {
 
 class viewMattersModel : public Nutmeg::TableModel
 {
     Q_OBJECT
-  public:
+public:
     explicit viewMattersModel(QObject *parent = nullptr);
+    
+    static QSqlRecord record(Key primaryKey);
 };
 
 } // namespace Nutmeg

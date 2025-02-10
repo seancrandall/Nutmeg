@@ -1,17 +1,19 @@
 #ifndef NUTMEG_VIEWTRADEMARKTASKTYPESMODEL_H
 #define NUTMEG_VIEWTRADEMARKTASKTYPESMODEL_H
 
-#include "tablemodel.h"
 #include <QObject>
+#include <QSqlRecord>
+#include "tablemodel.h"
 
-namespace Nutmeg
-{
+namespace Nutmeg {
 
 class viewTrademarkTaskTypesModel : public Nutmeg::TableModel
 {
     Q_OBJECT
-  public:
+public:
     explicit viewTrademarkTaskTypesModel(QObject *parent = nullptr);
+    
+    static QSqlRecord record(Key primaryKey);
 };
 
 } // namespace Nutmeg

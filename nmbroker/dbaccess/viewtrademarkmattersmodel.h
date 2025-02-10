@@ -2,6 +2,7 @@
 #define NUTMEG_VIEWTRADEMARKMATTERSMODEL_H
 
 #include <QObject>
+#include <QSqlRecord>
 #include "tablemodel.h"
 
 namespace Nutmeg {
@@ -11,6 +12,8 @@ class viewTrademarkMattersModel : public Nutmeg::TableModel
     Q_OBJECT
 public:
     explicit viewTrademarkMattersModel(QObject *parent = nullptr);
+    
+    static QSqlRecord record(Key primaryKey);
 };
 
 } // namespace Nutmeg

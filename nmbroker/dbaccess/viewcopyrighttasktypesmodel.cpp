@@ -1,14 +1,24 @@
 #include "viewcopyrighttasktypesmodel.h"
+#include "models.h"
+#include "record.h"
 
-namespace Nutmeg
-{
+namespace Nutmeg {
 
-viewCopyrightTaskTypesModel::viewCopyrightTaskTypesModel(QObject *parent) : Nutmeg::TableModel{parent}
+viewCopyrightTaskTypesModel::viewCopyrightTaskTypesModel(QObject *parent)
+    : Nutmeg::TableModel{parent}
 {
     setTable("viewCopyrightTaskTypes");
-    select();
-    mIsLoaded = true;
-    IndexLocations();
+    if(select())
+    {
+        mIsLoaded = true;
+        IndexLocations();
+    }
+}
+
+QSqlRecord viewCopyrightTaskTypesModel::record(Key primaryKey)
+{
+	//gViewCopyrightTaskTypes is already globally defined. 
+	return Nutmeg::record<viewCopyrightTaskTypesModel>(primaryKey, gViewCopyrightTaskTypesModel);
 }
 
 } // namespace Nutmeg

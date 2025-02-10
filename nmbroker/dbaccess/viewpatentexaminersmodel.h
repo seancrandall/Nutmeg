@@ -1,17 +1,19 @@
 #ifndef NUTMEG_VIEWPATENTEXAMINERSMODEL_H
 #define NUTMEG_VIEWPATENTEXAMINERSMODEL_H
 
-#include "tablemodel.h"
 #include <QObject>
+#include <QSqlRecord>
+#include "tablemodel.h"
 
-namespace Nutmeg
-{
+namespace Nutmeg {
 
 class viewPatentExaminersModel : public Nutmeg::TableModel
 {
     Q_OBJECT
-  public:
+public:
     explicit viewPatentExaminersModel(QObject *parent = nullptr);
+    
+    static QSqlRecord record(Key primaryKey);
 };
 
 } // namespace Nutmeg

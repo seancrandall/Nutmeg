@@ -1,4 +1,6 @@
 #include "viewobjecttagsmodel.h"
+#include "models.h"
+#include "record.h"
 
 namespace Nutmeg {
 
@@ -11,6 +13,12 @@ viewObjectTagsModel::viewObjectTagsModel(QObject *parent)
         mIsLoaded = true;
         IndexLocations();
     }
+}
+
+QSqlRecord viewObjectTagsModel::record(Key primaryKey)
+{
+	//gViewObjectTags is already globally defined. 
+	return Nutmeg::record<viewObjectTagsModel>(primaryKey, gViewObjectTagsModel);
 }
 
 } // namespace Nutmeg

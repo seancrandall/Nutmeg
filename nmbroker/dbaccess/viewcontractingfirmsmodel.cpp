@@ -1,14 +1,24 @@
 #include "viewcontractingfirmsmodel.h"
+#include "models.h"
+#include "record.h"
 
-namespace Nutmeg
-{
+namespace Nutmeg {
 
-viewContractingFirmsModel::viewContractingFirmsModel(QObject *parent) : Nutmeg::TableModel{parent}
+viewContractingFirmsModel::viewContractingFirmsModel(QObject *parent)
+    : Nutmeg::TableModel{parent}
 {
     setTable("viewContractingFirms");
-    select();
-    mIsLoaded = true;
-    IndexLocations();
+    if(select())
+    {
+        mIsLoaded = true;
+        IndexLocations();
+    }
+}
+
+QSqlRecord viewContractingFirmsModel::record(Key primaryKey)
+{
+	//gViewContractingFirms is already globally defined. 
+	return Nutmeg::record<viewContractingFirmsModel>(primaryKey, gViewContractingFirmsModel);
 }
 
 } // namespace Nutmeg

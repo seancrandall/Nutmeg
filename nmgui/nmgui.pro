@@ -23,7 +23,6 @@ SOURCES += \
     ../nmbroker/dbaccess/exception.cpp \
     ../nmbroker/dbaccess/flagclassmodel.cpp \
     ../nmbroker/dbaccess/models.cpp \
-    ../nmbroker/dbaccess/record.cpp \
     ../nmbroker/dbaccess/tagmodel.cpp \
     ../nmbroker/dbaccess/taskmodel.cpp \
     ../nmbroker/dbaccess/viewcopyrightfilingtypesmodel.cpp \
@@ -93,7 +92,6 @@ SOURCES += \
     widgets/workattorneysearchbox.cpp \
     widgets/xbutton.cpp \
     ../nmbroker/dbaccess/nutdb.cpp \
-    ../nmbroker/dbaccess/responsesdashboardtablemodel.cpp \
     ../nmbroker/dbaccess/sqlrecordstablemodel.cpp \
     ../nmbroker/dbaccess/tablemodel.cpp \
     ../nmbroker/dbaccess/tasktypemodel.cpp \
@@ -266,7 +264,6 @@ HEADERS += \
     ../nmbroker/dbaccess/viewtasktypesmodel.h \
     ../nmbroker/exception.h \
     ../nmbroker/dbaccess/nutdb.h \
-    ../nmbroker/dbaccess/responsesdashboardtablemodel.h \
     ../nmbroker/dbaccess/sqlrecordstablemodel.h \
     ../nmbroker/dbaccess/tablemodel.h \
     ../nmbroker/dbaccess/tasktypemodel.h \

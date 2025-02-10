@@ -1,17 +1,19 @@
 #ifndef NUTMEG_VIEWWORKATTORNEYSMODEL_H
 #define NUTMEG_VIEWWORKATTORNEYSMODEL_H
 
-#include "tablemodel.h"
 #include <QObject>
+#include <QSqlRecord>
+#include "tablemodel.h"
 
-namespace Nutmeg
-{
+namespace Nutmeg {
 
 class viewWorkAttorneysModel : public Nutmeg::TableModel
 {
     Q_OBJECT
-  public:
+public:
     explicit viewWorkAttorneysModel(QObject *parent = nullptr);
+    
+    static QSqlRecord record(Key primaryKey);
 };
 
 } // namespace Nutmeg

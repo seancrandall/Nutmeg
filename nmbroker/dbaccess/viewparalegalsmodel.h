@@ -1,17 +1,19 @@
 #ifndef NUTMEG_VIEWPARALEGALSMODEL_H
 #define NUTMEG_VIEWPARALEGALSMODEL_H
 
-#include "tablemodel.h"
 #include <QObject>
+#include <QSqlRecord>
+#include "tablemodel.h"
 
-namespace Nutmeg
-{
+namespace Nutmeg {
 
 class viewParalegalsModel : public Nutmeg::TableModel
 {
     Q_OBJECT
-  public:
+public:
     explicit viewParalegalsModel(QObject *parent = nullptr);
+    
+    static QSqlRecord record(Key primaryKey);
 };
 
 } // namespace Nutmeg

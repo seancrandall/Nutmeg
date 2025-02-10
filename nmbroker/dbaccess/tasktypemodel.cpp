@@ -1,14 +1,24 @@
 #include "tasktypemodel.h"
+#include "models.h"
+#include "record.h"
 
-namespace Nutmeg
-{
+namespace Nutmeg {
 
-taskTypeModel::taskTypeModel(QObject *parent) : Nutmeg::TableModel{parent}
+taskTypeModel::taskTypeModel(QObject *parent)
+    : Nutmeg::TableModel{parent}
 {
     setTable("taskType");
-    select();
-    mIsLoaded = true;
-    IndexLocations();
+    if(select())
+    {
+        mIsLoaded = true;
+        IndexLocations();
+    }
+}
+
+QSqlRecord taskTypeModel::record(Key primaryKey)
+{
+	//gTaskType is already globally defined. 
+	return Nutmeg::record<taskTypeModel>(primaryKey, gTaskTypeModel);
 }
 
 } // namespace Nutmeg

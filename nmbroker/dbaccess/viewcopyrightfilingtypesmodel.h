@@ -1,17 +1,19 @@
 #ifndef NUTMEG_VIEWCOPYRIGHTFILINGTYPESMODEL_H
 #define NUTMEG_VIEWCOPYRIGHTFILINGTYPESMODEL_H
 
-#include "tablemodel.h"
 #include <QObject>
+#include <QSqlRecord>
+#include "tablemodel.h"
 
-namespace Nutmeg
-{
+namespace Nutmeg {
 
 class viewCopyrightFilingTypesModel : public Nutmeg::TableModel
 {
     Q_OBJECT
-  public:
+public:
     explicit viewCopyrightFilingTypesModel(QObject *parent = nullptr);
+    
+    static QSqlRecord record(Key primaryKey);
 };
 
 } // namespace Nutmeg

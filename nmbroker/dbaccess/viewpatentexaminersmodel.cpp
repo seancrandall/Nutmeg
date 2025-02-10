@@ -1,14 +1,24 @@
 #include "viewpatentexaminersmodel.h"
+#include "models.h"
+#include "record.h"
 
-namespace Nutmeg
-{
+namespace Nutmeg {
 
-viewPatentExaminersModel::viewPatentExaminersModel(QObject *parent) : Nutmeg::TableModel{parent}
+viewPatentExaminersModel::viewPatentExaminersModel(QObject *parent)
+    : Nutmeg::TableModel{parent}
 {
     setTable("viewPatentExaminers");
-    select();
-    mIsLoaded = true;
-    IndexLocations();
+    if(select())
+    {
+        mIsLoaded = true;
+        IndexLocations();
+    }
+}
+
+QSqlRecord viewPatentExaminersModel::record(Key primaryKey)
+{
+	//gViewPatentExaminers is already globally defined. 
+	return Nutmeg::record<viewPatentExaminersModel>(primaryKey, gViewPatentExaminersModel);
 }
 
 } // namespace Nutmeg

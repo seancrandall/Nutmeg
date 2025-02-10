@@ -1,14 +1,24 @@
 #include "viewtrademarktasktypesmodel.h"
+#include "models.h"
+#include "record.h"
 
-namespace Nutmeg
-{
+namespace Nutmeg {
 
-viewTrademarkTaskTypesModel::viewTrademarkTaskTypesModel(QObject *parent) : Nutmeg::TableModel{parent}
+viewTrademarkTaskTypesModel::viewTrademarkTaskTypesModel(QObject *parent)
+    : Nutmeg::TableModel{parent}
 {
     setTable("viewTrademarkTaskTypes");
-    select();
-    mIsLoaded = true;
-    IndexLocations();
+    if(select())
+    {
+        mIsLoaded = true;
+        IndexLocations();
+    }
+}
+
+QSqlRecord viewTrademarkTaskTypesModel::record(Key primaryKey)
+{
+	//gViewTrademarkTaskTypes is already globally defined. 
+	return Nutmeg::record<viewTrademarkTaskTypesModel>(primaryKey, gViewTrademarkTaskTypesModel);
 }
 
 } // namespace Nutmeg

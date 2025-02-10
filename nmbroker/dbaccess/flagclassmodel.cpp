@@ -1,4 +1,6 @@
 #include "flagclassmodel.h"
+#include "models.h"
+#include "record.h"
 
 namespace Nutmeg {
 
@@ -11,22 +13,12 @@ flagClassModel::flagClassModel(QObject *parent)
         mIsLoaded = true;
         IndexLocations();
     }
-
-    mFlagsByCamelCase = QHash<QString, Key>();
-    //++i
-    for(int i = 0; i < rowCount(); i++){
-        QString camelCase = record(i).value("camelCase").toString();
-        Key flagClassId = record(i).value("FlagClassId").toUInt();
-        mFlagsByCamelCase[camelCase] = flagClassId;
-    }
 }
 
-Key flagClassModel::getFlagByCamelCase(QString cc)
+QSqlRecord flagClassModel::record(Key primaryKey)
 {
-    if(!mFlagsByCamelCase.contains(cc)){
-        return UINT32_MAX;
-    }
-    return mFlagsByCamelCase[cc];
+	//gFlagClass is already globally defined. 
+	return Nutmeg::record<flagClassModel>(primaryKey, gFlagClassModel);
 }
 
 } // namespace Nutmeg

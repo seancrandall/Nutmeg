@@ -1,17 +1,19 @@
 #ifndef NUTMEG_VIEWRESPONSETASKTYPESMODEL_H
 #define NUTMEG_VIEWRESPONSETASKTYPESMODEL_H
 
-#include "tablemodel.h"
 #include <QObject>
+#include <QSqlRecord>
+#include "tablemodel.h"
 
-namespace Nutmeg
-{
+namespace Nutmeg {
 
 class viewResponseTaskTypesModel : public Nutmeg::TableModel
 {
     Q_OBJECT
-  public:
+public:
     explicit viewResponseTaskTypesModel(QObject *parent = nullptr);
+    
+    static QSqlRecord record(Key primaryKey);
 };
 
 } // namespace Nutmeg

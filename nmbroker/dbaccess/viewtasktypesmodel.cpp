@@ -1,14 +1,24 @@
 #include "viewtasktypesmodel.h"
+#include "models.h"
+#include "record.h"
 
-namespace Nutmeg
-{
+namespace Nutmeg {
 
-viewTaskTypesModel::viewTaskTypesModel(QObject *parent) : Nutmeg::TableModel{parent}
+viewTaskTypesModel::viewTaskTypesModel(QObject *parent)
+    : Nutmeg::TableModel{parent}
 {
     setTable("viewTaskTypes");
-    select();
-    mIsLoaded = true;
-    IndexLocations();
+    if(select())
+    {
+        mIsLoaded = true;
+        IndexLocations();
+    }
+}
+
+QSqlRecord viewTaskTypesModel::record(Key primaryKey)
+{
+	//gViewTaskTypes is already globally defined. 
+	return Nutmeg::record<viewTaskTypesModel>(primaryKey, gViewTaskTypesModel);
 }
 
 } // namespace Nutmeg

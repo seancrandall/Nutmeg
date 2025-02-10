@@ -2,6 +2,7 @@
 #define NUTMEG_FLAGCLASSMODEL_H
 
 #include <QObject>
+#include <QSqlRecord>
 #include "tablemodel.h"
 
 namespace Nutmeg {
@@ -11,13 +12,8 @@ class flagClassModel : public Nutmeg::TableModel
     Q_OBJECT
 public:
     explicit flagClassModel(QObject *parent = nullptr);
-
-    ReadOnlyProperty(getFlagByCamelCase) Key camelCase[];
-
-    Key getFlagByCamelCase(QString cc);
-
-private:
-    QHash<QString, Key> mFlagsByCamelCase;
+    
+    static QSqlRecord record(Key primaryKey);
 };
 
 } // namespace Nutmeg

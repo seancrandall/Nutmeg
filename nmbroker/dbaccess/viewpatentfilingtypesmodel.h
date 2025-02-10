@@ -1,17 +1,19 @@
 #ifndef NUTMEG_VIEWPATENTFILINGTYPESMODEL_H
 #define NUTMEG_VIEWPATENTFILINGTYPESMODEL_H
 
-#include "tablemodel.h"
 #include <QObject>
+#include <QSqlRecord>
+#include "tablemodel.h"
 
-namespace Nutmeg
-{
+namespace Nutmeg {
 
 class viewPatentFilingTypesModel : public Nutmeg::TableModel
 {
     Q_OBJECT
-  public:
+public:
     explicit viewPatentFilingTypesModel(QObject *parent = nullptr);
+    
+    static QSqlRecord record(Key primaryKey);
 };
 
 } // namespace Nutmeg
