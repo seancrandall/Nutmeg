@@ -7,6 +7,7 @@ namespace Nutmeg{
 std::unique_ptr<appointmentTypeModel> gAppointmentTypeModel;
 std::unique_ptr<deadlineModel> gDeadlineModel;
 std::unique_ptr<flagClassModel> gFlagClassModel;
+std::unique_ptr<objectModel> gObjectModel;
 std::unique_ptr<tagModel> gTagModel;
 std::unique_ptr<taskModel> gTaskModel;
 std::unique_ptr<taskTypeModel> gTaskTypeModel;

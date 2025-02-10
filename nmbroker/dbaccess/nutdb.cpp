@@ -846,17 +846,10 @@ DeadlineData Nutmeg::Nutdb::GetDeadline(Key id)
     DeadlineData dat;
     QSqlRecord rec;
 
-    if(!gDeadlineModel)
-        gDeadlineModel = std::make_unique<deadlineModel>();
+    rec = deadlineModel::record(id);
 
-    rec = gDeadlineModel->keyRecord[id];
-
-    if(rec == QSqlRecord())
-    {
-        rec = GetRecord("deadline", id);
-        if(!mLastOperationSuccessful)
-            return dat;
-    }
+    if(rec.isEmpty())
+        return dat;
 
     dat.DeadlineId = rec.KeyField("DeadlineId");
     dat.TriggerDate = rec.DateField("TriggerDate");
@@ -925,14 +918,10 @@ EnterpriseData Nutdb::GetEnterprise(Key id)
     QSqlRecord rec;
     EnterpriseData dat;
 
-    if(!gViewEntitiesModel)
-        gViewEntitiesModel = std::make_unique<viewEntitiesModel>();
+    rec = viewEntitiesModel::record(id);
 
-    if(rec == QSqlRecord()){
-        rec = GetRecord("enterprise", id);
-        if(!mLastOperationSuccessful)
-            return dat;
-    }
+    if(rec.isEmpty())
+        return dat;
 
     dat.EnterpriseId = rec.KeyField("EnterpriseId");
     dat.EnterpriseName = rec.StringField("EnterpriseName");
@@ -958,18 +947,10 @@ EntityData Nutdb::GetEntity(Key id)
     QSqlRecord rec;
     EntityData dat;
 
-    if(!gViewEntitiesModel)
-        gViewEntitiesModel = std::make_unique<viewEntitiesModel>();
+    rec = viewEntitiesModel::record(id);
 
-    rec = gViewEntitiesModel->keyRecord[id];
-
-    //If for whatever reason, getting from the QSqlTableModel failed
-    //Try to read directly from the db instead.
-    if(rec == QSqlRecord()){
-        rec = GetRecord("entity", id);
-        if(!mLastOperationSuccessful)
-            return dat;
-    }
+    if(rec.isEmpty())
+        return dat;
 
     dat.EntityId = rec.UIntField("EntityId");
     dat.EntityName = rec.StringField("EntityName");
@@ -994,15 +975,10 @@ FilingData Nutdb::GetFiling(Key id)
     FilingData dat;
     QSqlRecord rec;
 
-    if(!gViewFilingsModel)
-        gViewFilingsModel = std::make_unique<viewFilingsModel>();
-    rec = gViewFilingsModel->keyRecord[id];
+    rec = viewFilingsModel::record(id);
 
-    if(rec == QSqlRecord()){
-        rec = GetRecord("filing", id);
-        if(!mLastOperationSuccessful)
-            return dat;
-    }
+    if(rec.isEmpty())
+        return dat;
 
     dat.FilingId = rec.KeyField("FilingId");
     dat.fkFilingStatus = rec.KeyField("fkFilingStatus");
@@ -1053,40 +1029,40 @@ bool Nutdb::GetFlag(Key objectId, QString camelCase)
 
 FlagClassData Nutdb::GetFlagClass(QString camelCase)
 {
-    QSqlQuery query;
-    QVariantList params;
     FlagClassData dat;
+    QSqlRecord rec;
 
-    params.append(camelCase);
+    if(!gFlagClassModel)
+        gFlagClassModel = std::make_unique<flagClassModel>();
 
-    query = CallStoredProcedure("GetFlagClass", params);
-    if(!mLastOperationSuccessful)
+    Key flagKey = gFlagClassModel->camelCase[camelCase];
+    rec = gFlagClassModel->keyRecord[flagKey];
+
+    if(rec.isEmpty())
         return dat;
 
-    dat.FlagClassId = query.record().field("FlagClassId").value().toUInt();
-    dat.CamelCase = query.record().field("CamelCase").value().toString();
-    dat.Label = query.record().field("Label").value().toString();
-    dat.Description = query.record().field("Description").value().toString();
+    dat.FlagClassId = rec.field("FlagClassId").value().toUInt();
+    dat.CamelCase = rec.field("CamelCase").value().toString();
+    dat.Label = rec.field("Label").value().toString();
+    dat.Description = rec.field("Description").value().toString();
 
     return dat;
 }
 
 FlagClassData Nutdb::GetFlagClass(Key id)
 {
-    QSqlQuery query;
-    QVariantList params;
     FlagClassData dat;
+    QSqlRecord rec;
 
-    params.append(QVariant::fromValue(id));
+    rec = flagClassModel::record(id);
 
-    query = CallStoredProcedure("GetFlagClass", params);
-    if(!mLastOperationSuccessful)
+    if(rec.isEmpty())
         return dat;
 
-    dat.FlagClassId = query.record().field("FlagClassId").value().toUInt();
-    dat.CamelCase = query.record().field("CamelCase").value().toString();
-    dat.Label = query.record().field("Label").value().toString();
-    dat.Description = query.record().field("Description").value().toString();
+    dat.FlagClassId = rec.field("FlagClassId").value().toUInt();
+    dat.CamelCase = rec.field("CamelCase").value().toString();
+    dat.Label = rec.field("Label").value().toString();
+    dat.Description = rec.field("Description").value().toString();
 
     return dat;
 
@@ -1097,17 +1073,10 @@ MatterData Nutdb::GetMatter(Key id)
     QSqlRecord rec;
     MatterData dat;
 
-    if(!gViewMattersModel)
-        gViewMattersModel = std::make_unique<viewMattersModel>();
+    rec = viewMattersModel::record(id);
 
-    rec = gViewMattersModel->keyRecord[id];
-
-    //If getting the record from the table model failed, try to load directly from the db
-    if(rec == QSqlRecord()){
-        rec = GetRecord("matter", id);
-        if(!mLastOperationSuccessful)
-            return dat;
-    }
+    if(rec.isEmpty())
+        return dat;
 
     dat.MatterId = rec.KeyField("MatterId");
     dat.fkParent = rec.KeyField("fkParent");
@@ -1130,8 +1099,9 @@ ObjectData Nutdb::GetObject(Key id)
     QSqlRecord rec;
     ObjectData dat;
 
-    rec = GetRecord("object", id);
-    if(!mLastOperationSuccessful)
+    rec = objectModel::record(id);
+
+    if(rec.isEmpty())
         return dat;
 
     dat.ObjectId = rec.KeyField("ObjectId");
@@ -1252,16 +1222,10 @@ PatentMatterData Nutdb::GetPatentMatter(Key id)
     QSqlRecord rec;
     PatentMatterData dat;
 
-    if(!gViewPatentMattersModel)
-        gViewPatentMattersModel = std::make_unique<viewPatentMattersModel>();
+    rec = viewPatentMattersModel::record(id);
 
-    rec = gViewPatentMattersModel->keyRecord[id];
-
-    if(rec == QSqlRecord()){
-        rec = GetRecord("patentMatter", id);
-        if(!mLastOperationSuccessful)
-            return dat;
-    }
+    if(rec.isEmpty())
+        return dat;
 
     dat.PatentMatterId = rec.KeyField("PatentMatterId");
     dat.FilingDate = rec.field("FilingDate").value().toDate();
@@ -1287,16 +1251,10 @@ PersonData Nutdb::GetPerson(Key id)
     QSqlRecord rec;
     PersonData dat;
 
-    if(!gViewPeopleModel)
-        gViewPeopleModel = std::make_unique<viewPeopleModel>();
+    rec = viewPeopleModel::record(id);
 
-    rec = gViewPeopleModel->keyRecord[id];
-
-    if(rec == QSqlRecord()){
-        rec = GetRecord("person", id);
-        if(!mLastOperationSuccessful)
-            return dat;
-    }
+    if(rec.isEmpty())
+        return dat;
 
     dat.PersonId = rec.UIntField("PersonId");
     dat.FirstName = rec.StringField("FirstName");
@@ -1313,15 +1271,10 @@ ResponseData Nutdb::GetResponse(Key id)
     QSqlRecord rec;
     ResponseData dat;
 
-    if(!gViewResponsesModel)
-        gViewResponsesModel = std::make_unique<viewResponsesModel>();
-    rec = gViewResponsesModel->keyRecord[id];
+    rec = viewResponsesModel::record(id);
 
-    if(rec == QSqlRecord()){
-        rec = GetRecord("response", id);
-        if(!mLastOperationSuccessful)
-            return dat;
-    }
+    if(rec.isEmpty())
+        return dat;
 
     dat.ResponseId = rec.KeyField("ResponseId");
     dat.fkClientOfficeHours = rec.KeyField("fkClientOfficeHours");
@@ -1339,16 +1292,10 @@ TagData Nutdb::GetTag(Key id)
     TagData dat;
     QSqlRecord rec;
 
-    if(!gTagModel)
-        gTagModel = std::make_unique<tagModel>();
+    rec = tagModel::record(id);
 
-    rec = gTagModel->keyRecord[id];
-
-    if(rec == QSqlRecord()){
-        rec = GetRecord("tag", id);
-        if(!mLastOperationSuccessful)
-            return dat;
-    }
+    if(rec.isEmpty())
+        return dat;
 
     dat.TagId = rec.UIntField("TagId");
     dat.TagText = rec.StringField("TagText");
@@ -1358,24 +1305,10 @@ TagData Nutdb::GetTag(Key id)
 
 Key Nutdb::GetTagId(QString tagText)
 {
-    // Use default database connection
-    QSqlDatabase db = QSqlDatabase::database();
-    Key tagId = 0;
+    if(!gTagModel)
+        gTagModel = std::make_unique<tagModel>();
 
-    if (db.isValid() && db.isOpen()) {
-        QSqlQuery query(db);
-        query.prepare("SELECT TagId FROM tag WHERE TagText = :tagText");
-        query.bindValue(":tagText", tagText);
-
-        if (query.exec() && query.next()) {
-            tagId = query.value(0).toUInt();
-        } else {
-            qWarning() << "Failed to execute query or no results found:" << query.lastError().text();
-        }
-    } else {
-        qWarning() << "Database not valid or not open.";
-    }
-
+    Key tagId = gTagModel->tagId[tagText];
     return tagId;
 }
 
@@ -1384,16 +1317,10 @@ TaskData Nutdb::GetTask(Key id)
     TaskData dat;
     QSqlRecord rec;
 
-    if(!gViewTasksModel)
-        gViewTasksModel = std::make_unique<viewTasksModel>();
+    rec = viewTasksModel::record(id);
 
-    rec = gViewTasksModel->keyRecord[id];
-
-    if(rec == QSqlRecord()){
-        rec = GetRecord("task", id);
-        if(!mLastOperationSuccessful)
-            return dat;
-    }
+    if(rec.isEmpty())
+        return dat;
 
     dat.TaskId = rec.KeyField("TaskId");
     dat.fkMatter = rec.KeyField("fkMatter");
@@ -1418,16 +1345,10 @@ TrademarkMatterData Nutdb::GetTrademarkMatter(Key id)
     TrademarkMatterData dat;
     QSqlRecord rec;
 
-    if(!gViewTrademarkMattersModel)
-        gViewTrademarkMattersModel = std::make_unique<viewTrademarkMattersModel>();
+    rec = viewTrademarkMattersModel::record(id);
 
-    rec = gViewTrademarkMattersModel->keyRecord[id];
-
-    if(rec == QSqlRecord()){
-        rec = GetRecord("trademarkMatter", id);
-        if(!mLastOperationSuccessful)
-            return dat;
-    }
+    if(rec.isEmpty())
+        return dat;
 
     dat.TrademarkMatterId = rec.KeyField("TrademarkMatterId");
     dat.FirstUseInCommerce = rec.DateField("FirstUseInCommerce");
@@ -1451,23 +1372,6 @@ TrademarkMatterData Nutdb::GetTrademarkMatter(Key id)
     return dat;
 }
 
-QList<Key> Nutdb::GetInventors(Key patentMatterId)
-{
-    QSqlQuery query;
-    QList<Key> resultList;
-
-    QVariantList params;
-    params.append(NullableInteger(patentMatterId));
-
-    query = CallStoredProcedure("", params);
-    if(!mLastOperationSuccessful)
-        return resultList;
-
-    while (query.next())
-        resultList.append(query.record().field(0).value().toUInt());
-
-    return resultList;
-}
 
 QVariant Nutdb::NullableInteger(Key value)
 {

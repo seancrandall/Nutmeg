@@ -10,6 +10,7 @@
 #include "deadlinemodel.h"
 #include "dbaccess/viewobjectflagsmodel.h"
 #include "flagclassmodel.h"
+#include "objectmodel.h"
 #include "tablemodel.h"
 #include "tagmodel.h"
 #include "tasktypemodel.h"
@@ -44,6 +45,7 @@ namespace Nutmeg{
 extern std::unique_ptr<appointmentTypeModel> gAppointmentTypeModel;
 extern std::unique_ptr<deadlineModel> gDeadlineModel;
 extern std::unique_ptr<flagClassModel> gFlagClassModel;
+extern std::unique_ptr<objectModel> gObjectModel;
 extern std::unique_ptr<tagModel> gTagModel;
 extern std::unique_ptr<taskModel> gTaskModel;
 extern std::unique_ptr<taskTypeModel> gTaskTypeModel;
