@@ -30,11 +30,13 @@ public:
     ReadOnlyProperty(getRecordByPrimaryKey) QSqlRecord keyRecord[]; //! Gets a QSqlRecord as though the table were an array indexed by primary key
     ReadOnlyProperty(getRowByPrimaryKey) int rowByPrimaryKey[]; //! Returns the ordinal index in the table that corresponds to the given key. For example, if the 7th row has key 482, rowByPrimaryKey[482] will return 6.
     ReadOnlyProperty(getLoaded) bool loaded; //! True if the model is loaded into memory, otherwise false.
+    ReadOnlyProperty(getPrimaryKeyField) const QString primaryKeyField;
 
     bool getLoaded(void) {return mIsLoaded;}
     const QSqlError getLastError(void);
     QSqlRecord getRecordByPrimaryKey(Key primaryKey) const;
     int getRowByPrimaryKey(Key key) const;
+    const QString getPrimaryKeyField(void) const;
 
     virtual bool select(void) override;
 

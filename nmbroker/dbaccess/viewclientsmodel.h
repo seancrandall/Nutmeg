@@ -1,17 +1,19 @@
 #ifndef NUTMEG_VIEWCLIENTSMODEL_H
 #define NUTMEG_VIEWCLIENTSMODEL_H
 
-#include "tablemodel.h"
 #include <QObject>
+#include <QSqlRecord>
+#include "tablemodel.h"
 
-namespace Nutmeg
-{
+namespace Nutmeg {
 
 class viewClientsModel : public Nutmeg::TableModel
 {
     Q_OBJECT
-  public:
+public:
     explicit viewClientsModel(QObject *parent = nullptr);
+    
+    static QSqlRecord record(Key primaryKey);
 };
 
 } // namespace Nutmeg

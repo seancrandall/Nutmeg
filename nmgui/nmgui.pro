@@ -23,6 +23,7 @@ SOURCES += \
     ../nmbroker/dbaccess/exception.cpp \
     ../nmbroker/dbaccess/flagclassmodel.cpp \
     ../nmbroker/dbaccess/models.cpp \
+    ../nmbroker/dbaccess/record.cpp \
     ../nmbroker/dbaccess/tagmodel.cpp \
     ../nmbroker/dbaccess/taskmodel.cpp \
     ../nmbroker/dbaccess/viewcopyrightfilingtypesmodel.cpp \
@@ -188,6 +189,7 @@ HEADERS += \
     ../nmbroker/dbaccess/exception.h \
     ../nmbroker/dbaccess/flagclassmodel.h \
     ../nmbroker/dbaccess/models.h \
+    ../nmbroker/dbaccess/record.h \
     ../nmbroker/dbaccess/tagmodel.h \
     ../nmbroker/dbaccess/taskmodel.h \
     ../nmbroker/dbaccess/viewcopyrightfilingtypesmodel.h \

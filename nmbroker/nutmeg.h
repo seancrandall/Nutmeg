@@ -26,6 +26,7 @@
     {                                                                                                                  \
         throw;                                                                                                         \
     }
+
 #define NUTMEGFONT (setFont(QFont(FontFamily, FontSize)))
 
 #define PU(x) std::unique_ptr<(x)>
@@ -34,11 +35,11 @@
 namespace Nutmeg
 {
 typedef QString String;
-typedef unsigned long int Key;
-typedef unsigned long int Uint32;
-typedef unsigned long long int Uint64;
-typedef unsigned char Uint8;
-typedef std::vector<unsigned char> ByteVector;
+typedef uint32_t Key;
+typedef uint32_t Uint32;
+typedef uint64_t Uint64;
+typedef uint8_t Uint8;
+typedef std::vector<uint8_t> ByteVector;
 // typedef std::chrono::year_month_day Date;
 typedef QDate Date;
 typedef QDateTime DateTime;

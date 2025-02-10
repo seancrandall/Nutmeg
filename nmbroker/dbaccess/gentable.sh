@@ -9,6 +9,7 @@ fi
 TableName=$1
 lowerTableName=$(echo "$TableName" | tr '[:upper:]' '[:lower:]')
 upperTableName=$(echo "$TableName" | tr '[:lower:]' '[:upper:]')
+globalVarName="g$(echo "${TableName:0:1}" | tr '[:lower:]' '[:upper:]')${TableName:1}"
 
 # Create the header file
 cat << EOF > "${lowerTableName}model.h"
@@ -16,6 +17,7 @@ cat << EOF > "${lowerTableName}model.h"
 #define NUTMEG_${upperTableName}MODEL_H
 
 #include <QObject>
+#include <QSqlRecord>
 #include "tablemodel.h"
 
 namespace Nutmeg {
@@ -25,6 +27,8 @@ class ${TableName}Model : public Nutmeg::TableModel
     Q_OBJECT
 public:
     explicit ${TableName}Model(QObject *parent = nullptr);
+    
+    static QSqlRecord record(Key primaryKey);
 };
 
 } // namespace Nutmeg
@@ -35,6 +39,8 @@ EOF
 # Create the source file
 cat << EOF > "${lowerTableName}model.cpp"
 #include "${lowerTableName}model.h"
+#include "models.h"
+#include "record.h"
 
 namespace Nutmeg {
 
@@ -47,6 +53,12 @@ ${TableName}Model::${TableName}Model(QObject *parent)
         mIsLoaded = true;
         IndexLocations();
     }
+}
+
+QSqlRecord ${TableName}Model::record(Key primaryKey)
+{
+	//${globalVarName} is already globally defined. 
+	return Nutmeg::record<${TableName}Model>(primaryKey, ${globalVarName}Model);
 }
 
 } // namespace Nutmeg

@@ -1,3 +1,5 @@
+#include <QSqlIndex>
+
 #include "tablemodel.h"
 #include "logger.h"
 
@@ -63,6 +65,19 @@ int TableModel::getRowByPrimaryKey(Key key) const
         Logger::LogMessage(QString("Tried to get a row number for primary key %1, but the table does not contain the key.").arg(QString::number(key)));
     }
     return -1;
+}
+
+const QString TableModel::getPrimaryKeyField() const
+{
+    QSqlIndex primaryKeyIndex = this->primaryKey();
+
+    if (!primaryKeyIndex.isEmpty()) {
+        // Assuming the primary key is the first (and usually only) field in the index
+        return primaryKeyIndex.fieldName(0);
+    }
+
+    // If no primary key is defined or found, return an empty string or handle this case appropriately
+    return QString();
 }
 
 bool TableModel::select()
