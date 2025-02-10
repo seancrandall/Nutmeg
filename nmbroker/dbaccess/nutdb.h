@@ -161,6 +161,7 @@ class Nutdb
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     static ActionData GetAction(Key id);
     static AppointmentData GetAppointment(Key id);
+    static QList<Key> GetCaseInventors(Key id);
     static QList<Key> GetObjectAppointments(Key id);
     static CopyrightFilingData GetCopyrightFiling(Key id);
     static CopyrightFormData GetCopyrightForm(Key id);
@@ -213,7 +214,6 @@ class Nutdb
     static QString EmailInventors(Key PatentCaseId);
 
     static QVector<FlagClassData> GetFlags(Key objectId);
-    static QList<Key> GetInventors(Key patentMatterId);
     static QString FormatParameter(QVariant parameter);
 
   protected:
