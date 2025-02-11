@@ -53,8 +53,10 @@ SOURCES += \
     completers/peoplecompleter.cpp \
     completers/tagcompleter.cpp \
     panels/abstracttaskpanel.cpp \
+    panels/appointmentdashpanel.cpp \
     panels/appointmentpanel.cpp \
     panels/appointmentpanelfull.cpp \
+    panels/appointmenttaskpanel.cpp \
     panels/deadlinespanel.cpp \
     panels/entitiespanel.cpp \
     panels/entitypanel.cpp \
@@ -76,7 +78,6 @@ SOURCES += \
     panels/taskpanelfull.cpp \
     utils/icalbuilder.cpp \
     widgets/abstractremovablebutton.cpp \
-    widgets/appointmenttaskpanel.cpp \
     widgets/checkbox.cpp \
     widgets/comboeditadd.cpp \
     widgets/datetimeedit.cpp \
@@ -222,8 +223,10 @@ HEADERS += \
     completers/peoplecompleter.h \
     completers/tagcompleter.h \
     panels/abstracttaskpanel.h \
+    panels/appointmentdashpanel.h \
     panels/appointmentpanel.h \
     panels/appointmentpanelfull.h \
+    panels/appointmenttaskpanel.h \
     panels/deadlinespanel.h \
     panels/entitiespanel.h \
     panels/entitypanel.h \
@@ -245,7 +248,6 @@ HEADERS += \
     panels/taskpanelfull.h \
     utils/icalbuilder.h \
     widgets/abstractremovablebutton.h \
-    widgets/appointmenttaskpanel.h \
     widgets/checkbox.h \
     widgets/comboeditadd.h \
     widgets/datetimeedit.h \

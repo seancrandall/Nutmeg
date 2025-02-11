@@ -757,6 +757,13 @@ Key Nutdb::GetAppointmentObject(Key appointmentId)
     return gViewAppointmentObjectsModel->objectForAppointment[appointmentId];
 }
 
+QString Nutdb::GetAppointmentTypeString(Key appointmentId)
+{
+    QSqlRecord rec =  viewAppointmentObjectsModel::fetchRecord(appointmentId);
+
+    return rec.field("AppointmentTypeName").value().toString();
+}
+
 QList<Key> Nutdb::GetObjectAppointments(Key id)
 {
     QList<Key> resultList = QList<Key>();

@@ -72,6 +72,26 @@ Key Appointment::getAssociatedObject() const
     return Nutdb::GetAppointmentObject(mDat.AppointmentId);
 }
 
+QString Appointment::getTypeString() const
+{
+    return Nutdb::GetAppointmentTypeString(mDat.AppointmentId);
+}
+
+bool Appointment::getNeedsAgenda() const
+{
+    return getFlag("NeedsAgenda");
+}
+
+bool Appointment::getAgendaSent() const
+{
+    return getFlag("AgendaSent");
+}
+
+bool Appointment::getComplete() const
+{
+    return mDat.Complete;
+}
+
 bool Appointment::SetAppointmentTime(DateTime newappt)
 {
     bool result = WriteDateTime(appointmentTableName, "AppointmentTime", newappt);
@@ -86,6 +106,22 @@ bool Appointment::SetfkAppointmentType(Key newfk)
     return result;
 }
 
+void Appointment::setNeedsAgenda(bool val)
+{
+    SetFlagValue("NeedsAgenda", val);
+}
+
+void Appointment::setAgendaSent(bool val)
+{
+    SetFlagValue("AgendaSent", val);
+}
+
+void Appointment::setComplete(bool val)
+{
+    bool result = WriteBoolean(appointmentTableName, "Complete", val);
+    if(result) mDat.Complete = val;
+}
+
 bool Appointment::InitializeAppointment(Key id)
 {
     mDat = Nutdb::GetAppointment(id);
@@ -93,7 +129,26 @@ bool Appointment::InitializeAppointment(Key id)
     {
         return false;
     }
+
+    bNeedsAgenda = getNeedsAgenda();
+    bAgendaSent = getAgendaSent();
+
     return Object::SetId(id);
+}
+
+Key Nutmeg::Appointment::getId() const { return mDat.AppointmentId; }
+
+DateTime Nutmeg::Appointment::getAppointmentTime() const { return mDat.AppointmentTime; }
+
+Key Nutmeg::Appointment::getfkAppointmentType() const { return mDat.fkAppointmentType; }
+
+void Nutmeg::Appointment::holdAppointmentTime(DateTime newval) {mDat.AppointmentTime = newval; dirty["AppointmentTime"] = true;}
+
+void Nutmeg::Appointment::holdfkAppointmentType(Key newval) {mDat.fkAppointmentType = newval; dirty["fkAppointmentType"] = true;}
+
+void Appointment::holdComplete(bool done)
+{
+    mDat.Complete = done;
 }
 
 } // namespace Nutmeg
