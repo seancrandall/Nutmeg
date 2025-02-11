@@ -52,6 +52,7 @@ void NewResponseDialog::slotCreateTask()
     Nutmeg::Key matterKey = ui->comboMatter->key;
     Nutmeg::Key responseKey = 0;
     Nutmeg::Key taskClass = ui->comboTaskClass->key;
+    Nutmeg::Key taskType = ui->comboTask->key;
 
     switch (taskClass)
     {
@@ -69,6 +70,7 @@ void NewResponseDialog::slotCreateTask()
     }
 
     Nutmeg::Response resp = Nutmeg::Response(responseKey);
+    resp.fkTaskType = taskType;
     Nutmeg::Key fkDeadline = resp.fkDeadline;
     Nutmeg::Deadline deadline = Nutmeg::Deadline(fkDeadline);
 

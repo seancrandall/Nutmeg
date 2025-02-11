@@ -46,6 +46,7 @@ void NewFilingDialog::slotCreateTask()
     Nutmeg::Key matterKey = ui->comboMatter->key;
     Nutmeg::Key filingKey = 0;
     Nutmeg::Key taskClass = ui->comboTaskClass->key;
+    Nutmeg::Key taskType = ui->comboTask->key;
 
     switch (taskClass)
     {
@@ -63,6 +64,8 @@ void NewFilingDialog::slotCreateTask()
     }
 
     Nutmeg::Filing filing(filingKey);
+    filing.fkTaskType = taskType;
+
     Nutmeg::Key fkDeadline = filing.fkDeadline;
     Nutmeg::Deadline deadline(fkDeadline);
 
