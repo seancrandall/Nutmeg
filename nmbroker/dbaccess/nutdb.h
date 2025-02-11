@@ -161,8 +161,9 @@ class Nutdb
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     static ActionData GetAction(Key id);
     static AppointmentData GetAppointment(Key id);
-    static QList<Key> GetCaseInventors(Key id);
+    static Key GetAppointmentObject(Key appointmentId);
     static QList<Key> GetObjectAppointments(Key id);
+    static QList<Key> GetCaseInventors(Key id);
     static CopyrightFilingData GetCopyrightFiling(Key id);
     static CopyrightFormData GetCopyrightForm(Key id);
     static CopyrightMatterData GetCopyrightMatter(Key id);

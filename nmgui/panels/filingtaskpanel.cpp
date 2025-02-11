@@ -5,7 +5,7 @@ namespace Nutmeg
 {
 
 FilingTaskPanel::FilingTaskPanel(std::shared_ptr<Filing> fil, QWidget *parent)
-    : Nutmeg::TaskPanel(new EmailInventorsButton(fil), fil, parent)
+    : Nutmeg::AbstractTaskPanel(new EmailInventorsButton(fil), fil, parent)
 {
 }
 

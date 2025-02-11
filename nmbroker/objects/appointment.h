@@ -28,6 +28,7 @@ class Appointment : public Nutmeg::Object
     Property(getAppointmentTime, SetAppointmentTime) DateTime AppointmentTime;
     Property(getfkAppointmentType, SetfkAppointmentType) Key fkAppointmentType;
     Property(setfkAppointmentType, SetfkAppointmentType) Key type;
+    ReadOnlyProperty(getAssociatedObject) Key associatedObject;
 
     // Overrides
     virtual Key getId(void) const override { return mDat.AppointmentId; }
@@ -36,11 +37,13 @@ class Appointment : public Nutmeg::Object
     virtual bool SetId(Key newid) override;
     virtual bool Commit(void) override;
 
-    DateTime getAppointmentTime(void) { return mDat.AppointmentTime; }
-    Key getfkAppointmentType(void) { return mDat.fkAppointmentType; }
+    DateTime getAppointmentTime(void) const { return mDat.AppointmentTime; }
+    Key getfkAppointmentType(void) const { return mDat.fkAppointmentType; }
+    Key getAssociatedObject(void) const;
 
     bool SetAppointmentTime(DateTime newappt);
     bool SetfkAppointmentType(Key newfk);
+    //void setAssociatedObject(Key newObject);
 
     void holdAppointmentTime(DateTime newval) {mDat.AppointmentTime = newval; dirty["AppointmentTime"] = true;}
     void holdfkAppointmentType(Key newval) {mDat.fkAppointmentType = newval; dirty["fkAppointmentType"] = true;}

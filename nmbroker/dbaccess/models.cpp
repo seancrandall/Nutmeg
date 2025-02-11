@@ -12,6 +12,7 @@ std::unique_ptr<objectTypeModel> gObjectTypeModel;
 std::unique_ptr<tagModel> gTagModel;
 std::unique_ptr<taskModel> gTaskModel;
 std::unique_ptr<taskTypeModel> gTaskTypeModel;
+std::unique_ptr<viewAppointmentObjectsModel>gViewAppointmentObjectsModel;
 std::unique_ptr<viewClientsModel> gViewClientsModel;
 std::unique_ptr<viewContractingFirmsModel> gViewContractingFirmsModel;
 std::unique_ptr<viewCopyrightFilingTypesModel> gViewCopyrightFilingTypesModel;

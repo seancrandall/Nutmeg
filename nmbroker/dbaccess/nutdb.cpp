@@ -749,6 +749,24 @@ AppointmentData Nutdb::GetAppointment(Key input)
     return dat;
 }
 
+Key Nutdb::GetAppointmentObject(Key appointmentId)
+{
+    if(!gViewAppointmentObjectsModel)
+        gViewAppointmentObjectsModel = std::make_unique<viewAppointmentObjectsModel>();
+
+    return gViewAppointmentObjectsModel->objectForAppointment[appointmentId];
+}
+
+QList<Key> Nutdb::GetObjectAppointments(Key id)
+{
+    QList<Key> resultList = QList<Key>();
+
+    if(!gViewAppointmentObjectsModel)
+        gViewAppointmentObjectsModel = std::make_unique<viewAppointmentObjectsModel>();
+
+    return gViewAppointmentObjectsModel->appointmentsForObject[id];
+}
+
 QList<Key> Nutdb::GetCaseInventors(Key id)
 {
     QList<Key> resultList;
@@ -770,24 +788,6 @@ QList<Key> Nutdb::GetCaseInventors(Key id)
         // Append each fkPerson value to the result list
         resultList.append(query.value(0).toUInt());
     }
-
-    return resultList;
-}
-
-QList<Key> Nutdb::GetObjectAppointments(Key id)
-{
-    QList<Key> resultList;
-
-    QVariantList params;
-    params.append(NullableInteger(id));
-
-    QSqlQuery query;
-    query = CallStoredProcedure("GetObjectAppointments", params);
-    if(!mLastOperationSuccessful)
-        return resultList;
-
-    while (query.next())
-        resultList.append(query.record().field(0).value().toUInt());
 
     return resultList;
 }

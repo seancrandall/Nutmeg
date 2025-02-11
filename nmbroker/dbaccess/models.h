@@ -15,6 +15,7 @@
 #include "tablemodel.h"
 #include "tagmodel.h"
 #include "tasktypemodel.h"
+#include "viewappointmentobjectsmodel.h"
 #include "viewclientsmodel.h"
 #include "viewcontractingfirmsmodel.h"
 #include "viewcopyrightfilingtypesmodel.h"
@@ -51,6 +52,7 @@ extern std::unique_ptr<objectTypeModel> gObjectTypeModel;
 extern std::unique_ptr<tagModel> gTagModel;
 extern std::unique_ptr<taskModel> gTaskModel;
 extern std::unique_ptr<taskTypeModel> gTaskTypeModel;
+extern std::unique_ptr<viewAppointmentObjectsModel>gViewAppointmentObjectsModel;
 extern std::unique_ptr<viewClientsModel> gViewClientsModel;
 extern std::unique_ptr<viewContractingFirmsModel> gViewContractingFirmsModel;
 extern std::unique_ptr<viewFilingsModel> gViewFilingsModel;

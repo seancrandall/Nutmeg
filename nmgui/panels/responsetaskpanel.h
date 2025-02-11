@@ -2,7 +2,7 @@
 #define NUTMEG_RESPONSETASKPANEL_H
 
 #include "objects/response.h"
-#include "taskpanel.h"
+#include "abstracttaskpanel.h"
 #include <QObject>
 #include <QWidget>
 

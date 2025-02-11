@@ -1,5 +1,5 @@
-#ifndef NUTMEG_TASKPANEL_H
-#define NUTMEG_TASKPANEL_H
+#ifndef NUTMEG_ABSTRACTTASKPANEL_H
+#define NUTMEG_ABSTRACTTASKPANEL_H
 
 #include <QComboBox>
 #include <QPalette>
@@ -21,20 +21,27 @@
 #include "widgets/titleedit.h"
 #include "widgets/informationbox.h"
 #include "widgets/arrowbutton.h"
+#include "widgets/disabledbutton.h"
 
 #include "windows/taskdialog.h"
 
 namespace Nutmeg
 {
 
-class TaskPanel : public Frame
+class AbstractTaskPanel : public Frame
 {
     Q_OBJECT
 
   public:
-    TaskPanel(std::shared_ptr<Task> task, QWidget *parent = nullptr);
-    TaskPanel(PushButton *xtra, std::shared_ptr<Task> task, QWidget *parent = nullptr);
-    TaskPanel(Key taskId, PushButton *xtra, QWidget *parent = nullptr);
+    AbstractTaskPanel(std::shared_ptr<Task> task, QWidget *parent = nullptr);
+    AbstractTaskPanel(PushButton *xtra, std::shared_ptr<Task> task, QWidget *parent = nullptr);
+    AbstractTaskPanel(Key taskId, PushButton *xtra, QWidget *parent = nullptr);
+    AbstractTaskPanel(Key appointmentId, QWidget *parent = nullptr);
+
+    Property(getExtraButton, setExtraButton) PushButton *extraButton;
+
+    PushButton *getExtraButton(void) const {return mExtraButton;}
+    void setExtraButton(PushButton* newButton);
 
   protected slots:
     void slotUpdateTitle(void);
@@ -51,12 +58,12 @@ class TaskPanel : public Frame
     ArrowButton *openTaskButton;
     TaskTypeCombo *taskTypeCombo;
     TitleEdit *titleEdit;
-    PushButton *extraButton = nullptr;
+    PushButton *mExtraButton = nullptr;
 
   private:
-    void SetupDisplay(void);
     void ConnectSigalsAndSlots(void);
+    void SetupDisplay(void);
 };
 
 } // namespace Nutmeg
-#endif // NUTMEG_RESPONSETASKPANEL_H
+#endif // NUTMEG_ABSTRACTRESPONSETASKPANEL_H

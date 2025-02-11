@@ -5,12 +5,12 @@
 #include <QWidget>
 
 #include "objects/filing.h"
-#include "taskpanel.h"
+#include "abstracttaskpanel.h"
 
 namespace Nutmeg
 {
 
-class FilingTaskPanel : public Nutmeg::TaskPanel
+class FilingTaskPanel : public Nutmeg::AbstractTaskPanel
 {
     Q_OBJECT
   public:

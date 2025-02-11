@@ -27,6 +27,7 @@ SOURCES += \
     ../nmbroker/dbaccess/objecttypemodel.cpp \
     ../nmbroker/dbaccess/tagmodel.cpp \
     ../nmbroker/dbaccess/taskmodel.cpp \
+    ../nmbroker/dbaccess/viewappointmentobjectsmodel.cpp \
     ../nmbroker/dbaccess/viewcopyrightfilingtypesmodel.cpp \
     ../nmbroker/dbaccess/viewfilingsincompletemodel.cpp \
     ../nmbroker/dbaccess/viewfilingsmodel.cpp \
@@ -51,6 +52,7 @@ SOURCES += \
     completers/paralegalcompleter.cpp \
     completers/peoplecompleter.cpp \
     completers/tagcompleter.cpp \
+    panels/abstracttaskpanel.cpp \
     panels/appointmentpanel.cpp \
     panels/appointmentpanelfull.cpp \
     panels/deadlinespanel.cpp \
@@ -71,13 +73,14 @@ SOURCES += \
     panels/personaddselectpanel.cpp \
     panels/responsepanel.cpp \
     panels/responsetaskpanel.cpp \
-    panels/taskpanel.cpp \
     panels/taskpanelfull.cpp \
     utils/icalbuilder.cpp \
     widgets/abstractremovablebutton.cpp \
+    widgets/appointmenttaskpanel.cpp \
     widgets/checkbox.cpp \
     widgets/comboeditadd.cpp \
     widgets/datetimeedit.cpp \
+    widgets/disabledbutton.cpp \
     widgets/doublespinbox.cpp \
     widgets/editbutton.cpp \
     widgets/emailinventorsbutton.cpp \
@@ -194,6 +197,7 @@ HEADERS += \
     ../nmbroker/dbaccess/record.h \
     ../nmbroker/dbaccess/tagmodel.h \
     ../nmbroker/dbaccess/taskmodel.h \
+    ../nmbroker/dbaccess/viewappointmentobjectsmodel.h \
     ../nmbroker/dbaccess/viewcopyrightfilingtypesmodel.h \
     ../nmbroker/dbaccess/viewfilingsincompletemodel.h \
     ../nmbroker/dbaccess/viewfilingsmodel.h \
@@ -217,6 +221,7 @@ HEADERS += \
     completers/paralegalcompleter.h \
     completers/peoplecompleter.h \
     completers/tagcompleter.h \
+    panels/abstracttaskpanel.h \
     panels/appointmentpanel.h \
     panels/appointmentpanelfull.h \
     panels/deadlinespanel.h \
@@ -237,13 +242,14 @@ HEADERS += \
     panels/personaddselectpanel.h \
     panels/responsepanel.h \
     panels/responsetaskpanel.h \
-    panels/taskpanel.h \
     panels/taskpanelfull.h \
     utils/icalbuilder.h \
     widgets/abstractremovablebutton.h \
+    widgets/appointmenttaskpanel.h \
     widgets/checkbox.h \
     widgets/comboeditadd.h \
     widgets/datetimeedit.h \
+    widgets/disabledbutton.h \
     widgets/doublespinbox.h \
     widgets/editbutton.h \
     widgets/emailinventorsbutton.h \

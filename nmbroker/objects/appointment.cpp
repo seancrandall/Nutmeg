@@ -67,6 +67,11 @@ bool Appointment::Commit()
     return Update(mDat);
 }
 
+Key Appointment::getAssociatedObject() const
+{
+    return Nutdb::GetAppointmentObject(mDat.AppointmentId);
+}
+
 bool Appointment::SetAppointmentTime(DateTime newappt)
 {
     bool result = WriteDateTime(appointmentTableName, "AppointmentTime", newappt);
