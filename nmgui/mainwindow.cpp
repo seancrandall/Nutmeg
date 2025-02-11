@@ -154,7 +154,7 @@ void MainWindow::SetupResponses()
     {
         QSqlRecord fieldNames = gViewResponsesIncompleteModel->record();
         QSqlRecord rec = gViewResponsesIncompleteModel->record(i);
-        Key id = rec.field(1).value().toUInt();
+        Key id = rec.field(0).value().toUInt();
         ResponsePanel *rpanel = new ResponsePanel(id, responsesContainer);
         responsesPanel.append(rpanel);
         responsesLayout->addWidget(rpanel);
