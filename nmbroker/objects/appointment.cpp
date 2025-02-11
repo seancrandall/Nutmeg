@@ -77,12 +77,12 @@ QString Appointment::getTypeString() const
     return Nutdb::GetAppointmentTypeString(mDat.AppointmentId);
 }
 
-bool Appointment::getNeedsAgenda() const
+bool Appointment::getNeedsAgenda()
 {
     return getFlag("NeedsAgenda");
 }
 
-bool Appointment::getAgendaSent() const
+bool Appointment::getAgendaSent()
 {
     return getFlag("AgendaSent");
 }

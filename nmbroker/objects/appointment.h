@@ -44,8 +44,8 @@ class Appointment : public Nutmeg::Object
     Key getfkAppointmentType(void) const;
     Key getAssociatedObject(void) const;
     QString getTypeString(void) const;
-    bool getNeedsAgenda(void) const;
-    bool getAgendaSent(void) const;
+    bool getNeedsAgenda(void);
+    bool getAgendaSent(void);
     bool getComplete(void) const;
 
     bool SetAppointmentTime(DateTime newappt);

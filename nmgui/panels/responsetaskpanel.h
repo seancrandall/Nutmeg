@@ -11,7 +11,7 @@
 namespace Nutmeg
 {
 
-class ResponseTaskPanel : public Nutmeg::TaskPanel
+class ResponseTaskPanel : public Nutmeg::AbstractTaskPanel
 {
     Q_OBJECT
   public:
@@ -21,7 +21,7 @@ class ResponseTaskPanel : public Nutmeg::TaskPanel
     void signalSomethingChanged(void);
 
   public slots:
-    virtual void slotExtraButtonAction(void) override;
+    virtual void slotExtraButtonAction(void);
 
   protected:
     std::shared_ptr<Response> mResponse;

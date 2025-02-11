@@ -42,6 +42,7 @@ SOURCES += \
     ../nmbroker/dbaccess/viewtasksmodel.cpp \
     ../nmbroker/dbaccess/viewtrademarkfilingtypesmodel.cpp \
     ../nmbroker/dbaccess/viewtrademarkmattersmodel.cpp \
+    ../nmbroker/dbaccess/viewupcomingappointmentsmodel.cpp \
     ../nmbroker/logger.cpp \
     ../nmbroker/nutmeg.cpp \
     completers/completer.cpp \
@@ -213,6 +214,7 @@ HEADERS += \
     ../nmbroker/dbaccess/viewtasksmodel.h \
     ../nmbroker/dbaccess/viewtrademarkfilingtypesmodel.h \
     ../nmbroker/dbaccess/viewtrademarkmattersmodel.h \
+    ../nmbroker/dbaccess/viewupcomingappointmentsmodel.h \
     ../nmbroker/logger.h \
     completers/completer.h \
     completers/entitiescompleter.h \

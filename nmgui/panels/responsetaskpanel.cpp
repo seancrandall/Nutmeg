@@ -5,7 +5,7 @@ namespace Nutmeg
 {
 
 ResponseTaskPanel::ResponseTaskPanel(std::shared_ptr<Response> response, QWidget *parent)
-    : Nutmeg::TaskPanel(new EIButton(response), response, parent)
+    : Nutmeg::AbstractTaskPanel(new EIButton(response), response, parent)
     , mResponse(response)
 {
 }

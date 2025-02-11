@@ -72,7 +72,7 @@ class Object
     const QVector<QString>& getErrors(void) const;
 
     const QList<FlagData> getObjectFlags(void) const;
-    bool getFlag(const QString& camelCase) const;
+    bool getFlag(const QString& camelCase);
     FlagData getFlagData(const QString& camelCase);
     const QList<TagData> getObjectTags(void) const;
     const QList<Key> getObjectDocuments(void) const;

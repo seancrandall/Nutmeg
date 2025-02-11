@@ -7,6 +7,7 @@
 #include "dbaccess/viewfilingtypesmodel.h"
 #include "dbaccess/viewpatentmattersmodel.h"
 #include "dbaccess/viewtrademarkmattersmodel.h"
+#include "dbaccess/viewupcomingappointmentsmodel.h"
 #include "deadlinemodel.h"
 #include "dbaccess/viewobjectflagsmodel.h"
 #include "flagclassmodel.h"
@@ -82,6 +83,7 @@ extern std::unique_ptr<viewTrademarkFilingTypesModel> gViewTrademarkFilingTypesM
 extern std::unique_ptr<viewTrademarkMattersModel> gViewTrademarkMattersModel;
 extern std::unique_ptr<viewTasksModel> gViewTasksModel;
 extern std::unique_ptr<viewTrademarkTaskTypesModel> gViewTrademarkTaskTypesModel;
+extern std::unique_ptr<viewUpcomingAppointmentsModel> gViewUpcomingAppointmentsModel;
 extern std::unique_ptr<viewWorkAttorneysModel> gViewWorkAttorneysModel;
 
 } //namespace Nutmeg

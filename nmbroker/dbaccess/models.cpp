@@ -41,6 +41,7 @@ std::unique_ptr<viewTaskClassModel> gViewTaskClassModel;
 std::unique_ptr<viewTaskTypesModel> gViewTaskTypesModel;
 std::unique_ptr<viewTrademarkFilingTypesModel> gViewTrademarkFilingTypesModel;
 std::unique_ptr<viewTrademarkMattersModel> gViewTrademarkMattersModel;
+std::unique_ptr<viewUpcomingAppointmentsModel> gViewUpcomingAppointmentsModel;
 std::unique_ptr<viewTrademarkTaskTypesModel> gViewTrademarkTaskTypesModel;
 std::unique_ptr<viewWorkAttorneysModel> gViewWorkAttorneysModel;
 

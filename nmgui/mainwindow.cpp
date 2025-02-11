@@ -33,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
     {
         SetupResponses();
         SetupFilings();
+        SetupAppointments();
         ConnectSignalsAndSlots();
     }
 
@@ -140,13 +141,8 @@ void MainWindow::SetupResponses()
     responsesLayout = new QVBoxLayout(responsesContainer);
 
     // Create the global responses model if it hasn't already been loaded
-    // Unique pointers don't get parent pointers
     if(!gViewResponsesIncompleteModel)
         gViewResponsesIncompleteModel = std::make_unique<viewResponsesIncompleteModel>();
-
-#ifdef QT_DEBUG
-    qDebug() << "Responses found: " << gViewResponsesIncompleteModel;
-#endif
 
     // Populate the responses container with ResponsePanels
     auto rows = gViewResponsesIncompleteModel->rowCount();
@@ -191,12 +187,13 @@ void MainWindow::SetupFilings()
     filingsLayout = new QVBoxLayout(filingsContainer);
 
     // Filings model
-    filings = new viewFilingsIncompleteModel();
+    if(!gViewFilingsIncompleteModel)
+        gViewFilingsIncompleteModel = std::make_unique<viewFilingsIncompleteModel>();
 
     // Populate the filings container
-    for (auto i = 0; i < filings->rowCount(); i++)
+    for (auto i = 0; i < gViewFilingsIncompleteModel->rowCount(); i++)
     {
-        Key id = filings->record(i).field(0).value().toUInt();
+        Key id = gViewFilingsIncompleteModel->record(i).field(0).value().toUInt();
         FilingPanel *fpanel = new FilingPanel(id, filingsContainer);
         filingsPanel.append(fpanel);
         filingsLayout->addWidget(fpanel);
@@ -206,6 +203,47 @@ void MainWindow::SetupFilings()
     mainFilingsLayout = new QVBoxLayout(ui->frameMiddle);
     mainFilingsLayout->addLayout(filingsHeaderLayout);
     mainFilingsLayout->addWidget(filingsScrollArea);
+}
+
+void MainWindow::SetupAppointments()
+{
+    // matterSearch = new MatterSearchBox(ui->frameMiddle);
+    apptsHeader = new QLabel("Upcoming Appointments");
+    apptsHeader->setFont((QFont("Arial", 14, QFont::Bold)));
+    apptsHeader->setMaximumHeight(80);
+    //addFilingButton = new Nutmeg::AddNewButton();
+
+    apptsHeaderLayout = new QHBoxLayout();
+    apptsHeaderLayout->addWidget(filingsHeader);
+    apptsHeaderLayout->addStretch();
+
+    // Create scroll area
+    apptsScrollArea = new QScrollArea(ui->frameTop);
+    apptsScrollArea->setWidgetResizable(true);
+
+    // Widget to hold the appointments
+    apptsContainer = new QWidget();
+    apptsScrollArea->setWidget(apptsContainer);
+
+    // Layout for the appointments container
+    apptsLayout = new QVBoxLayout(apptsContainer);
+
+    if(!gViewUpcomingAppointmentsModel)
+        gViewUpcomingAppointmentsModel = std::make_unique<viewUpcomingAppointmentsModel>();
+
+    // Populate the appointments container
+    for (auto i = 0; i < gViewUpcomingAppointmentsModel->rowCount(); i++)
+    {
+        Key id = gViewUpcomingAppointmentsModel->record(i).field(0).value().toUInt();
+        AppointmentDashPanel *apanel = new AppointmentDashPanel(id, apptsContainer);
+        apptsPanel.append(apanel);
+        apptsLayout->addWidget(apanel);
+    }
+
+    // Add scroll area to main layout
+    mainApptsLayout = new QVBoxLayout(ui->frameTop);
+    mainApptsLayout->addLayout(apptsHeaderLayout);
+    mainApptsLayout->addWidget(apptsScrollArea);
 }
 
 void MainWindow::ConnectSignalsAndSlots()

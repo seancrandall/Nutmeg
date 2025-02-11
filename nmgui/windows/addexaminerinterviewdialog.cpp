@@ -68,7 +68,7 @@ void AddExaminerInterviewDialog::slotGather()
     mAppointmentDateTime.setTime(mAppointmentTime);
 
     Appointment *appt = new Appointment(mAppointmentDateTime, mTask->TaskId);
-    appt->type = Nutmeg::ExaminerInterviewPatent;
+    appt->fkAppointmentType = Nutmeg::ExaminerInterviewPatent;
     delete appt;
 
     IcalBuilder *builder = new IcalBuilder(mAppointmentDateTime, mAppointmentDateTime.addMSecs(1800));

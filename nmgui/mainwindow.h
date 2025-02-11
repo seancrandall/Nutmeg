@@ -11,6 +11,7 @@
 
 #include "dbaccess/databaseconnection.h"
 #include "nutmeg.h"
+#include "panels/appointmentdashpanel.h"
 #include "settings.h"
 
 #include "dbaccess/nutdb.h"
@@ -81,7 +82,7 @@ class MainWindow : public QMainWindow
 
     // Filings Panel
     QList<FilingPanel *> filingsPanel;
-    viewFilingsIncompleteModel *filings;
+    //viewFilingsIncompleteModel *filings;
     QLabel *filingsHeader;
     Nutmeg::AddNewButton *addFilingButton;
     QHBoxLayout *filingsHeaderLayout;
@@ -89,10 +90,18 @@ class MainWindow : public QMainWindow
     QWidget *filingsContainer;
     QVBoxLayout *mainFilingsLayout;
 
+    // Appointments Panel
+    QList<AppointmentDashPanel *>apptsPanel;
+    QLabel *apptsHeader;
+    QHBoxLayout *apptsHeaderLayout;
+    QScrollArea *apptsScrollArea;
+    QWidget *apptsContainer;
+    QVBoxLayout *mainApptsLayout;
+
     TableView *apptsView;
     TableView *filingsView;
 
-    QGridLayout *apptsLayout;
+    QVBoxLayout *apptsLayout;
     QVBoxLayout *filingsLayout;
     QVBoxLayout *responsesLayout;
 
