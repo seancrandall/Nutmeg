@@ -5,6 +5,7 @@
 #include <QTranslator>
 #include <QPixmap>
 #include <QSplashScreen>
+#include <QStyleFactory>
 
 #include "logger.h"
 #include "settings.h"
@@ -14,16 +15,22 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    //Initialize the object cache
+    // Set the application to use the native style of the OS
+    //QApplication::setStyle(QStyleFactory::create("Fusion")); // For a more generic approach, you might want to use:
+    QApplication::setStyle(QStyleFactory::create(QStyleFactory::keys().contains("windows") ? "windows" :
+                                                  QStyleFactory::keys().contains("macintosh") ? "macintosh" :
+                                                  "Fusion"));
+
+    // Initialize the object cache
     Nutmeg::initCaches();
 
-    //Logo is included in the resource file
+    // Logo is included in the resource file
     QPixmap nutmegSplashScreen(":images/Logo.png");
     QSplashScreen splash(nutmegSplashScreen);
     splash.show();
 
-    //Initialize the log file and setup the maximum and "preferred" number of lines
-    //Once log grows beyond max number of lines, it is trimmed back to "preferred" size.
+    // Initialize the log file and setup the maximum and "preferred" number of lines
+    // Once log grows beyond max number of lines, it is trimmed back to "preferred" size.
     Nutmeg::Logger::InitializeLogCount();
     Nutmeg::Settings settings;
     Nutmeg::Logger::maxLogLines = settings.maxLogLines;
