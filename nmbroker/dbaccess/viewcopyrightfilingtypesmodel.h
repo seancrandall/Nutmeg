@@ -13,7 +13,7 @@ class viewCopyrightFilingTypesModel : public Nutmeg::TableModel
 public:
     explicit viewCopyrightFilingTypesModel(QObject *parent = nullptr);
     
-    static QSqlRecord record(Key primaryKey);
+    static QSqlRecord fetchRecord(Key primaryKey);
 };
 
 } // namespace Nutmeg

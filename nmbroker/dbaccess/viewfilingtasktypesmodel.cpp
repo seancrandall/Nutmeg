@@ -10,12 +10,11 @@ viewFilingTaskTypesModel::viewFilingTaskTypesModel(QObject *parent)
     setTable("viewFilingTaskTypes");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewFilingTaskTypesModel::record(Key primaryKey)
+QSqlRecord viewFilingTaskTypesModel::fetchRecord(Key primaryKey)
 {
 	//gViewFilingTaskTypes is already globally defined. 
 	return Nutmeg::record<viewFilingTaskTypesModel>(primaryKey, gViewFilingTaskTypesModel);

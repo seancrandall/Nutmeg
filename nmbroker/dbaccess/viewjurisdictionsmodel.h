@@ -13,7 +13,7 @@ class viewJurisdictionsModel : public Nutmeg::TableModel
 public:
     explicit viewJurisdictionsModel(QObject *parent = nullptr);
     
-    static QSqlRecord record(Key primaryKey);
+    static QSqlRecord fetchRecord(Key primaryKey);
 };
 
 } // namespace Nutmeg

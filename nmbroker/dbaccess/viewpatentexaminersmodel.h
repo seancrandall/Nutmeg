@@ -13,7 +13,7 @@ class viewPatentExaminersModel : public Nutmeg::TableModel
 public:
     explicit viewPatentExaminersModel(QObject *parent = nullptr);
     
-    static QSqlRecord record(Key primaryKey);
+    static QSqlRecord fetchRecord(Key primaryKey);
 };
 
 } // namespace Nutmeg

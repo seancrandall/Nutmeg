@@ -13,7 +13,7 @@ class viewTrademarkTaskTypesModel : public Nutmeg::TableModel
 public:
     explicit viewTrademarkTaskTypesModel(QObject *parent = nullptr);
     
-    static QSqlRecord record(Key primaryKey);
+    static QSqlRecord fetchRecord(Key primaryKey);
 };
 
 } // namespace Nutmeg

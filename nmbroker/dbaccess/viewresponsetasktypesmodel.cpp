@@ -10,12 +10,11 @@ viewResponseTaskTypesModel::viewResponseTaskTypesModel(QObject *parent)
     setTable("viewResponseTaskTypes");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewResponseTaskTypesModel::record(Key primaryKey)
+QSqlRecord viewResponseTaskTypesModel::fetchRecord(Key primaryKey)
 {
 	//gViewResponseTaskTypes is already globally defined. 
 	return Nutmeg::record<viewResponseTaskTypesModel>(primaryKey, gViewResponseTaskTypesModel);

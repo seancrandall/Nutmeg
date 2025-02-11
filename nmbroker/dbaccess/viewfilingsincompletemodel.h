@@ -13,7 +13,7 @@ class viewFilingsIncompleteModel : public Nutmeg::TableModel
 public:
     explicit viewFilingsIncompleteModel(QObject *parent = nullptr);
     
-    static QSqlRecord record(Key primaryKey);
+    static QSqlRecord fetchRecord(Key primaryKey);
 };
 
 } // namespace Nutmeg

@@ -10,12 +10,11 @@ viewWorkAttorneysModel::viewWorkAttorneysModel(QObject *parent)
     setTable("viewWorkAttorneys");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewWorkAttorneysModel::record(Key primaryKey)
+QSqlRecord viewWorkAttorneysModel::fetchRecord(Key primaryKey)
 {
 	//gViewWorkAttorneys is already globally defined. 
 	return Nutmeg::record<viewWorkAttorneysModel>(primaryKey, gViewWorkAttorneysModel);

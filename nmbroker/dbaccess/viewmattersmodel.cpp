@@ -10,12 +10,11 @@ viewMattersModel::viewMattersModel(QObject *parent)
     setTable("viewMatters");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewMattersModel::record(Key primaryKey)
+QSqlRecord viewMattersModel::fetchRecord(Key primaryKey)
 {
 	//gViewMatters is already globally defined. 
 	return Nutmeg::record<viewMattersModel>(primaryKey, gViewMattersModel);

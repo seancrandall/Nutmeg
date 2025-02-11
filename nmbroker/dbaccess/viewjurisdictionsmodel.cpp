@@ -10,12 +10,11 @@ viewJurisdictionsModel::viewJurisdictionsModel(QObject *parent)
     setTable("viewJurisdictions");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewJurisdictionsModel::record(Key primaryKey)
+QSqlRecord viewJurisdictionsModel::fetchRecord(Key primaryKey)
 {
 	//gViewJurisdictions is already globally defined. 
 	return Nutmeg::record<viewJurisdictionsModel>(primaryKey, gViewJurisdictionsModel);

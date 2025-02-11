@@ -29,10 +29,10 @@ public:
     ReadOnlyProperty(getLastError) QSqlError lastError; //! The last database error
     ReadOnlyProperty(getRecordByPrimaryKey) QSqlRecord keyRecord[]; //! Gets a QSqlRecord as though the table were an array indexed by primary key
     ReadOnlyProperty(getRowByPrimaryKey) int rowByPrimaryKey[]; //! Returns the ordinal index in the table that corresponds to the given key. For example, if the 7th row has key 482, rowByPrimaryKey[482] will return 6.
-    ReadOnlyProperty(getLoaded) bool loaded; //! True if the model is loaded into memory, otherwise false.
+    //ReadOnlyProperty(getLoaded) bool loaded; //! True if the model is loaded into memory, otherwise false.
     ReadOnlyProperty(getPrimaryKeyField) const QString primaryKeyField;
 
-    bool getLoaded(void) {return mIsLoaded;}
+    //bool getLoaded(void) {return mIsLoaded;}
     const QSqlError getLastError(void);
     QSqlRecord getRecordByPrimaryKey(Key primaryKey) const;
     int getRowByPrimaryKey(Key key) const;
@@ -43,7 +43,7 @@ public:
 protected:
     void IndexLocations(void);
     QHash<Key, QPersistentModelIndex> mKeyLocations; //! Contains an indexed list of primary keys found in the table with persistent indices.
-    bool mIsLoaded = false; //! Child classes should set this to true after loading the model into memory
+    //bool mIsLoaded = false; //! Child classes should set this to true after loading the model into memory
 };
 
 } // namespace Nutmeg

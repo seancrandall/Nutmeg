@@ -10,12 +10,11 @@ viewFilingsModel::viewFilingsModel(QObject *parent)
     setTable("viewFilings");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewFilingsModel::record(Key primaryKey)
+QSqlRecord viewFilingsModel::fetchRecord(Key primaryKey)
 {
 	//gViewFilings is already globally defined. 
 	return Nutmeg::record<viewFilingsModel>(primaryKey, gViewFilingsModel);

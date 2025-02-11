@@ -10,12 +10,11 @@ viewTrademarkTaskTypesModel::viewTrademarkTaskTypesModel(QObject *parent)
     setTable("viewTrademarkTaskTypes");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewTrademarkTaskTypesModel::record(Key primaryKey)
+QSqlRecord viewTrademarkTaskTypesModel::fetchRecord(Key primaryKey)
 {
 	//gViewTrademarkTaskTypes is already globally defined. 
 	return Nutmeg::record<viewTrademarkTaskTypesModel>(primaryKey, gViewTrademarkTaskTypesModel);

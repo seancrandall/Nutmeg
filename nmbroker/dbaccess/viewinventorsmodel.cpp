@@ -10,12 +10,11 @@ viewInventorsModel::viewInventorsModel(QObject *parent)
     setTable("viewInventors");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewInventorsModel::record(Key primaryKey)
+QSqlRecord viewInventorsModel::fetchRecord(Key primaryKey)
 {
 	//gViewInventors is already globally defined. 
 	return Nutmeg::record<viewInventorsModel>(primaryKey, gViewInventorsModel);

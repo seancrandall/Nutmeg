@@ -10,12 +10,11 @@ viewPatentMattersModel::viewPatentMattersModel(QObject *parent)
     setTable("viewPatentMatters");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewPatentMattersModel::record(Key primaryKey)
+QSqlRecord viewPatentMattersModel::fetchRecord(Key primaryKey)
 {
 	//gViewPatentMatters is already globally defined. 
 	return Nutmeg::record<viewPatentMattersModel>(primaryKey, gViewPatentMattersModel);

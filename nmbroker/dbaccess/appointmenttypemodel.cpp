@@ -10,12 +10,11 @@ appointmentTypeModel::appointmentTypeModel(QObject *parent)
     setTable("appointmentType");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord appointmentTypeModel::record(Key primaryKey)
+QSqlRecord appointmentTypeModel::fetchRecord(Key primaryKey)
 {
 	//gAppointmentType is already globally defined. 
 	return Nutmeg::record<appointmentTypeModel>(primaryKey, gAppointmentTypeModel);

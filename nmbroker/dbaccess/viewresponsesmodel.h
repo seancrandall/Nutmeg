@@ -13,7 +13,7 @@ class viewResponsesModel : public Nutmeg::TableModel
 public:
     explicit viewResponsesModel(QObject *parent = nullptr);
     
-    static QSqlRecord record(Key primaryKey);
+    static QSqlRecord fetchRecord(Key primaryKey);
 };
 
 } // namespace Nutmeg

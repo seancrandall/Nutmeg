@@ -13,7 +13,7 @@ class taskTypeModel : public Nutmeg::TableModel
 public:
     explicit taskTypeModel(QObject *parent = nullptr);
     
-    static QSqlRecord record(Key primaryKey);
+    static QSqlRecord fetchRecord(Key primaryKey);
 };
 
 } // namespace Nutmeg

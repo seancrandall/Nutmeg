@@ -10,12 +10,11 @@ viewFilingTypesModel::viewFilingTypesModel(QObject *parent)
     setTable("viewFilingTypes");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewFilingTypesModel::record(Key primaryKey)
+QSqlRecord viewFilingTypesModel::fetchRecord(Key primaryKey)
 {
 	//gViewFilingTypes is already globally defined. 
 	return Nutmeg::record<viewFilingTypesModel>(primaryKey, gViewFilingTypesModel);

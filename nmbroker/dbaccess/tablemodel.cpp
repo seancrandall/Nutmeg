@@ -30,7 +30,7 @@ const QSqlError TableModel::getLastError(void)
  */
 QSqlRecord TableModel::getRecordByPrimaryKey(Key primaryKey) const
 {
-    if (!mIsLoaded) return QSqlRecord();
+    //if (!mIsLoaded) return QSqlRecord();
 
     if (!mKeyLocations.contains(primaryKey)) {
         Logger::LogMessage(QString("Tried to get a record for key %1, but it wasn't found in the table.").arg(QString::number(primaryKey)));
@@ -102,10 +102,10 @@ bool TableModel::select()
 void TableModel::IndexLocations()
 {
     mKeyLocations.clear();
-    if(!mIsLoaded) {
-        Logger::LogMessage("Trying to index locations in a TableModel, but the model is not loaded.");
-        return;
-    }
+    // if(!mIsLoaded) {
+    //     Logger::LogMessage("Trying to index locations in a TableModel, but the model is not loaded.");
+    //     return;
+    // }
 
     for (int row = 0; row < rowCount(); row++) {
         QModelIndex index = this->index(row, 0);

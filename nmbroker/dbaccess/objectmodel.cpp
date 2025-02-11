@@ -10,12 +10,11 @@ objectModel::objectModel(QObject *parent)
     setTable("object");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord objectModel::record(Key primaryKey)
+QSqlRecord objectModel::fetchRecord(Key primaryKey)
 {
 	//gObject is already globally defined. 
 	return Nutmeg::record<objectModel>(primaryKey, gObjectModel);

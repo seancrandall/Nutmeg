@@ -10,12 +10,11 @@ viewPatentTaskTypesModel::viewPatentTaskTypesModel(QObject *parent)
     setTable("viewPatentTaskTypes");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewPatentTaskTypesModel::record(Key primaryKey)
+QSqlRecord viewPatentTaskTypesModel::fetchRecord(Key primaryKey)
 {
 	//gViewPatentTaskTypes is already globally defined. 
 	return Nutmeg::record<viewPatentTaskTypesModel>(primaryKey, gViewPatentTaskTypesModel);

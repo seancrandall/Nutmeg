@@ -28,7 +28,7 @@ class ${TableName}Model : public Nutmeg::TableModel
 public:
     explicit ${TableName}Model(QObject *parent = nullptr);
     
-    static QSqlRecord record(Key primaryKey);
+    static QSqlRecord fetchRecord(Key primaryKey);
 };
 
 } // namespace Nutmeg
@@ -50,12 +50,11 @@ ${TableName}Model::${TableName}Model(QObject *parent)
     setTable("${TableName}");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord ${TableName}Model::record(Key primaryKey)
+QSqlRecord ${TableName}Model::fetchRecord(Key primaryKey)
 {
 	//${globalVarName} is already globally defined. 
 	return Nutmeg::record<${TableName}Model>(primaryKey, ${globalVarName}Model);

@@ -10,12 +10,11 @@ viewCopyrightTaskTypesModel::viewCopyrightTaskTypesModel(QObject *parent)
     setTable("viewCopyrightTaskTypes");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewCopyrightTaskTypesModel::record(Key primaryKey)
+QSqlRecord viewCopyrightTaskTypesModel::fetchRecord(Key primaryKey)
 {
 	//gViewCopyrightTaskTypes is already globally defined. 
 	return Nutmeg::record<viewCopyrightTaskTypesModel>(primaryKey, gViewCopyrightTaskTypesModel);

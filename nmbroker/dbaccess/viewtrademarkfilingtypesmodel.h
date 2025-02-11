@@ -13,7 +13,7 @@ class viewTrademarkFilingTypesModel : public Nutmeg::TableModel
 public:
     explicit viewTrademarkFilingTypesModel(QObject *parent = nullptr);
     
-    static QSqlRecord record(Key primaryKey);
+    static QSqlRecord fetchRecord(Key primaryKey);
 };
 
 } // namespace Nutmeg

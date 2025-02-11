@@ -16,7 +16,7 @@ public:
 
     ReadOnlyProperty(getTagidByText) Key tagId[];
     
-    static QSqlRecord record(Key primaryKey);
+    static QSqlRecord fetchRecord(Key primaryKey);
     Key getTagidByText(const QString& text) const;
 
     QHash<QString, Key> mTagsByText;

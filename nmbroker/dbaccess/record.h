@@ -61,37 +61,37 @@ QSqlRecord record(Key primaryKey, std::unique_ptr<Type>& model){
     }
 
     // If still not found, attempt to query directly from the database
-    if (rec.isEmpty()) {
-        const QString tableName = model->tableName();
-        const QString primaryKeyName = model->primaryKeyField;
+    // if (rec.isEmpty()) {
+    //     const QString tableName = model->tableName();
+    //     const QString primaryKeyName = model->primaryKeyField;
 
-        QSqlDatabase db = QSqlDatabase::database();
-        if (!db.isValid()) {
-            Logger::LogMessage(QString("Trying to get record from table %1 with key %2, but no database connection established")
-                                   .arg(tableName)
-                                   .arg(QString::number(primaryKey)));
-            return rec; // Return empty record if no valid database connection
-        }
+    //     QSqlDatabase db = QSqlDatabase::database();
+    //     if (!db.isValid()) {
+    //         Logger::LogMessage(QString("Trying to get record from table %1 with key %2, but no database connection established")
+    //                                .arg(tableName)
+    //                                .arg(QString::number(primaryKey)));
+    //         return rec; // Return empty record if no valid database connection
+    //     }
 
-        QSqlQuery query(db);
-        const QString queryString = QString("SELECT * FROM %1 WHERE %2 = :key")
-                                        .arg(tableName)
-                                        .arg(primaryKeyName);
-        query.prepare(queryString);
-        query.bindValue(":key", primaryKey);
+    //     QSqlQuery query(db);
+    //     const QString queryString = QString("SELECT * FROM %1 WHERE %2 = :key")
+    //                                     .arg(tableName)
+    //                                     .arg(primaryKeyName);
+    //     query.prepare(queryString);
+    //     query.bindValue(":key", primaryKey);
 
-        if (!query.exec()) {
-            qWarning() << "Database query error:" << query.lastError().text();
-            return rec; // Return empty record on query error
-        }
+    //     if (!query.exec()) {
+    //         qWarning() << "Database query error:" << query.lastError().text();
+    //         return rec; // Return empty record on query error
+    //     }
 
-        if (query.next()) {
-            // Load record fields into QSqlRecord
-            rec = query.record();
-        } else {
-            qDebug() << "Record not found in database for key:" << primaryKey;
-        }
-    }
+    //     if (query.next()) {
+    //         // Load record fields into QSqlRecord
+    //         rec = query.record();
+    //     } else {
+    //         qDebug() << "Record not found in database for key:" << primaryKey;
+    //     }
+    // }
 
     return rec;
 }

@@ -17,8 +17,7 @@ public:
 
     ReadOnlyProperty(getFlagByCamelCase) Key camelCase[];
     
-    static QSqlRecord record(Key primaryKey);
-    static const FlagClassData record(const QString& camelCase);
+    static QSqlRecord fetchRecord(Key primaryKey);
 
     Key getFlagByCamelCase(const QString& cc) const;
 

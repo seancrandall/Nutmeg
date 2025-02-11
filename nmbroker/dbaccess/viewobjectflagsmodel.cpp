@@ -10,12 +10,11 @@ viewObjectFlagsModel::viewObjectFlagsModel(QObject *parent)
     setTable("viewObjectFlags");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewObjectFlagsModel::record(Key primaryKey)
+QSqlRecord viewObjectFlagsModel::fetchRecord(Key primaryKey)
 {
 	//gViewObjectFlags is already globally defined. 
 	return Nutmeg::record<viewObjectFlagsModel>(primaryKey, gViewObjectFlagsModel);

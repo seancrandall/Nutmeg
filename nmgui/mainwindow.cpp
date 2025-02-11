@@ -141,17 +141,20 @@ void MainWindow::SetupResponses()
 
     // Create the global responses model if it hasn't already been loaded
     // Unique pointers don't get parent pointers
-    if(!responses)
-        responses = std::make_unique<viewResponsesIncompleteModel>();
+    if(!gViewResponsesIncompleteModel)
+        gViewResponsesIncompleteModel = std::make_unique<viewResponsesIncompleteModel>();
+
 #ifdef QT_DEBUG
-    qDebug() << "Responses found: " << responses;
+    qDebug() << "Responses found: " << gViewResponsesIncompleteModel;
 #endif
 
     // Populate the responses container with ResponsePanels
-    //auto tmpcount = responses->rowCount();
-    for (auto i = 0; i < responses->rowCount(); i++)
+    auto rows = gViewResponsesIncompleteModel->rowCount();
+    for (auto i = 0; i < rows; i++)
     {
-        Key id = responses->record(i).field(0).value().toUInt();
+        QSqlRecord fieldNames = gViewResponsesIncompleteModel->record();
+        QSqlRecord rec = gViewResponsesIncompleteModel->record(i);
+        Key id = rec.field(1).value().toUInt();
         ResponsePanel *rpanel = new ResponsePanel(id, responsesContainer);
         responsesPanel.append(rpanel);
         responsesLayout->addWidget(rpanel);

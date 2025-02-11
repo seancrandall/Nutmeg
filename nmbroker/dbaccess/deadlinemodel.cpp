@@ -10,12 +10,11 @@ deadlineModel::deadlineModel(QObject *parent)
     setTable("deadline");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord deadlineModel::record(Key primaryKey)
+QSqlRecord deadlineModel::fetchRecord(Key primaryKey)
 {
 	//gDeadline is already globally defined. 
 	return Nutmeg::record<deadlineModel>(primaryKey, gDeadlineModel);

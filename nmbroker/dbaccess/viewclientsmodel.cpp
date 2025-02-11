@@ -10,12 +10,11 @@ viewClientsModel::viewClientsModel(QObject *parent)
     setTable("viewClients");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewClientsModel::record(Key primaryKey)
+QSqlRecord viewClientsModel::fetchRecord(Key primaryKey)
 {
 	//gViewClients is already globally defined. 
 	return Nutmeg::record<viewClientsModel>(primaryKey, gViewClientsModel);

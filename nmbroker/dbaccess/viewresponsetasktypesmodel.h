@@ -13,7 +13,7 @@ class viewResponseTaskTypesModel : public Nutmeg::TableModel
 public:
     explicit viewResponseTaskTypesModel(QObject *parent = nullptr);
     
-    static QSqlRecord record(Key primaryKey);
+    static QSqlRecord fetchRecord(Key primaryKey);
 };
 
 } // namespace Nutmeg

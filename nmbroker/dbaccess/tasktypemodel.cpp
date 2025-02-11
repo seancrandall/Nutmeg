@@ -10,12 +10,11 @@ taskTypeModel::taskTypeModel(QObject *parent)
     setTable("taskType");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord taskTypeModel::record(Key primaryKey)
+QSqlRecord taskTypeModel::fetchRecord(Key primaryKey)
 {
 	//gTaskType is already globally defined. 
 	return Nutmeg::record<taskTypeModel>(primaryKey, gTaskTypeModel);

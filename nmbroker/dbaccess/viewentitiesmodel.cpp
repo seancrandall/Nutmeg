@@ -10,12 +10,11 @@ viewEntitiesModel::viewEntitiesModel(QObject *parent)
     setTable("viewEntities");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewEntitiesModel::record(Key primaryKey)
+QSqlRecord viewEntitiesModel::fetchRecord(Key primaryKey)
 {
 	//gViewEntities is already globally defined. 
 	return Nutmeg::record<viewEntitiesModel>(primaryKey, gViewEntitiesModel);

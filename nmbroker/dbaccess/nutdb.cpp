@@ -560,11 +560,11 @@ Key Nutdb::InsertPerson(QString firstName, QString lastName)
     params.append(lastName);
 
     Key result = CallStoredKeyProcedure("InsertPerson", params);
-    if(result){
-        gViewPeopleModel = std::make_unique<viewPeopleModel>();
-        gViewInventorsModel = std::make_unique<viewInventorsModel>();
-        gViewPatentExaminersModel = std::make_unique<viewPatentExaminersModel>();
-    }
+    // if(result){
+    //     gViewPeopleModel = std::make_unique<viewPeopleModel>();
+    //     gViewInventorsModel = std::make_unique<viewInventorsModel>();
+    //     gViewPatentExaminersModel = std::make_unique<viewPatentExaminersModel>();
+    // }
     return result;
 }
 
@@ -846,7 +846,7 @@ DeadlineData Nutmeg::Nutdb::GetDeadline(Key id)
     DeadlineData dat;
     QSqlRecord rec;
 
-    rec = deadlineModel::record(id);
+    rec = deadlineModel::fetchRecord(id);
 
     if(rec.isEmpty())
         return dat;
@@ -918,7 +918,7 @@ EnterpriseData Nutdb::GetEnterprise(Key id)
     QSqlRecord rec;
     EnterpriseData dat;
 
-    rec = viewEntitiesModel::record(id);
+    rec = viewEntitiesModel::fetchRecord(id);
 
     if(rec.isEmpty())
         return dat;
@@ -947,7 +947,7 @@ EntityData Nutdb::GetEntity(Key id)
     QSqlRecord rec;
     EntityData dat;
 
-    rec = viewEntitiesModel::record(id);
+    rec = viewEntitiesModel::fetchRecord(id);
 
     if(rec.isEmpty())
         return dat;
@@ -975,7 +975,7 @@ FilingData Nutdb::GetFiling(Key id)
     FilingData dat;
     QSqlRecord rec;
 
-    rec = viewFilingsModel::record(id);
+    rec = viewFilingsModel::fetchRecord(id);
 
     if(rec.isEmpty())
         return dat;
@@ -1054,7 +1054,7 @@ FlagClassData Nutdb::GetFlagClass(Key id)
     FlagClassData dat;
     QSqlRecord rec;
 
-    rec = flagClassModel::record(id);
+    rec = flagClassModel::fetchRecord(id);
 
     if(rec.isEmpty())
         return dat;
@@ -1073,7 +1073,7 @@ MatterData Nutdb::GetMatter(Key id)
     QSqlRecord rec;
     MatterData dat;
 
-    rec = viewMattersModel::record(id);
+    rec = viewMattersModel::fetchRecord(id);
 
     if(rec.isEmpty())
         return dat;
@@ -1099,7 +1099,7 @@ ObjectData Nutdb::GetObject(Key id)
     QSqlRecord rec;
     ObjectData dat;
 
-    rec = objectModel::record(id);
+    rec = objectModel::fetchRecord(id);
 
     if(rec.isEmpty())
         return dat;
@@ -1222,7 +1222,7 @@ PatentMatterData Nutdb::GetPatentMatter(Key id)
     QSqlRecord rec;
     PatentMatterData dat;
 
-    rec = viewPatentMattersModel::record(id);
+    rec = viewPatentMattersModel::fetchRecord(id);
 
     if(rec.isEmpty())
         return dat;
@@ -1251,7 +1251,7 @@ PersonData Nutdb::GetPerson(Key id)
     QSqlRecord rec;
     PersonData dat;
 
-    rec = viewPeopleModel::record(id);
+    rec = viewPeopleModel::fetchRecord(id);
 
     if(rec.isEmpty())
         return dat;
@@ -1271,7 +1271,7 @@ ResponseData Nutdb::GetResponse(Key id)
     QSqlRecord rec;
     ResponseData dat;
 
-    rec = viewResponsesModel::record(id);
+    rec = viewResponsesModel::fetchRecord(id);
 
     if(rec.isEmpty())
         return dat;
@@ -1292,7 +1292,7 @@ TagData Nutdb::GetTag(Key id)
     TagData dat;
     QSqlRecord rec;
 
-    rec = tagModel::record(id);
+    rec = tagModel::fetchRecord(id);
 
     if(rec.isEmpty())
         return dat;
@@ -1317,7 +1317,7 @@ TaskData Nutdb::GetTask(Key id)
     TaskData dat;
     QSqlRecord rec;
 
-    rec = viewTasksModel::record(id);
+    rec = viewTasksModel::fetchRecord(id);
 
     if(rec.isEmpty())
         return dat;
@@ -1345,7 +1345,7 @@ TrademarkMatterData Nutdb::GetTrademarkMatter(Key id)
     TrademarkMatterData dat;
     QSqlRecord rec;
 
-    rec = viewTrademarkMattersModel::record(id);
+    rec = viewTrademarkMattersModel::fetchRecord(id);
 
     if(rec.isEmpty())
         return dat;

@@ -10,12 +10,11 @@ viewObjectTagsModel::viewObjectTagsModel(QObject *parent)
     setTable("viewObjectTags");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewObjectTagsModel::record(Key primaryKey)
+QSqlRecord viewObjectTagsModel::fetchRecord(Key primaryKey)
 {
 	//gViewObjectTags is already globally defined. 
 	return Nutmeg::record<viewObjectTagsModel>(primaryKey, gViewObjectTagsModel);

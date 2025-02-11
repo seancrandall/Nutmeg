@@ -13,7 +13,7 @@ class viewObjectFlagsModel : public Nutmeg::TableModel
 public:
     explicit viewObjectFlagsModel(QObject *parent = nullptr);
     
-    static QSqlRecord record(Key primaryKey);
+    static QSqlRecord fetchRecord(Key primaryKey);
 };
 
 } // namespace Nutmeg

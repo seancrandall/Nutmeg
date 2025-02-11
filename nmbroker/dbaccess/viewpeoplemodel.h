@@ -13,7 +13,7 @@ class viewPeopleModel : public Nutmeg::TableModel
 public:
     explicit viewPeopleModel(QObject *parent = nullptr);
     
-    static QSqlRecord record(Key primaryKey);
+    static QSqlRecord fetchRecord(Key primaryKey);
 };
 
 } // namespace Nutmeg

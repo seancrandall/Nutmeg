@@ -10,12 +10,11 @@ viewCopyrightFilingTypesModel::viewCopyrightFilingTypesModel(QObject *parent)
     setTable("viewCopyrightFilingTypes");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewCopyrightFilingTypesModel::record(Key primaryKey)
+QSqlRecord viewCopyrightFilingTypesModel::fetchRecord(Key primaryKey)
 {
 	//gViewCopyrightFilingTypes is already globally defined. 
 	return Nutmeg::record<viewCopyrightFilingTypesModel>(primaryKey, gViewCopyrightFilingTypesModel);

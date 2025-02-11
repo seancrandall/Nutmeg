@@ -10,12 +10,11 @@ viewContractingFirmsModel::viewContractingFirmsModel(QObject *parent)
     setTable("viewContractingFirms");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewContractingFirmsModel::record(Key primaryKey)
+QSqlRecord viewContractingFirmsModel::fetchRecord(Key primaryKey)
 {
 	//gViewContractingFirms is already globally defined. 
 	return Nutmeg::record<viewContractingFirmsModel>(primaryKey, gViewContractingFirmsModel);

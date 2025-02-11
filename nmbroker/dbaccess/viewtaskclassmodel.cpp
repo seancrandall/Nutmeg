@@ -10,12 +10,11 @@ viewTaskClassModel::viewTaskClassModel(QObject *parent)
     setTable("viewTaskClass");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewTaskClassModel::record(Key primaryKey)
+QSqlRecord viewTaskClassModel::fetchRecord(Key primaryKey)
 {
 	//gViewTaskClass is already globally defined. 
 	return Nutmeg::record<viewTaskClassModel>(primaryKey, gViewTaskClassModel);

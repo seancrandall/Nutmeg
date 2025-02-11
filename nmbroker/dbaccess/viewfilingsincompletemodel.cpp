@@ -10,12 +10,11 @@ viewFilingsIncompleteModel::viewFilingsIncompleteModel(QObject *parent)
     setTable("viewFilingsIncomplete");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewFilingsIncompleteModel::record(Key primaryKey)
+QSqlRecord viewFilingsIncompleteModel::fetchRecord(Key primaryKey)
 {
 	//gViewFilingsIncomplete is already globally defined. 
 	return Nutmeg::record<viewFilingsIncompleteModel>(primaryKey, gViewFilingsIncompleteModel);

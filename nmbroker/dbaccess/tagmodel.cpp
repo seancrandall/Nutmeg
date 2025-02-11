@@ -11,14 +11,13 @@ tagModel::tagModel(QObject *parent)
     setTable("tag");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 
     PopulateTagsByText();
 }
 
-QSqlRecord tagModel::record(Key primaryKey)
+QSqlRecord tagModel::fetchRecord(Key primaryKey)
 {
 	//gTag is already globally defined. 
 	return Nutmeg::record<tagModel>(primaryKey, gTagModel);

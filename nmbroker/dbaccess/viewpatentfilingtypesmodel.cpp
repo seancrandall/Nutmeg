@@ -10,12 +10,11 @@ viewPatentFilingTypesModel::viewPatentFilingTypesModel(QObject *parent)
     setTable("viewPatentFilingTypes");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewPatentFilingTypesModel::record(Key primaryKey)
+QSqlRecord viewPatentFilingTypesModel::fetchRecord(Key primaryKey)
 {
 	//gViewPatentFilingTypes is already globally defined. 
 	return Nutmeg::record<viewPatentFilingTypesModel>(primaryKey, gViewPatentFilingTypesModel);

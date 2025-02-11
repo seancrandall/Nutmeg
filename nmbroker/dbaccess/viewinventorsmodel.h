@@ -13,7 +13,7 @@ class viewInventorsModel : public Nutmeg::TableModel
 public:
     explicit viewInventorsModel(QObject *parent = nullptr);
     
-    static QSqlRecord record(Key primaryKey);
+    static QSqlRecord fetchRecord(Key primaryKey);
 };
 
 } // namespace Nutmeg

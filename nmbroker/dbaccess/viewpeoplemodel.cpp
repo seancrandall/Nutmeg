@@ -10,12 +10,11 @@ viewPeopleModel::viewPeopleModel(QObject *parent)
     setTable("viewPeople");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewPeopleModel::record(Key primaryKey)
+QSqlRecord viewPeopleModel::fetchRecord(Key primaryKey)
 {
 	//gViewPeople is already globally defined. 
 	return Nutmeg::record<viewPeopleModel>(primaryKey, gViewPeopleModel);

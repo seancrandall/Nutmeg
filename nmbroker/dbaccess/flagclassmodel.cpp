@@ -10,11 +10,12 @@ flagClassModel::flagClassModel(QObject *parent)
     Initialize();
 }
 
-QSqlRecord flagClassModel::record(Key primaryKey)
+QSqlRecord flagClassModel::fetchRecord(Key primaryKey)
 {
 	//gFlagClass is already globally defined. 
 	return Nutmeg::record<flagClassModel>(primaryKey, gFlagClassModel);
 }
+
 
 Key flagClassModel::getFlagByCamelCase(const QString &cc) const
 {
@@ -30,13 +31,12 @@ void flagClassModel::Initialize()
     setTable("flagClass");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 
     mFlagsByCamelCase = QHash<QString, Key>();
     for(int i = 0; i < rowCount(); i++){
-        QString camelCase = record(i).value("camelCase").toString();
+        QString camelCase = record(i).value("CamelCase").toString();
         Key flagClassId = record(i).value("FlagClassId").toUInt();
         mFlagsByCamelCase[camelCase] = flagClassId;
     }

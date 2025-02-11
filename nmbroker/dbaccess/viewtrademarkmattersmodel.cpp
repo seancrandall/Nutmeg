@@ -10,12 +10,11 @@ viewTrademarkMattersModel::viewTrademarkMattersModel(QObject *parent)
     setTable("viewTrademarkMatters");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewTrademarkMattersModel::record(Key primaryKey)
+QSqlRecord viewTrademarkMattersModel::fetchRecord(Key primaryKey)
 {
 	//gViewTrademarkMatters is already globally defined. 
 	return Nutmeg::record<viewTrademarkMattersModel>(primaryKey, gViewTrademarkMattersModel);

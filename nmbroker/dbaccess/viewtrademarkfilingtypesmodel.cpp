@@ -10,12 +10,11 @@ viewTrademarkFilingTypesModel::viewTrademarkFilingTypesModel(QObject *parent)
     setTable("viewTrademarkFilingTypes");
     if(select())
     {
-        mIsLoaded = true;
         IndexLocations();
     }
 }
 
-QSqlRecord viewTrademarkFilingTypesModel::record(Key primaryKey)
+QSqlRecord viewTrademarkFilingTypesModel::fetchRecord(Key primaryKey)
 {
 	//gViewTrademarkFilingTypes is already globally defined. 
 	return Nutmeg::record<viewTrademarkFilingTypesModel>(primaryKey, gViewTrademarkFilingTypesModel);

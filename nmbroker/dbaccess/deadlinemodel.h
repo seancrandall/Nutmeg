@@ -13,7 +13,7 @@ class deadlineModel : public Nutmeg::TableModel
 public:
     explicit deadlineModel(QObject *parent = nullptr);
     
-    static QSqlRecord record(Key primaryKey);
+    static QSqlRecord fetchRecord(Key primaryKey);
 };
 
 } // namespace Nutmeg
