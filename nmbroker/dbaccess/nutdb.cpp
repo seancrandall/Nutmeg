@@ -1,5 +1,4 @@
 #include "nutdb.h"
-#include "exception.h"
 #include<QSqlDriver>
 
 // Key InsertDocumentWithParse(QString FullPath);
@@ -972,7 +971,7 @@ EntityData Nutdb::GetEntity(Key id)
 
 FilingData Nutdb::GetFiling(Key id)
 {
-    FilingData dat;
+    FilingData dat = FilingData();
     QSqlRecord rec;
 
     rec = viewFilingsModel::fetchRecord(id);
@@ -1097,7 +1096,7 @@ MatterData Nutdb::GetMatter(Key id)
 ObjectData Nutdb::GetObject(Key id)
 {
     QSqlRecord rec;
-    ObjectData dat;
+    ObjectData dat = ObjectData();
 
     rec = objectModel::fetchRecord(id);
 

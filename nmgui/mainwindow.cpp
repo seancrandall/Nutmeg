@@ -33,9 +33,9 @@ MainWindow::MainWindow(QWidget *parent)
     {
         SetupResponses();
         SetupFilings();
+        ConnectSignalsAndSlots();
     }
 
-    ConnectSignalsAndSlots();
 }
 
 MainWindow::~MainWindow() { delete ui; }
@@ -210,7 +210,8 @@ void MainWindow::SetupFilings()
 
 void MainWindow::ConnectSignalsAndSlots()
 {
-    QObject::connect(addRespButton, &Nutmeg::AddNewButton::clicked, this, &MainWindow::slotAddNewResponse);
+    QObject::connect(addRespButton, &Nutmeg::AddNewButton::clicked,
+                     this, &MainWindow::slotAddNewResponse);
 
     QObject::connect(addFilingButton, &Nutmeg::AddNewButton::clicked, this, &MainWindow::slotAddNewFiling);
 }
