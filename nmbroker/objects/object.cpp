@@ -39,15 +39,15 @@ Object::Object(QString objectType)
 
 Object::Object(Key id) //: QObject(parent)
 {
-    auto& objectCache = getCache<Object>();
-    if (objectCache.contains(id)) {  // Check if object is already in cache
-        Object* cachedObject = *objectCache.object(id);
-        if (cachedObject) {
-            *this = *cachedObject;  // Copy state if found in cache
-            mObjectIsNull = false;
-            return;  // Exit constructor early if we've copied from cache
-        }
-    }
+    // auto& objectCache = getCache<Object>();
+    // if (objectCache.contains(id)) {  // Check if object is already in cache
+    //     Object* cachedObject = *objectCache.object(id);
+    //     if (cachedObject) {
+    //         *this = *cachedObject;  // Copy state if found in cache
+    //         mObjectIsNull = false;
+    //         return;  // Exit constructor early if we've copied from cache
+    //     }
+    // }
     // If not in cache, initialize normally
     InitializeObject(id);
 }

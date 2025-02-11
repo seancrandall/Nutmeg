@@ -4,9 +4,9 @@ namespace Nutmeg {
 
 FlagCheckbox::FlagCheckbox(FlagData flag, std::shared_ptr<Object> object, QWidget *parent)
     : Frame(parent)
-    , mObject(object)
-    , mFlag(flag)
 {
+    mObject = object;
+    mFlag = flag;
     LayoutCheckbox();
 }
 

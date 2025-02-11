@@ -1119,7 +1119,6 @@ QList<FlagData> Nutdb::GetObjectFlags(Key objectId)
 
     //Filter for the given objectId
     gViewObjectFlagsModel->setFilter(QString("ObjectId = %1").arg(objectId));
-    //++i
     for(int i=0; i < gViewObjectFlagsModel->rowCount(); i++)
     {
         FlagData localdata;
@@ -1133,7 +1132,7 @@ QList<FlagData> Nutdb::GetObjectFlags(Key objectId)
     }
 
     //Now clear the filter
-    gViewObjectFlagsModel->setFilter(QString());
+    //gViewObjectFlagsModel->setFilter(QString());
 
     return flagList;
 }
@@ -1158,22 +1157,23 @@ QList<Key> Nutdb::GetFlagObjects(const QString &camelCase)
 
 QString Nutdb::GetObjectTypeString(Key objectTypeId)
 {
-    ObjectTypeData dat;
-    QVariantList params;
+    if(!gObjectTypeModel)
+        gObjectTypeModel = std::make_unique<objectTypeModel>();
 
-    params.append(NullableInteger(objectTypeId));
+    QSqlRecord rec = objectTypeModel::fetchRecord(objectTypeId);
 
-    return CallStoredReturnProcedure("GetObjectTypeString", params).toString();
+    if(rec.isEmpty())
+        return QString();
+
+    return rec.field("TypeName").value().toString();
 }
 
 Key Nutdb::GetObjectTypeId(QString objectTypeText)
 {
-    ObjectTypeData dat;
+    if(!gObjectTypeModel)
+        gObjectTypeModel = std::make_unique<objectTypeModel>();
 
-    QVariantList params;
-    params.append(objectTypeText);
-
-    return CallStoredReturnProcedure("GetObjectTypeId", params).toUInt();
+    return gObjectTypeModel->typeKey[objectTypeText];
 }
 
 QList<TagData> Nutdb::GetObjectTags(Key objectId)

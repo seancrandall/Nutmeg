@@ -38,7 +38,7 @@ class Object
 {
   public:
     explicit Object();
-    explicit Object(Key object_id);
+    explicit Object(Key id);
     explicit Object(QSqlRecord &record);
     explicit Object(QString objectType);        /// Should almost(?) never be called. Instead,
                                                 /// insert the correct higher-level object
