@@ -21,17 +21,17 @@ class ComboBox : public QComboBox
     ComboBox(QWidget *parent = nullptr);
 
     Property(getKey, setToKey) Key key;
-    Property(getTableModel, setTableModel) TableModel *model;
+    Property(getTableModel, setTableModel) Nutmeg::TableModel *model;
     Property(getColumn, setColumn) int column;
 
-    QSqlTableModel *getTableModel(void) { return mModel; }
+    Nutmeg::TableModel *getTableModel(void) { return mModel; }
 
     int getColumn(void) { return modelColumn(); }
 
     bool getIsNew(void);
 
   public slots:
-    void setTableModel(TableModel *newmod);
+    void setTableModel(Nutmeg::TableModel *newmod);
     void setToKey(Key key);
 
     void setColumn(int newcol) { setModelColumn(newcol); }

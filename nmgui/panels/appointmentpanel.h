@@ -31,7 +31,7 @@ public:
 
     Property(getAppointmentTime, setAppointmentTime) QDateTime appointmentTime;
     Property(getValid, setValid) bool valid;
-    Property(getAppointmentObject, setAppointmentObject) Appointment* appointmentObject;
+    Property(getAppointmentObject, setAppointmentObject) std::shared_ptr<Appointment> appointmentObject;
 
     QDateTime getAppointment(void);
     void setAppointment(QDateTime newAppointment);

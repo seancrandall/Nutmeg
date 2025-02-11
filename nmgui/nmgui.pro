@@ -368,9 +368,9 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-QMAKE_CXXFLAGS += -fdeclspec #-Wno-unused-function
-#QMAKE_CXXFLAGS += -Wno-unused-function
-#QMAKE_CXXFLAGS += -Wno-unused-include
+unix:!mac {
+    QMAKE_CXXFLAGS += -fdeclspec #-Wno-unused-function
+}
 
 DISTFILES += \
     ../nmbroker/dbaccess/gentable.sh
