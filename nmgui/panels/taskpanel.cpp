@@ -22,6 +22,16 @@ Nutmeg::TaskPanel::TaskPanel(PushButton *xtra, std::shared_ptr<Task>task, QWidge
     SetupDisplay();
 }
 
+TaskPanel::TaskPanel(Key taskId, PushButton *xtra, QWidget *parent)
+    : Frame(parent)
+{
+    mTask = std::make_shared<Task>(taskId);
+    mMatter = std::make_shared<Matter>(mTask->fkMatter);
+    extraButton = xtra;
+
+    SetupDisplay();
+}
+
 void Nutmeg::TaskPanel::ConnectSigalsAndSlots()
 {
     QObject::connect(docketNumberButton, &QPushButton::clicked,

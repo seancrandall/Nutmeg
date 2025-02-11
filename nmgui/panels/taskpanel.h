@@ -34,6 +34,7 @@ class TaskPanel : public Frame
   public:
     TaskPanel(std::shared_ptr<Task> task, QWidget *parent = nullptr);
     TaskPanel(PushButton *xtra, std::shared_ptr<Task> task, QWidget *parent = nullptr);
+    TaskPanel(Key taskId, PushButton *xtra, QWidget *parent = nullptr);
 
   protected slots:
     void slotUpdateTitle(void);
