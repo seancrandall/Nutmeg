@@ -1399,13 +1399,45 @@ QVariant Nutdb::NullableDate(const QDate date)
 
 bool Nutdb::UpdateAppointment(AppointmentData dat)
 {
-    QVariantList params;
-    params.append(QVariant::fromValue(dat.AppointmentId));
-    params.append(QVariant(dat.AppointmentTime));
-    params.append(NullableInteger(dat.fkAppointmentType));
+    QSqlDatabase db = QSqlDatabase::database(); // Using the default connection
+    QSqlQuery query(db);
 
-    CallStoredProcedure("UpdateAppointment", params);
-    return mLastOperationSuccessful;
+    // Start transaction to ensure atomicity of the update operation
+    if (!db.transaction()) {
+        qWarning() << "Failed to start transaction:" << db.lastError().text();
+        return false;
+    }
+
+    // Prepare the SQL update statement
+    query.prepare("UPDATE appointment SET AppointmentTime = :AppointmentTime, "
+                  "fkAppointmentType = :fkAppointmentType, Complete = :Complete "
+                  "WHERE AppointmentId = :AppointmentId");
+
+    // Bind values to the placeholders
+    query.bindValue(":AppointmentId", dat.AppointmentId);
+    query.bindValue(":AppointmentTime", dat.AppointmentTime);
+    query.bindValue(":fkAppointmentType", dat.fkAppointmentType);
+    query.bindValue(":Complete", dat.Complete);
+
+    // Execute the update query
+    if (!query.exec()) {
+        qWarning() << "Failed to update appointment:" << query.lastError().text();
+        db.rollback(); // Rollback if the query fails
+        return false;
+    }
+
+    // Check if any rows were affected
+    if (query.numRowsAffected() == 0) {
+        qWarning() << "No rows were updated; the appointment might not exist or no changes were made.";
+    }
+
+    // Commit the transaction
+    if (!db.commit()) {
+        qWarning() << "Failed to commit transaction:" << db.lastError().text();
+        return false;
+    }
+
+    return true; // Return true if everything was successful
 }
 
 bool Nutdb::UpdateCopyrightMatter(CopyrightMatterData dat)

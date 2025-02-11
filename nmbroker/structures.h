@@ -6,33 +6,29 @@
 namespace Nutmeg
 {
 
-typedef struct
-{
+typedef struct{
     Key ActionId;
     QString ActionName;
 } ActionData;
 
-typedef struct
-{
+typedef struct{
     Key AppointmentId;
     QDateTime AppointmentTime;
     Key fkAppointmentType;
+    bool Complete;
 } AppointmentData;
 
-typedef struct
-{
+typedef struct{
     Key CopyrightFilingId;
 } CopyrightFilingData;
 
-typedef struct
-{
+typedef struct{
     Key CopyrightFormId;
     QString FormName;
     Key fkStoredForm;
 } CopyrightFormData;
 
-typedef struct
-{
+typedef struct{
     Key CopyrightMatterId;
     Key fkAuthor;
     Date Created;
