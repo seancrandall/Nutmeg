@@ -1,18 +1,18 @@
-#include "responsepanel.h"
+#include "responsedashpanel.h"
 #include "responsetaskpanel.h"
 
 namespace Nutmeg
 {
 
-ResponsePanel::ResponsePanel(Key responseId, QWidget *parent)
-    : QWidget{parent}
+ResponseDashPanel::ResponseDashPanel(Key responseId, QWidget *parent)
+    : Frame{parent}
 {
     mResponse = std::make_shared<Response>(responseId);
     mMatter = std::make_shared<Matter>(mResponse->fkMatter);
     LoadData();
 }
 
-void ResponsePanel::LoadData(void)
+void ResponseDashPanel::LoadData(void)
 {
     // Objects
     mDeadline = std::make_shared<Deadline>(mResponse->fkDeadline);
@@ -43,32 +43,32 @@ void ResponsePanel::LoadData(void)
     ConnectSignalsAndSlots();
 }
 
-void ResponsePanel::slotUpdateParalegal(Key newkey)
+void ResponseDashPanel::slotUpdateParalegal(Key newkey)
 {
     mResponse->fkParalegal = newkey;
 }
 
-void ResponsePanel::slotUpdateWorkAttorney(Key newkey)
+void ResponseDashPanel::slotUpdateWorkAttorney(Key newkey)
 {
     mResponse->fkWorkAttorney = newkey;
 }
 
-void ResponsePanel::slotUpdateClient(Key newkey)
+void ResponseDashPanel::slotUpdateClient(Key newkey)
 {
     mMatter->fkClient = newkey;
 }
 
-void ResponsePanel::slotUpdateCompletion()
+void ResponseDashPanel::slotUpdateCompletion()
 {
     emit signalSomethingChanged();
 }
 
-void ResponsePanel::slotRefreshView(void)
+void ResponseDashPanel::slotRefreshView(void)
 {
     emit signalSomethingChanged();
 }
 
-void ResponsePanel::ConnectSignalsAndSlots()
+void ResponseDashPanel::ConnectSignalsAndSlots()
 {
     QObject::connect(doneButton, &QPushButton::clicked,
                      doneButton, &Nutmeg::DoneButton::slotHandleClicked);

@@ -18,8 +18,8 @@
 #include "dbaccess/viewfilingsincompletemodel.h"
 #include "dbaccess/viewresponsesincompletemodel.h"
 
-#include "panels/filingpanel.h"
-#include "panels/responsepanel.h"
+#include "panels/filingdashpanel.h"
+#include "panels/responsedashpanel.h"
 
 #include "widgets/addnewbutton.h"
 #include "widgets/mattersearchbox.h"
@@ -71,8 +71,7 @@ class MainWindow : public QMainWindow
     MatterSearchBox *matterSearch;
 
     // Responses Panel
-    QList<ResponsePanel *> responsesPanel;
-    //std::unique_ptr<viewResponsesIncompleteModel> responses;
+    QList<ResponseDashPanel *> responseDashPanels;
     QLabel *responsesHeader;
     Nutmeg::AddNewButton *addRespButton;
     QHBoxLayout *responsesHeaderLayout;
@@ -81,8 +80,7 @@ class MainWindow : public QMainWindow
     QVBoxLayout *mainResponseLayout;
 
     // Filings Panel
-    QList<FilingPanel *> filingsPanel;
-    //viewFilingsIncompleteModel *filings;
+    QList<FilingDashPanel *> filingDashPanels;
     QLabel *filingsHeader;
     Nutmeg::AddNewButton *addFilingButton;
     QHBoxLayout *filingsHeaderLayout;
@@ -91,7 +89,7 @@ class MainWindow : public QMainWindow
     QVBoxLayout *mainFilingsLayout;
 
     // Appointments Panel
-    QList<AppointmentDashPanel *>apptsPanel;
+    QList<AppointmentDashPanel *>apptDashPanels;
     QLabel *apptsHeader;
     QHBoxLayout *apptsHeaderLayout;
     QScrollArea *apptsScrollArea;

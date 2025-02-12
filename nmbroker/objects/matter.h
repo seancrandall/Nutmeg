@@ -31,17 +31,17 @@ class Matter : public Nutmeg::Object
     // Getters
     virtual Key getId(void) const override { return mDat.MatterId; }
 
-    Key getfkParent(void);
-    QString getAttorneyDocketNumber(void) { return mDat.AttorneyDocketNumber; }
-    QString getClientDocketNumber(void) { return mDat.ClientDocketNumber; }
-    QString getTitle(void) { return mDat.Title; }
-    Key getfkClient(void) { return mDat.fkClient; }
-    Key getfkAssigningFirm(void) { return mDat.fkAssigningFirm; }
-    Key getfkDefaultWorkAttorney(void) { return mDat.fkDefaultWorkAttorney; }
-    Key getfkDefaultParalegal(void) { return mDat.fkDefaultParalegal; }
-    Key getfkKeyDocument(void) { return mDat.fkKeyDocument; }
-    Key getfkMatterJurisdiction(void) { return mDat.fkMatterJurisdiction; }
-    Key getOldMatterId(void) { return mDat.OldMatterId; }
+    Key getfkParent(void) const;
+    QString getAttorneyDocketNumber(void) const { return mDat.AttorneyDocketNumber; }
+    QString getClientDocketNumber(void) const { return mDat.ClientDocketNumber; }
+    QString getTitle(void) const { return mDat.Title; }
+    Key getfkClient(void) const { return mDat.fkClient; }
+    Key getfkAssigningFirm(void) const { return mDat.fkAssigningFirm; }
+    Key getfkDefaultWorkAttorney(void) const { return mDat.fkDefaultWorkAttorney; }
+    Key getfkDefaultParalegal(void) const { return mDat.fkDefaultParalegal; }
+    Key getfkKeyDocument(void) const { return mDat.fkKeyDocument; }
+    Key getfkMatterJurisdiction(void) const { return mDat.fkMatterJurisdiction; }
+    Key getOldMatterId(void) const { return mDat.OldMatterId; }
 
     virtual bool SetId(Key id) override;
     bool Update(MatterData dat);

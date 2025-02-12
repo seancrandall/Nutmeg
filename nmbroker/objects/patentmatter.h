@@ -48,15 +48,16 @@ class PatentMatter : public Nutmeg::Matter
     Key getfkSpecification(void) { return mDat.fkSpecification; }
     Key getfkDrawings(void) { return mDat.fkDrawings; }
     Key getfkAsFiledClaims(void) { return mDat.fkAsFiledClaims; }
-
     QList<Key> getInventors(void);
 
+public slots:
     bool AddInventor(QString first, QString last);
     bool AssignInventor(Key personId);
     bool RemoveInventor(Key personId);
     bool AddInventors(QList<PersonData> inventors);
     bool AddExaminer(String first, String last);
     bool AddSupervisoryExaminer(String first, String last);
+    void EmailInventors(const QString& body=QString()) const;
 
     bool Update(PatentMatterData dat);
     virtual bool SetId(Key newval) override;

@@ -62,7 +62,7 @@ SOURCES += \
     panels/entitiespanel.cpp \
     panels/entitypanel.cpp \
     panels/examinerinfopanel.cpp \
-    panels/filingpanel.cpp \
+    panels/filingdashpanel.cpp \
     panels/filingtaskpanel.cpp \
     panels/flagspanel.cpp \
     panels/frame.cpp \
@@ -75,7 +75,7 @@ SOURCES += \
     panels/optionsdocumentpanel.cpp \
     panels/patentmatterpanel.cpp \
     panels/personaddselectpanel.cpp \
-    panels/responsepanel.cpp \
+    panels/responsedashpanel.cpp \
     panels/responsetaskpanel.cpp \
     panels/taskpanelfull.cpp \
     utils/email.cpp \
@@ -235,7 +235,7 @@ HEADERS += \
     panels/entitiespanel.h \
     panels/entitypanel.h \
     panels/examinerinfopanel.h \
-    panels/filingpanel.h \
+    panels/filingdashpanel.h \
     panels/filingtaskpanel.h \
     panels/flagspanel.h \
     panels/frame.h \
@@ -248,7 +248,7 @@ HEADERS += \
     panels/optionsdocumentpanel.h \
     panels/patentmatterpanel.h \
     panels/personaddselectpanel.h \
-    panels/responsepanel.h \
+    panels/responsedashpanel.h \
     panels/responsetaskpanel.h \
     panels/taskpanelfull.h \
     utils/email.h \

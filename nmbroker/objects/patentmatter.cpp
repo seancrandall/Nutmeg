@@ -1,4 +1,7 @@
 #include "patentmatter.h"
+#include "objects/person.h"
+#include "settings.h"
+#include "utils/email.h"
 
 namespace Nutmeg
 {
@@ -185,6 +188,42 @@ bool PatentMatter::AddSupervisoryExaminer(String first, String last)
     Key personid = Nutdb::InsertExaminer(first, last);
     if(personid == 0) return false;
     return SetfkSupervisoryExaminer(personid);
+}
+
+void PatentMatter::EmailInventors(const QString& body) const
+{
+    Email em;
+
+    Person atty = Person(fkDefaultWorkAttorney);
+    if(!atty.PrimaryEmail.isEmpty())
+        em.from = atty.PrimaryEmail;
+
+    if(!body.isEmpty())
+        em.body = body;
+
+    bool hasClientDocket = !(ClientDocketNumber.isEmpty());
+
+    QString subject;
+    if(hasClientDocket) {
+        subject = QString("%1 (").arg(ClientDocketNumber)
+        % "Our " % AttorneyDocketNumber % ")";
+    } else {
+        subject = "Our " % AttorneyDocketNumber;
+    }
+    subject = subject % "—ATTORNEY-CLIENT PRIVILEGED AND CONFIDENTIAL";
+    em.subject = subject;
+
+    Person para = Person(fkDefaultParalegal);
+    if(!para.PrimaryEmail.isEmpty())
+        em.addCC(para.PrimaryEmail);
+
+    for(int i=0; i < mInventors.size(); i++){
+        Person p = Person(mInventors[i]);
+        if(!p.PrimaryEmail.isNull())
+            em.addRecipient(p.PrimaryEmail);
+    }
+
+    em.open();
 }
 
 bool PatentMatter::Update(PatentMatterData dat)

@@ -32,6 +32,7 @@ class Appointment : public Nutmeg::Object
     Property(getComplete, setComplete) bool complete;
     Property(getNeedsAgenda, setNeedsAgenda) bool needsAgenda;
     Property(getAgendaSent, setAgendaSent) bool agentdaSent;
+    Property(getConfirmed, setConfirmd) bool confirmed;
 
     // Overrides
     virtual Key getId(void) const override;
@@ -47,6 +48,7 @@ class Appointment : public Nutmeg::Object
     bool getNeedsAgenda(void);
     bool getAgendaSent(void);
     bool getComplete(void) const;
+    bool getConfirmed(void);
 
     bool SetAppointmentTime(DateTime newappt);
     bool SetfkAppointmentType(Key newfk);
@@ -54,6 +56,7 @@ class Appointment : public Nutmeg::Object
     void setNeedsAgenda(bool val);
     void setAgendaSent(bool val);
     void setComplete(bool val);
+    void setConfirmed(bool val);
 
     void holdAppointmentTime(DateTime newval);
     void holdfkAppointmentType(Key newval);
@@ -65,6 +68,7 @@ class Appointment : public Nutmeg::Object
     AppointmentData mDat;
     bool bNeedsAgenda;
     bool bAgendaSent;
+    bool bConfirmed;
 private:
     static Appointment* GetAppointment(Key id);
 };

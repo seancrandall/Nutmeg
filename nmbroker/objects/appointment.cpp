@@ -92,6 +92,11 @@ bool Appointment::getComplete() const
     return mDat.Complete;
 }
 
+bool Appointment::getConfirmed()
+{
+    return getFlag("Confirmed");
+}
+
 bool Appointment::SetAppointmentTime(DateTime newappt)
 {
     bool result = WriteDateTime(appointmentTableName, "AppointmentTime", newappt);
@@ -122,6 +127,11 @@ void Appointment::setComplete(bool val)
     if(result) mDat.Complete = val;
 }
 
+void Appointment::setConfirmed(bool val)
+{
+    SetFlagValue("Confirmed", val);
+}
+
 bool Appointment::InitializeAppointment(Key id)
 {
     mDat = Nutdb::GetAppointment(id);
@@ -132,6 +142,7 @@ bool Appointment::InitializeAppointment(Key id)
 
     bNeedsAgenda = getNeedsAgenda();
     bAgendaSent = getAgendaSent();
+    bConfirmed = getConfirmed();
 
     return Object::SetId(id);
 }

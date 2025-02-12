@@ -155,8 +155,8 @@ void MainWindow::SetupResponses()
         QSqlRecord fieldNames = gViewResponsesIncompleteModel->record();
         QSqlRecord rec = gViewResponsesIncompleteModel->record(i);
         Key id = rec.field(0).value().toUInt();
-        ResponsePanel *rpanel = new ResponsePanel(id, responsesContainer);
-        responsesPanel.append(rpanel);
+        ResponseDashPanel *rpanel = new ResponseDashPanel(id, responsesContainer);
+        responseDashPanels.append(rpanel);
         responsesLayout->addWidget(rpanel);
     }
 
@@ -198,8 +198,8 @@ void MainWindow::SetupFilings()
     for (auto i = 0; i < gViewFilingsIncompleteModel->rowCount(); i++)
     {
         Key id = gViewFilingsIncompleteModel->record(i).field(0).value().toUInt();
-        FilingPanel *fpanel = new FilingPanel(id, filingsContainer);
-        filingsPanel.append(fpanel);
+        FilingDashPanel *fpanel = new FilingDashPanel(id, filingsContainer);
+        filingDashPanels.append(fpanel);
         filingsLayout->addWidget(fpanel);
     }
 
@@ -238,7 +238,7 @@ void MainWindow::SetupAppointments()
     {
         Key id = gViewUpcomingAppointmentsModel->record(i).field(0).value().toUInt();
         AppointmentDashPanel *apanel = new AppointmentDashPanel(id, apptsContainer);
-        apptsPanel.append(apanel);
+        apptDashPanels.append(apanel);
         apptsLayout->addWidget(apanel);
     }
 

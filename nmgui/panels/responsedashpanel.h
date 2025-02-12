@@ -1,5 +1,5 @@
-#ifndef NUTMEG_RESPONSEPANEL_H
-#define NUTMEG_RESPONSEPANEL_H
+#ifndef NUTMEG_RESPONSEDASHPANEL_H
+#define NUTMEG_RESPONSEDASHPANEL_H
 
 #include <QHBoxLayout>
 #include <QObject>
@@ -7,6 +7,7 @@
 #include <QWidget>
 
 #include "nutmeg.h"
+#include "frame.h"
 #include "objects/deadline.h"
 #include "objects/matter.h"
 #include "objects/response.h"
@@ -24,11 +25,11 @@
 namespace Nutmeg
 {
 
-class ResponsePanel : public QWidget
+class ResponseDashPanel : public Frame
 {
     Q_OBJECT
   public:
-    explicit ResponsePanel(Key responseId, QWidget *parent = nullptr);
+    explicit ResponseDashPanel(Key responseId, QWidget *parent = nullptr);
 
   public slots:
     void slotUpdateParalegal(Key newkey);
@@ -56,4 +57,4 @@ class ResponsePanel : public QWidget
 
 } // namespace Nutmeg
 
-#endif // NUTMEG_RESPONSEPANEL_H
+#endif // NUTMEG_RESPONSEDASHPANEL_H

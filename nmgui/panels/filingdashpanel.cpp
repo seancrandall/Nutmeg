@@ -1,33 +1,33 @@
-#include "filingpanel.h"
+#include "filingdashpanel.h"
 
 namespace Nutmeg
 {
 
-FilingPanel::FilingPanel(Key id, QWidget *parent)
-    : QWidget(parent)
+FilingDashPanel::FilingDashPanel(Key id, QWidget *parent)
+    : Frame(parent)
     , filing(std::make_shared<Filing>(id))
     , matter(std::make_shared<Matter>(filing->fkMatter))
 {
     LoadData();
 }
 
-void FilingPanel::slotUpdateCompletion()
+void FilingDashPanel::slotUpdateCompletion()
 {
     emit signalSomethingChanged();
 }
 
-void FilingPanel::slotRefreshView()
+void FilingDashPanel::slotRefreshView()
 {
     emit signalSomethingChanged();
 }
 
-void FilingPanel::ConnectSignalsAndSlots()
+void FilingDashPanel::ConnectSignalsAndSlots()
 {
     QObject::connect(doneButton, &QPushButton::clicked,
                      doneButton, &Nutmeg::DoneButton::slotHandleClicked);
 }
 
-void FilingPanel::LoadData()
+void FilingDashPanel::LoadData()
 {
     deadline = std::make_shared<Deadline>(filing->fkDeadline);
 

@@ -1,10 +1,11 @@
-#ifndef FILINGPANEL_H
-#define FILINGPANEL_H
+#ifndef FILINGDASHPANEL_H
+#define FILINGDASHPANEL_H
 
 #include <QWidget>
 #include <QHBoxLayout>
 
 #include "nutmeg.h"
+#include "frame.h"
 #include "objects/deadline.h"
 #include "objects/matter.h"
 #include "objects/response.h"
@@ -25,11 +26,11 @@
 namespace Nutmeg
 {
 
-class FilingPanel : public QWidget
+class FilingDashPanel : public Frame
 {
     Q_OBJECT
   public:
-    explicit FilingPanel(Key id, QWidget *parent = nullptr);
+    explicit FilingDashPanel(Key id, QWidget *parent = nullptr);
 
   public slots:
     void slotUpdateCompletion(void);
@@ -53,4 +54,4 @@ class FilingPanel : public QWidget
 
 } // namespace Nutmeg
 
-#endif // FILINGPANEL_H
+#endif // FILINGDASHPANEL_H
