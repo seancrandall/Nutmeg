@@ -163,7 +163,7 @@ bool Matter::InitializeMatter(Key newid)
     //return true;
 }
 
-Key Nutmeg::Matter::getfkParent()
+Key Nutmeg::Matter::getfkParent() const
 {
     return mDat.fkParent;
 }

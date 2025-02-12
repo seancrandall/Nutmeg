@@ -13,14 +13,19 @@ namespace Nutmeg
 class FilingTaskPanel : public Nutmeg::AbstractTaskPanel
 {
     Q_OBJECT
-  public:
+public:
     FilingTaskPanel(std::shared_ptr<Filing> fil, QWidget *parent = nullptr);
 
-  signals:
+signals:
     void signalSomethingChanged(void);
+    void signalEmailInventors(const QString& body);
 
-  public slots:
+public slots:
     virtual void slotExtraButtonAction(void) override;
+
+protected:
+    std::shared_ptr<Filing> mFiling;
+    std::shared_ptr<Matter> mMatter;
 };
 
 } // namespace Nutmeg

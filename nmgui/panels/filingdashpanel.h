@@ -35,6 +35,7 @@ class FilingDashPanel : public Frame
   public slots:
     void slotUpdateCompletion(void);
     void slotRefreshView(void);
+    void EmailInventors(const QString& body);
 
   signals:
     void signalAddNewFiling(void);
@@ -46,10 +47,18 @@ class FilingDashPanel : public Frame
     std::shared_ptr<Matter> matter;
 
     DoneButton *doneButton;
+    FilingTaskPanel *taskPanel;
+    DeadlinesPanel *deadlinePanel;
+    EntitiesPanel *entitiesPanel;
+    FlagsPanel *flagsPanel;
+    FilingTypeLabel *label;
 
   private:
     void ConnectSignalsAndSlots(void);
-    void LoadData(void);
+    void Initialize(void);
+    void SetColor(void);
+    void InitializeControls(void);
+    void LayoutWidgets(void);
 };
 
 } // namespace Nutmeg
