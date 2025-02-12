@@ -15,6 +15,7 @@
 #include "panels/examinerinfopanel.h"
 #include "panels/flagspanel.h"
 #include "widgets/donebutton.h"
+#include "widgets/timeedit.h"
 
 namespace Nutmeg {
 
@@ -29,6 +30,8 @@ public:
 protected:
     QLabel *lAppointmentType;
     PushButton *bDone;
+    DateEdit *cDate;
+    TimeEdit *cTime;
 
     ExaminerInfoPanel *pExaminerInfo;
 
@@ -38,6 +41,8 @@ protected:
 protected slots:
     void markDone(void);
     void emailExmainer(void);
+    void changeDate(const QDate& newdate);
+    void changeTime(const QTime& newtime);
 
 private:
     std::shared_ptr<Appointment> mAppointment;

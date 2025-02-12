@@ -15,6 +15,7 @@ class TimeEdit : public QTimeEdit
     Q_OBJECT
 public:
     TimeEdit(QWidget *parent = nullptr);
+    TimeEdit(const QTime& newtime, QWidget *parent=nullptr);
 
     Property(getTime, setTime) QTime time;
 

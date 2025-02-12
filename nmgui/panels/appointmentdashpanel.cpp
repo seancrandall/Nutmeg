@@ -73,6 +73,18 @@ void AppointmentDashPanel::emailExmainer()
     QDesktopServices::openUrl(QUrl(mailtoLink));
 }
 
+void AppointmentDashPanel::changeDate(const QDate &newdate)
+{
+    QTime oldTime = QTime(mAppointment->AppointmentTime.time());
+    mAppointment->AppointmentTime = QDateTime(newdate, oldTime);
+}
+
+void AppointmentDashPanel::changeTime(const QTime &newtime)
+{
+    QDate oldDate = QDate(mAppointment->AppointmentTime.date());
+    mAppointment->AppointmentTime = QDateTime(oldDate, newtime);
+}
+
 void AppointmentDashPanel::InitializeControls()
 {
     lAppointmentType = new QLabel();
@@ -82,6 +94,12 @@ void AppointmentDashPanel::InitializeControls()
     bDone = new PushButton();
     bDone->setText("Done");
     bDone->setMaximumWidth(60);
+
+    cDate = new DateEdit(mAppointment->AppointmentTime.date());
+    cDate->setDisplayFormat("ddd MMMM d");
+    cDate->setMaximumWidth(300);
+    cTime = new TimeEdit(mAppointment->AppointmentTime.time());
+    cTime->setMaximumWidth(300);
 
     pExaminerInfo = new ExaminerInfoPanel(mInterviewee->EntityId);
 
@@ -99,10 +117,18 @@ void AppointmentDashPanel::LayoutWidgets()
     setPalette(pal);
     setAutoFillBackground(true);
 
+    //Lay them out horizontally
     QHBoxLayout *mainLayout = new QHBoxLayout(this);
 
     mainLayout->addWidget(lAppointmentType);
-    mainLayout->addWidget(bDone);
+    //mainLayout->addWidget(bDone);
+
+    //Stack the date and time on each other
+    QVBoxLayout *dtLayout = new QVBoxLayout();
+    dtLayout->addWidget(cDate, 0, Qt::AlignHCenter);
+    dtLayout->addWidget(cTime, 0, Qt::AlignHCenter);
+    dtLayout->addWidget(bDone, 0, Qt::AlignHCenter);
+    mainLayout->addLayout(dtLayout);
 
     mainLayout->addWidget(pExaminerInfo);
 
@@ -117,6 +143,12 @@ void AppointmentDashPanel::ConnectSignalsAndSlots()
 
     QObject::connect(pExaminerInfo,     &ExaminerInfoPanel::signalEmailExaminer,
                      this,               &AppointmentDashPanel::emailExmainer);
+
+    QObject::connect(cDate,         &DateEdit::userDateChanged,
+                     this,           &AppointmentDashPanel::changeDate);
+
+    QObject::connect(cTime,         &TimeEdit::userTimeChanged,
+                     this,           &AppointmentDashPanel::changeTime);
 }
 
 void AppointmentDashPanel::Initialize()
