@@ -559,11 +559,14 @@ Key Nutdb::InsertPerson(QString firstName, QString lastName)
     params.append(lastName);
 
     Key result = CallStoredKeyProcedure("InsertPerson", params);
-    // if(result){
-    //     gViewPeopleModel = std::make_unique<viewPeopleModel>();
-    //     gViewInventorsModel = std::make_unique<viewInventorsModel>();
-    //     gViewPatentExaminersModel = std::make_unique<viewPatentExaminersModel>();
-    // }
+    if(result){
+        gViewPeopleModel = std::make_unique<viewPeopleModel>();
+        gViewInventorsModel = std::make_unique<viewInventorsModel>();
+        gViewPatentExaminersModel = std::make_unique<viewPatentExaminersModel>();
+        gViewClientsModel = std::make_unique<viewClientsModel>();
+        gViewParalegalsModel = std::make_unique<viewParalegalsModel>();
+        gViewWorkAttorneysModel = std::make_unique<viewWorkAttorneysModel>();
+    }
     return result;
 }
 
@@ -998,37 +1001,30 @@ bool Nutdb::GetFlag(Key objectId, QString camelCase)
     if(!gViewObjectFlagsModel)
         gViewObjectFlagsModel = std::make_unique<viewObjectFlagsModel>();
 
-    bool flagValue = false
-        , found = false;
+    bool flagValue = false;
     QSqlRecord rec;
 
-    gViewObjectFlagsModel->setFilter(QString("fkObject = %1").arg(objectId));
-
-    //++i
-    for(auto i=0; i < gViewObjectFlagsModel->rowCount(); i++){
-        QString camel;
-        camel = gViewObjectFlagsModel->record(i).field("CamelCase").value().toString();
-        if(camel == camelCase){
-            found = true;
-            flagValue = gViewObjectFlagsModel->record(i).field("FlagValue").value().toBool();
-            break;
-        }
+    if(gViewObjectFlagsModel->contains(objectId, camelCase)){
+        Key id = gViewObjectFlagsModel->getIndex(objectId, camelCase);
+        rec = gViewObjectFlagsModel->keyRecord[id];
+        flagValue = rec.field("FlagValue").value().toBool();
+        return flagValue;
     }
 
     //If we couldn't find it in the loaded table, try a native database call
-    //as a backup
-    if(!found){
-        QVariantList params;
+    QVariantList params;
 
-        params.append(NullableInteger(objectId));
-        params.append(camelCase);
+    params.append(objectId);
+    params.append(camelCase);
 
-        QVariant flagval;
-        QVariant result = CallStoredReturnProcedure("GetFlag", params);
-        if(!mLastOperationSuccessful)
-            return false;
-        else
-            flagValue = result.toBool();
+    QVariant result = CallStoredReturnProcedure("GetFlag", params);
+    if(!mLastOperationSuccessful){
+        return false;
+    }
+    else{
+        //Reload the table so we have current values
+        gViewObjectFlagsModel = std::make_unique<viewObjectFlagsModel>();
+        flagValue = result.toBool();
     }
     return flagValue;
 }

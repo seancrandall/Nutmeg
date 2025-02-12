@@ -145,8 +145,7 @@ void MainWindow::SetupResponses()
     responsesLayout = new QVBoxLayout(responsesContainer);
 
     // Create the global responses model if it hasn't already been loaded
-    if(!gViewResponsesIncompleteModel)
-        gViewResponsesIncompleteModel = std::make_unique<viewResponsesIncompleteModel>();
+    gViewResponsesIncompleteModel = std::make_unique<viewResponsesIncompleteModel>();
 
     // Populate the responses container with ResponsePanels
     auto rows = gViewResponsesIncompleteModel->rowCount();
@@ -191,8 +190,7 @@ void MainWindow::SetupFilings()
     filingsLayout = new QVBoxLayout(filingsContainer);
 
     // Filings model
-    if(!gViewFilingsIncompleteModel)
-        gViewFilingsIncompleteModel = std::make_unique<viewFilingsIncompleteModel>();
+    gViewFilingsIncompleteModel = std::make_unique<viewFilingsIncompleteModel>();
 
     // Populate the filings container
     for (auto i = 0; i < gViewFilingsIncompleteModel->rowCount(); i++)
@@ -230,8 +228,7 @@ void MainWindow::SetupAppointments()
     // Layout for the appointments container
     apptsLayout = new QVBoxLayout(apptsContainer);
 
-    if(!gViewUpcomingAppointmentsModel)
-        gViewUpcomingAppointmentsModel = std::make_unique<viewUpcomingAppointmentsModel>();
+    gViewUpcomingAppointmentsModel = std::make_unique<viewUpcomingAppointmentsModel>();
 
     // Populate the appointments container
     for (auto i = 0; i < gViewUpcomingAppointmentsModel->rowCount(); i++)
