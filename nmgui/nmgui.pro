@@ -78,6 +78,7 @@ SOURCES += \
     panels/responsepanel.cpp \
     panels/responsetaskpanel.cpp \
     panels/taskpanelfull.cpp \
+    utils/email.cpp \
     utils/icalbuilder.cpp \
     widgets/abstractremovablebutton.cpp \
     widgets/checkbox.cpp \
@@ -250,6 +251,7 @@ HEADERS += \
     panels/responsepanel.h \
     panels/responsetaskpanel.h \
     panels/taskpanelfull.h \
+    utils/email.h \
     utils/icalbuilder.h \
     widgets/abstractremovablebutton.h \
     widgets/checkbox.h \

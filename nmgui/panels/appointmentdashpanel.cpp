@@ -4,6 +4,7 @@
 #include "objects/patentmatter.h"
 #include "settings.h"
 #include "windows/entitydialog.h"
+#include "utils/email.h"
 
 namespace Nutmeg {
 
@@ -47,6 +48,8 @@ void AppointmentDashPanel::emailExmainer()
     const QString toEmail = mInterviewee->PrimaryEmail;
     QDateTime apptTime = mAppointment->AppointmentTime;
 
+    Email email;
+
     // Format the appointment time as "Day Month Date"
     const QString apptTimeString = apptTime.toString("dddd MMMM d");
 
@@ -63,14 +66,12 @@ void AppointmentDashPanel::emailExmainer()
                                   .arg(examinerLastName)
                                   .arg(apptTimeString);
 
-    // Create the mailto link
-    QString mailtoLink = QString("mailto:%1?subject=%2&body=%3")
-                             .arg(toEmail)
-                             .arg(QUrl::toPercentEncoding(subjectLine))
-                             .arg(QUrl::toPercentEncoding(emailBody));
+    email.addRecipient(toEmail);
+    email.from = fromEmail;
+    email.subject = subjectLine;
+    email.body = emailBody;
 
-    // Open the link using QDesktopServices
-    QDesktopServices::openUrl(QUrl(mailtoLink));
+    email.open();
 }
 
 void AppointmentDashPanel::changeDate(const QDate &newdate)
