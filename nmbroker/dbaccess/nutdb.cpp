@@ -1904,7 +1904,7 @@ Key Nutdb::AssignCaseInventor(Key personId, Key patentCaseId)
         insertedId = query.lastInsertId().toUInt();
 
         Logger::LogMessage(QString("Assigned person %1 as an inventor to case %2 and got insert ID %3.")
-                .arg(personId).arg(patentCaseId).arg(insertedId));
+                               .arg(personId).arg(patentCaseId).arg(insertedId));
     }
 
     // Commit transaction
@@ -1988,45 +1988,61 @@ Key Nutdb::ClearTag(Key objectId, QString tagText)
 
 Key Nutdb::InsertAppointment(DateTime appointmentTime, Key taskId)
 {
-    QVariantList params;
+    QSqlDatabase db = QSqlDatabase::database();
+    QSqlQuery query(db);
 
-    params.append(QVariant::fromValue(taskId));
-    params.append(appointmentTime);
+    if (db.isValid() && db.isOpen()) {
+        // Step 1: Insert appointment
+        query.prepare("INSERT INTO appointment (AppointmentTime) VALUES (:appointmentTime)");
+        query.bindValue(":appointmentTime", appointmentTime.toString(Qt::ISODate));
 
-    return CallStoredKeyProcedure("InsertAppointment", params);
+        if (query.exec()) {
+            Key lastInsertedId = query.lastInsertId().toUInt();
+
+            if (lastInsertedId != 0) {
+                // Step 2: Insert into object_appointment if first insert was successful
+                QSqlQuery linkQuery(db);
+                linkQuery.prepare("INSERT INTO object_appointment (fkAppointment, fkObject) VALUES (:appointmentId, :taskId)");
+                linkQuery.bindValue(":appointmentId", lastInsertedId);
+                linkQuery.bindValue(":taskId", taskId);
+
+                if (linkQuery.exec()) {
+                    return lastInsertedId; // Return the ID of the appointment if both inserts succeed
+                } else {
+                    qWarning() << "Failed to link appointment to task:" << linkQuery.lastError().text();
+                    return 0; // Return 0 if linking fails
+                }
+            } else {
+                qWarning() << "Failed to insert appointment:" << query.lastError().text();
+                return 0; // Return 0 if initial insert fails
+            }
+        } else {
+            qWarning() << "Failed to insert appointment:" << query.lastError().text();
+            return 0;
+        }
+    } else {
+        qWarning() << "Database not valid or not open.";
+        return 0;
+    }
 }
 
 Key Nutdb::InsertAppointment(DateTime appointmentTime)
 {
     QSqlDatabase db = QSqlDatabase::database();
-    QSqlQuery query;
+    QSqlQuery query(db);
 
-    QVariantList params;
-    params.append("appointment");
-    Key newobj = CallStoredKeyProcedure("InsertObject", params);
-
-    // If call was successful and returned a new key, populate the new appointment
-    if(newobj)
-    {
-        query.prepare("INSERT INTO appointment (AppointmentId, AppointmentTime) VALUES (:id, :time)");
-        query.bindValue(":id", QVariant::fromValue(newobj));
-        query.bindValue(":time", appointmentTime);
+    if (db.isValid() && db.isOpen()) {
+        query.prepare("INSERT INTO appointment (AppointmentTime) VALUES (:appointmentTime)");
+        query.bindValue(":appointmentTime", appointmentTime.toString(Qt::ISODate)); // Convert to ISO date for SQL compatibility
 
         if (query.exec()) {
-            // Check if the insert was successful by checking affected rows
-            if (query.numRowsAffected() > 0) {
-                return newobj; // Return the new key as it was the last inserted id
-            } else {
-                return 0; // Insert failed but no specific error handling here
-            }
+            return query.lastInsertId().toUInt(); // Assuming Key is uint32_t or similar
         } else {
-            // Log or handle the error from the query
-            qDebug() << "Error inserting appointment:" << query.lastError().text();
+            qWarning() << "Failed to insert appointment:" << query.lastError().text();
             return 0;
         }
-    }
-    else {
-        // If CallStoredKeyProcedure failed or returned an invalid Key
+    } else {
+        qWarning() << "Database not valid or not open.";
         return 0;
     }
 }

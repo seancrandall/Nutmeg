@@ -12,6 +12,7 @@
 #include "objects/matter.h"
 #include "objects/task.h"
 #include "appointmenttaskpanel.h"
+#include "panels/examinerinfopanel.h"
 #include "panels/flagspanel.h"
 #include "widgets/donebutton.h"
 
@@ -29,21 +30,14 @@ protected:
     QLabel *lAppointmentType;
     PushButton *bDone;
 
-    //Examiner Information
-    PushButton *bExaminerName;
-    LineEdit *cExaminerPhoneNumber;
-    LineEdit *cExaminerEmail;
-    PushButton *bEmailExaminer;
-    LabeledWidgetLeft *lExaminerPhoneNumber
-                     ,*lExaminerEmail;
+    ExaminerInfoPanel *pExaminerInfo;
 
     AppointmentTaskPanel *pTask;
     FlagsPanel *pFlags;
 
 protected slots:
-    void emailExaminer(void);
-    void openExaminer(void);
     void markDone(void);
+    void emailExmainer(void);
 
 private:
     std::shared_ptr<Appointment> mAppointment;

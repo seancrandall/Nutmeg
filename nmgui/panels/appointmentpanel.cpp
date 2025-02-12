@@ -101,13 +101,15 @@ void AppointmentPanel::Gather()
 
 void AppointmentPanel::Initialize()
 {
-    typeModel = new appointmentTypeModel(this);
+    //typeModel = new appointmentTypeModel(this);
+    if(!gAppointmentTypeModel)
+        gAppointmentTypeModel = std::make_unique<appointmentTypeModel>();
 
     //Setup Widgets
     cId = new LineDisplayId();
     cDateTime = new DateTimeEdit(mAppointment->AppointmentTime);
     cAppointmentType = new ComboBox();
-    cAppointmentType->setModel(typeModel);
+    cAppointmentType->setModel(gAppointmentTypeModel.get());
     plus = new PlusButton();
 
     lId = new LabeledWidgetLeft("Appointment ID", cId);

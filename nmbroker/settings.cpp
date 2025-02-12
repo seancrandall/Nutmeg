@@ -43,8 +43,26 @@ Settings::Settings(QObject *parent)
     mDeadlinesCacheSize = value("deadlines_cache_size", DEFAULT_DEADLINES_CACHE_SIZE).toUInt();
     endGroup();
 
+    beginGroup("user_data");
+    mFirstName = value("first_name", DEFAULT_FIRST_NAME).toString();
+    mLastName = value("last_name", DEFAULT_LAST_NAME).toString();
+    mEmail = value("email", DEFAULT_EMAIL).toString();
+    endGroup();
+
     //If any values are missing from the config file, this will write the defaults to that file
     populate();
+}
+
+void Settings::setServer(QString val)
+{
+    setValue("database/server", val);
+    mServer = val;
+}
+
+void Settings::setDatabaseName(QString val)
+{
+    setValue("database/database_name", val);
+    mDatabaseName = val;
 }
 
 void Settings::setFontFamily(QString val)
@@ -150,6 +168,10 @@ void Settings::populate()
     flagsCacheSize = mFlagsCacheSize;
     tagsCacheSize = mTagsCacheSize;
     deadlinesCacheSize = mDeadlinesCacheSize;
+
+    firstName = mFirstName;
+    lastName = mLastName;
+    email = mEmail;
 
     QSettings::sync();
 }

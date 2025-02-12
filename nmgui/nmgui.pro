@@ -61,6 +61,7 @@ SOURCES += \
     panels/deadlinespanel.cpp \
     panels/entitiespanel.cpp \
     panels/entitypanel.cpp \
+    panels/examinerinfopanel.cpp \
     panels/filingpanel.cpp \
     panels/filingtaskpanel.cpp \
     panels/flagspanel.cpp \
@@ -232,6 +233,7 @@ HEADERS += \
     panels/deadlinespanel.h \
     panels/entitiespanel.h \
     panels/entitypanel.h \
+    panels/examinerinfopanel.h \
     panels/filingpanel.h \
     panels/filingtaskpanel.h \
     panels/flagspanel.h \

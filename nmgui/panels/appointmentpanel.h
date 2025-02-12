@@ -63,7 +63,6 @@ protected:
 
 private:
     std::shared_ptr<Appointment> mAppointment;
-    appointmentTypeModel *typeModel;
 
     void Initialize(void);
     bool mIsValid;

@@ -50,11 +50,15 @@ void MainWindow::slotRefresh()
         delete mainResponseLayout;
         SetupResponses();
 
-        delete filings;
         delete filingsHeaderLayout;
         delete filingsScrollArea;
         delete mainFilingsLayout;
         SetupFilings();
+
+        delete apptsHeaderLayout;
+        delete apptsScrollArea;
+        delete mainApptsLayout;
+        SetupAppointments();
 
         ConnectSignalsAndSlots();
     }
@@ -207,14 +211,12 @@ void MainWindow::SetupFilings()
 
 void MainWindow::SetupAppointments()
 {
-    // matterSearch = new MatterSearchBox(ui->frameMiddle);
     apptsHeader = new QLabel("Upcoming Appointments");
     apptsHeader->setFont((QFont("Arial", 14, QFont::Bold)));
     apptsHeader->setMaximumHeight(80);
-    //addFilingButton = new Nutmeg::AddNewButton();
 
     apptsHeaderLayout = new QHBoxLayout();
-    apptsHeaderLayout->addWidget(filingsHeader);
+    apptsHeaderLayout->addWidget(apptsHeader);
     apptsHeaderLayout->addStretch();
 
     // Create scroll area

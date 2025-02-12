@@ -38,6 +38,11 @@ namespace Nutmeg
 #define DEFAULT_TAGS_CACHE_SIZE 5000
 #define DEFAULT_DEADLINES_CACHE_SIZE 5000
 
+//User Data Defaults
+#define DEFAULT_FIRST_NAME "John"
+#define DEFAULT_LAST_NAME "Doe"
+#define DEFAULT_EMAIL "john.doe@example.com"
+
 class Settings : public QSettings
 {
   public:
@@ -73,21 +78,16 @@ class Settings : public QSettings
     Property(getTagsCacheSize, setTagsCacheSize) unsigned int tagsCacheSize;
     Property(getDeadlinesCacheSize, setDeadlinesCacheSize) unsigned int deadlinesCacheSize;
 
+    //User Data
+    Property(getFirstName, setFirstName) QString firstName;
+    Property(getLastName, setLastName) QString lastName;
+    Property(getEmail, setEmail) QString email;
+
     // Property(getFontWeight, setFontWeight) QString fontWeight;
 
-    void setServer(QString val)
-    {
-        setValue("database/server", val);
-        mServer = val;
-    }
-
+    void setServer(QString val);
     void setPort(uint val) { setValue("database/port", val), mPort = val; }
-
-    void setDatabaseName(QString val)
-    {
-        setValue("database/database_name", val);
-        mDatabaseName = val;
-    }
+    void setDatabaseName(QString val);
 
     const QString getCompanyName(void){return mCompanyName;}
     const QString getSoftwareName(void) {return mSoftwareName;}
@@ -107,6 +107,13 @@ class Settings : public QSettings
     uint getMaxFilenameLength(void) { return mMaxFilenameLength = value("documents/max_docname_length").toUInt(); }
     QString getFontFamily(void) { return mFontFamily = value("display/font_family").toString(); }
     uint getFontSize(void) { return mFontSize = value("display/font_size").toUInt(); }
+
+    void setFirstName(QString val) {setValue("user_data/first_name", val); mFirstName = val; }
+    QString getFirstName(void) { return mFirstName = value("user_data/first_name").toString();}
+    void setLastName(QString val) {setValue("user_data/last_name", val); mLastName = val; }
+    QString getLastName(void) {return mLastName = value("user_data/last_name").toString();}
+    void setEmail(QString val) {setValue("user_data/email", val); mEmail = val;}
+    QString getEmail(void) {return mEmail = value("user_data/email").toString();}
 
     const QString getAirUrl(void);
     void setAirUrl(const QString newurl);
@@ -152,6 +159,11 @@ class Settings : public QSettings
     uint mFlagsCacheSize;
     uint mTagsCacheSize;
     uint mDeadlinesCacheSize;
+
+    //User Data
+    QString mFirstName;
+    QString mLastName;
+    QString mEmail;
 
     void populate(void);
 
