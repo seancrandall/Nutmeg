@@ -76,7 +76,7 @@ class MainWindow : public QMainWindow
     Nutmeg::AddNewButton *addRespButton;
     QHBoxLayout *responsesHeaderLayout;
     QScrollArea *responseScrollArea;
-    QWidget *responsesContainer;
+    Frame *responsesContainer;
     QVBoxLayout *mainResponseLayout;
 
     // Filings Panel
@@ -85,7 +85,7 @@ class MainWindow : public QMainWindow
     Nutmeg::AddNewButton *addFilingButton;
     QHBoxLayout *filingsHeaderLayout;
     QScrollArea *filingsScrollArea;
-    QWidget *filingsContainer;
+    Frame *filingsContainer;
     QVBoxLayout *mainFilingsLayout;
 
     // Appointments Panel
@@ -93,7 +93,7 @@ class MainWindow : public QMainWindow
     QLabel *apptsHeader;
     QHBoxLayout *apptsHeaderLayout;
     QScrollArea *apptsScrollArea;
-    QWidget *apptsContainer;
+    Frame *apptsContainer;
     QVBoxLayout *mainApptsLayout;
 
     TableView *apptsView;

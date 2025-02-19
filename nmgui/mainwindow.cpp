@@ -138,7 +138,7 @@ void MainWindow::SetupResponses()
 
     // Create a widget to hold the responses and set it as the scroll area's
     // widget
-    responsesContainer = new QWidget();
+    responsesContainer = new Frame();
     responseScrollArea->setWidget(responsesContainer);
 
     // Create a layout for the responses container
@@ -183,7 +183,7 @@ void MainWindow::SetupFilings()
     filingsScrollArea->setWidgetResizable(true);
 
     // Widget to hold the filings
-    filingsContainer = new QWidget();
+    filingsContainer = new Frame();
     filingsScrollArea->setWidget(filingsContainer);
 
     // Layout for the responses container
@@ -222,7 +222,7 @@ void MainWindow::SetupAppointments()
     apptsScrollArea->setWidgetResizable(true);
 
     // Widget to hold the appointments
-    apptsContainer = new QWidget();
+    apptsContainer = new Frame();
     apptsScrollArea->setWidget(apptsContainer);
 
     // Layout for the appointments container
