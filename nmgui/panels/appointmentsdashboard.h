@@ -18,6 +18,9 @@ class AppointmentsDashboard : public Nutmeg::Frame
 public:
     AppointmentsDashboard(QWidget *parent=nullptr);
 
+signals:
+    void signalRefresh(void);
+
 private:
     QList<AppointmentDashPanel *>apptDashPanels;
     QLabel *apptsHeader;

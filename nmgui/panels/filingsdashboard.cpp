@@ -1,4 +1,5 @@
 #include "filingsdashboard.h"
+#include "windows/newfilingdialog.h"
 
 namespace Nutmeg {
 
@@ -6,6 +7,15 @@ FilingsDashboard::FilingsDashboard(QWidget *parent)
     : Frame(parent)
 {
     SetupFilings();
+}
+
+void FilingsDashboard::AddNewFiling()
+{
+    NewFilingDialog nfdialog;
+    nfdialog.setModal(true);
+    bool result = nfdialog.exec();
+    if (result)
+        emit signalRefresh();
 }
 
 void FilingsDashboard::SetupFilings()
@@ -48,6 +58,12 @@ void FilingsDashboard::SetupFilings()
     mainFilingsLayout = new QVBoxLayout(this);
     mainFilingsLayout->addLayout(filingsHeaderLayout);
     mainFilingsLayout->addWidget(filingsScrollArea);
+}
+
+void FilingsDashboard::ConnectSignalsAndSlots()
+{
+    QObject::connect(addFilingButton, &Nutmeg::AddNewButton::clicked,
+                     this, &FilingsDashboard::AddNewFiling);
 }
 
 } // namespace Nutmeg

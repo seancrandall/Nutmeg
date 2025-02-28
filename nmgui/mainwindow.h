@@ -9,24 +9,14 @@
 #include <QSplashScreen>
 #include <QPixmap>
 
-#include "dbaccess/databaseconnection.h"
 #include "nutmeg.h"
-#include "panels/appointmentdashpanel.h"
 #include "settings.h"
 
 #include "dbaccess/nutdb.h"
-#include "dbaccess/viewfilingsincompletemodel.h"
-#include "dbaccess/viewresponsesincompletemodel.h"
+#include "dbaccess/databaseconnection.h"
 
-#include "panels/filingdashpanel.h"
-#include "panels/responsedashpanel.h"
-
-#include "widgets/addnewbutton.h"
-#include "widgets/mattersearchbox.h"
-#include "widgets/tableview.h"
-#include "windows/newfilingdialog.h"
-#include "windows/newresponsedialog.h"
 #include "windows/optionswindow.h"
+#include "panels/maindashboard.h"
 
 namespace Nutmeg
 {
@@ -48,15 +38,10 @@ class MainWindow : public QMainWindow
     void signalCreateNewResponse();
 
   protected slots:
-    void slotRefresh(void);
-    void slotAddNewResponse(void);
-    void slotAddNewFiling(void);
-    void slotAddNewAppointment(void);
+    void Refresh(void);
 
   private slots:
-
-    void on_actionRefreshData_triggered(void) { slotRefresh(); }
-
+    void on_actionRefreshData_triggered(void) { Refresh(); }
     void on_actionPreferences_triggered();
 
   private:
@@ -67,32 +52,20 @@ class MainWindow : public QMainWindow
     Nutmeg::Settings settings;
     Nutdb nut;
 
-    // Filings Panel
-    MatterSearchBox *matterSearch;
-
-    // Responses Panel
-    QList<ResponseDashPanel *> responseDashPanels;
-    QLabel *responsesHeader;
-    Nutmeg::AddNewButton *addRespButton;
-    QHBoxLayout *responsesHeaderLayout;
-    QScrollArea *responseScrollArea;
-    Frame *responsesContainer;
-    QVBoxLayout *mainResponseLayout;
-
-    //TableView *apptsView;
-    //TableView *filingsView;
+    MainDashboard *dash;
+    QGridLayout *dashLayout;
 
     // Organization functions
     bool SetupDatabase(void);
     void SetupResponses(void);
     void SetupFilings(void);
     void SetupAppointments(void);
-    void SetupHeader(void);
 
     bool databaseConnectionExists = false;
     std::shared_ptr<DatabaseConnection> dbconn;
 
     void ConnectSignalsAndSlots(void);
+    void SetupDashboard(void);
 };
 
 } // namespace Nutmeg

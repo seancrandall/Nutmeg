@@ -18,6 +18,12 @@ class FilingsDashboard : public Nutmeg::Frame
 public:
     FilingsDashboard(QWidget *parent=nullptr);
 
+signals:
+    void signalRefresh();
+
+private slots:
+    void AddNewFiling(void);
+
 private:
     QList<FilingDashPanel *> filingDashPanels;
     QLabel *filingsHeader;
@@ -28,6 +34,7 @@ private:
     QVBoxLayout *mainFilingsLayout;
 
     void SetupFilings(void);
+    void ConnectSignalsAndSlots(void);
 };
 
 } // namespace Nutmeg
