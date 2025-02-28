@@ -12,6 +12,11 @@ MainDashboard::MainDashboard(QWidget *parent)
     Setup();
 }
 
+void MainDashboard::Refresh()
+{
+    emit signalRefresh();
+}
+
 void MainDashboard::Setup()
 {
     appts = new AppointmentsDashboard();
