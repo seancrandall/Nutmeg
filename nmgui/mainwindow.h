@@ -88,13 +88,7 @@ class MainWindow : public QMainWindow
     Frame *filingsContainer;
     QVBoxLayout *mainFilingsLayout;
 
-    // Appointments Panel
-    QList<AppointmentDashPanel *>apptDashPanels;
-    QLabel *apptsHeader;
-    QHBoxLayout *apptsHeaderLayout;
-    QScrollArea *apptsScrollArea;
-    Frame *apptsContainer;
-    QVBoxLayout *mainApptsLayout;
+
 
     TableView *apptsView;
     TableView *filingsView;
