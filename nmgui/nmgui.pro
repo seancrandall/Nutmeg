@@ -57,18 +57,21 @@ SOURCES += \
     panels/appointmentdashpanel.cpp \
     panels/appointmentpanel.cpp \
     panels/appointmentpanelfull.cpp \
+    panels/appointmentsdashboard.cpp \
     panels/appointmenttaskpanel.cpp \
     panels/deadlinespanel.cpp \
     panels/entitiespanel.cpp \
     panels/entitypanel.cpp \
     panels/examinerinfopanel.cpp \
     panels/filingdashpanel.cpp \
+    panels/filingsdashboard.cpp \
     panels/filingtaskpanel.cpp \
     panels/flagspanel.cpp \
     panels/frame.cpp \
     panels/insertenterprisepanel.cpp \
     panels/insertpersonpanel.cpp \
     panels/inventorspanel.cpp \
+    panels/maindashboard.cpp \
     panels/matterpanel.cpp \
     panels/optionsdatabasepanel.cpp \
     panels/optionsdisplaypanel.cpp \
@@ -76,6 +79,7 @@ SOURCES += \
     panels/patentmatterpanel.cpp \
     panels/personaddselectpanel.cpp \
     panels/responsedashpanel.cpp \
+    panels/responsesdashboard.cpp \
     panels/responsetaskpanel.cpp \
     panels/taskpanelfull.cpp \
     utils/email.cpp \
@@ -230,18 +234,21 @@ HEADERS += \
     panels/appointmentdashpanel.h \
     panels/appointmentpanel.h \
     panels/appointmentpanelfull.h \
+    panels/appointmentsdashboard.h \
     panels/appointmenttaskpanel.h \
     panels/deadlinespanel.h \
     panels/entitiespanel.h \
     panels/entitypanel.h \
     panels/examinerinfopanel.h \
     panels/filingdashpanel.h \
+    panels/filingsdashboard.h \
     panels/filingtaskpanel.h \
     panels/flagspanel.h \
     panels/frame.h \
     panels/insertenterprisepanel.h \
     panels/insertpersonpanel.h \
     panels/inventorspanel.h \
+    panels/maindashboard.h \
     panels/matterpanel.h \
     panels/optionsdatabasepanel.h \
     panels/optionsdisplaypanel.h \
@@ -249,6 +256,7 @@ HEADERS += \
     panels/patentmatterpanel.h \
     panels/personaddselectpanel.h \
     panels/responsedashpanel.h \
+    panels/responsesdashboard.h \
     panels/responsetaskpanel.h \
     panels/taskpanelfull.h \
     utils/email.h \
