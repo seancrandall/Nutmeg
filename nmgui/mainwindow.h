@@ -79,23 +79,8 @@ class MainWindow : public QMainWindow
     Frame *responsesContainer;
     QVBoxLayout *mainResponseLayout;
 
-    // Filings Panel
-    QList<FilingDashPanel *> filingDashPanels;
-    QLabel *filingsHeader;
-    Nutmeg::AddNewButton *addFilingButton;
-    QHBoxLayout *filingsHeaderLayout;
-    QScrollArea *filingsScrollArea;
-    Frame *filingsContainer;
-    QVBoxLayout *mainFilingsLayout;
-
-
-
-    TableView *apptsView;
-    TableView *filingsView;
-
-    QVBoxLayout *apptsLayout;
-    QVBoxLayout *filingsLayout;
-    QVBoxLayout *responsesLayout;
+    //TableView *apptsView;
+    //TableView *filingsView;
 
     // Organization functions
     bool SetupDatabase(void);
