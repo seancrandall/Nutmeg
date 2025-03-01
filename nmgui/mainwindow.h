@@ -53,7 +53,6 @@ class MainWindow : public QMainWindow
     Nutdb nut;
 
     MainDashboard *dash;
-    QGridLayout *dashLayout;
 
     // Organization functions
     bool SetupDatabase(void);

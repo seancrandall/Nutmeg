@@ -41,9 +41,11 @@ void AppointmentsDashboard::SetupAppointments()
     }
 
     // Add scroll area to main layout
-    mainApptsLayout = new QVBoxLayout(this);
+    mainApptsLayout = new QVBoxLayout();
     mainApptsLayout->addLayout(apptsHeaderLayout);
     mainApptsLayout->addWidget(apptsScrollArea);
+    setLayout(mainApptsLayout);
 }
+
 
 } // namespace Nutmeg

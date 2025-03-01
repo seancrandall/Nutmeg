@@ -77,6 +77,50 @@ void Settings::setFontSize(int val)
     mFontSize = val;
 }
 
+QByteArray Settings::getWindowGeometry()
+{
+    QByteArray val = value("geometry/window_geometry").toByteArray();
+    return val;
+}
+
+void Settings::setWindowGeometry(const QByteArray &geometry)
+{
+    setValue("geometry/window_geometry", geometry);
+}
+
+QByteArray Settings::getWindowState()
+{
+    QByteArray val = value("geometry/window_state").toByteArray();
+    return val;
+}
+
+void Settings::setWindowState(const QByteArray &state)
+{
+    setValue("geometry/window_state", state);
+}
+
+QByteArray Settings::getSplitterGeometry()
+{
+    QByteArray val = value("geometry/splitter_geometry").toByteArray();
+    return val;
+}
+
+void Settings::setSplitterGeometry(const QByteArray &geometry)
+{
+    setValue("geometry/splitter_geometry", geometry);
+}
+
+QByteArray Settings::getSplitterState()
+{
+    QByteArray val = value("geometry/splitter_state").toByteArray();
+    return val;
+}
+
+void Settings::setSplitterState(const QByteArray &state)
+{
+    setValue("geometry/splitter_state", state);
+}
+
 const QString Nutmeg::Settings::getAirUrl()
 {
     return mAirUrl = value("preferences/air_url").toString();

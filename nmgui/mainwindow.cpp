@@ -13,14 +13,14 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), settings(new Nutmeg::Settings(this)), nut(Nutmeg::Nutdb())
 
 {
-
-    // Restore splitter geometry
     ui->setupUi(this);
 
     // Restore window geometry
     setWindowTitle("Nutmeg—A Personal Docket Manager");
-    restoreGeometry(settings.value("geometry/window_geometry").toByteArray());
-    restoreState(settings.value("geometry/window_state").toByteArray());
+
+    //Restore geometry and state of the window
+    restoreGeometry(settings.windowGeometry);
+    restoreState(settings.windowState);
 
     // Global Display stuff
     FontFamily = settings.fontFamily;
@@ -41,12 +41,12 @@ void MainWindow::Refresh()
 {
     if (databaseConnectionExists)
     {
+        //Make sure models have the latest data
         gViewFilingsIncompleteModel->select();
         gViewResponsesIncompleteModel->select();
         gViewUpcomingAppointmentsModel->select();
-        delete dash;
-        delete dashLayout;
 
+        delete dash;
         SetupDashboard();
     }
     else
@@ -59,10 +59,10 @@ void MainWindow::Refresh()
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     Q_UNUSED(event);
-    settings.setValue("geometry/window_geometry", saveGeometry());
-    settings.setValue("geometry/window_state", saveState());
-    settings.setValue("geometry/splitter_geometry", dash->saveGeometry());
-    settings.setValue("geometry/splitter_state", dash->saveState());
+    settings.windowGeometry = saveGeometry();
+    settings.windowState = saveState();
+    settings.splitterGeometry = dash->saveGeometry();
+    settings.splitterState = dash->saveState();
 }
 
 bool MainWindow::SetupDatabase()
@@ -87,10 +87,12 @@ bool MainWindow::SetupDatabase()
 
 void MainWindow::SetupDashboard()
 {
-    dash = new MainDashboard();
-    dashLayout = new QGridLayout();
-    dashLayout->addWidget(dash, 0, 0);
-    ui->centralwidget->setLayout(dashLayout);
+    dash = new MainDashboard(this);
+    setCentralWidget(dash);
+
+    dash->restoreGeometry(settings.splitterGeometry);
+    dash->restoreState(settings.splitterState);
+
     QObject::connect(dash,      &MainDashboard::signalRefresh,
                      this,       &MainWindow::Refresh);
 }

@@ -12,11 +12,15 @@
 
 namespace Nutmeg {
 
-class MainDashboard : public QSplitter
+class MainDashboard : public Frame
 {
     Q_OBJECT
 public:
     MainDashboard(QWidget *parent=nullptr);
+    QByteArray saveState(void);
+    bool restoreState(const QByteArray& state);
+    QByteArray saveGeometry(void);
+    bool restoreGeometry(const QByteArray& geometry);
 
 signals:
     void signalRefresh(void);
@@ -25,6 +29,7 @@ public slots:
     void Refresh(void);
 
 private:
+    QSplitter *splitter;
     AppointmentsDashboard *appts;
     FilingsDashboard *filings;
     ResponsesDashboard *resps;

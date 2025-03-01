@@ -71,6 +71,10 @@ class Settings : public QSettings
     // Display
     Property(getFontFamily, setFontFamily) QString fontFamily;
 	Property(getFontSize, setFontSize) uint fontSize;
+    Property(getSplitterState, setSplitterState) QByteArray splitterState;
+    Property(getSplitterGeometry, setSplitterGeometry) QByteArray splitterGeometry;
+    Property(getWindowState, setWindowState) QByteArray windowState;
+    Property(getWindowGeometry, setWindowGeometry) QByteArray windowGeometry;
 
     //Cache
     Property(getObjectCacheSize, setObjectCacheSize) unsigned int objectCacheSize;
@@ -107,6 +111,14 @@ class Settings : public QSettings
     uint getMaxFilenameLength(void) { return mMaxFilenameLength = value("documents/max_docname_length").toUInt(); }
     QString getFontFamily(void) { return mFontFamily = value("display/font_family").toString(); }
     uint getFontSize(void) { return mFontSize = value("display/font_size").toUInt(); }
+    QByteArray getWindowGeometry(void);
+    void setWindowGeometry(const QByteArray& geometry);
+    QByteArray getWindowState(void);
+    void setWindowState(const QByteArray& state);
+    QByteArray getSplitterGeometry(void);
+    void setSplitterGeometry(const QByteArray& geometry);
+    QByteArray getSplitterState(void);
+    void setSplitterState(const QByteArray& state);
 
     void setFirstName(QString val) {setValue("user_data/first_name", val); mFirstName = val; }
     QString getFirstName(void) { return mFirstName = value("user_data/first_name").toString();}

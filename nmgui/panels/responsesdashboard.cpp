@@ -53,6 +53,7 @@ void ResponsesDashboard::SetupResponses()
     mainResponseLayout = new QVBoxLayout(this);
     mainResponseLayout->addLayout(responsesHeaderLayout);
     mainResponseLayout->addWidget(responseScrollArea);
+    setLayout(mainResponseLayout);
 }
 
 void ResponsesDashboard::ConnectSignalsAndSlots()

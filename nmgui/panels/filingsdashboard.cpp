@@ -55,9 +55,10 @@ void FilingsDashboard::SetupFilings()
     }
 
     // Add scroll area to main layout
-    mainFilingsLayout = new QVBoxLayout(this);
+    mainFilingsLayout = new QVBoxLayout();
     mainFilingsLayout->addLayout(filingsHeaderLayout);
     mainFilingsLayout->addWidget(filingsScrollArea);
+    setLayout(mainFilingsLayout);
 }
 
 void FilingsDashboard::ConnectSignalsAndSlots()

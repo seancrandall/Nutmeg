@@ -4,12 +4,33 @@ namespace Nutmeg {
 
 
 MainDashboard::MainDashboard(QWidget *parent)
-    : QSplitter(parent)
+    : Frame(parent)
+    , splitter(new QSplitter())
 {
-    setOrientation(Qt::Vertical);
-    setChildrenCollapsible(true);
+    splitter->setOrientation(Qt::Vertical);
+    splitter->setChildrenCollapsible(true);
 
     Setup();
+}
+
+QByteArray MainDashboard::saveState()
+{
+    return splitter->saveState();
+}
+
+bool MainDashboard::restoreState(const QByteArray &state)
+{
+    return splitter->restoreState(state);
+}
+
+QByteArray MainDashboard::saveGeometry()
+{
+    return splitter->saveGeometry();
+}
+
+bool MainDashboard::restoreGeometry(const QByteArray &geometry)
+{
+    return splitter->restoreGeometry(geometry);
 }
 
 void MainDashboard::Refresh()
@@ -23,9 +44,14 @@ void MainDashboard::Setup()
     filings = new FilingsDashboard();
     resps = new ResponsesDashboard();
 
-    addWidget(appts);
-    addWidget(filings);
-    addWidget(resps);
+    splitter->addWidget(appts);
+    splitter->addWidget(filings);
+    splitter->addWidget(resps);
+
+    //Layout splitter as the sole widget
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->addWidget(splitter);
+    setLayout(layout);
 
     QObject::connect(appts,     &AppointmentsDashboard::signalRefresh,
                      this,       &MainDashboard::Refresh);
