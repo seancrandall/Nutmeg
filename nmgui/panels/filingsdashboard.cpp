@@ -7,6 +7,7 @@ FilingsDashboard::FilingsDashboard(QWidget *parent)
     : Frame(parent)
 {
     SetupFilings();
+    ConnectSignalsAndSlots();
 }
 
 void FilingsDashboard::AddNewFiling()

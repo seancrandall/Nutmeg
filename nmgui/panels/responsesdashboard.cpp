@@ -7,6 +7,7 @@ ResponsesDashboard::ResponsesDashboard(QWidget *parent)
     : Frame(parent)
 {
     SetupResponses();
+    ConnectSignalsAndSlots();
 }
 
 void ResponsesDashboard::SetupResponses()

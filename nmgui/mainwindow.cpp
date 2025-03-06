@@ -41,13 +41,25 @@ void MainWindow::Refresh()
 {
     if (databaseConnectionExists)
     {
-        //Make sure models have the latest data
+        // Create and show a splash screen
+        QSplashScreen *splash = new QSplashScreen(QPixmap(), Qt::WindowStaysOnTopHint);
+        splash->setAttribute(Qt::WA_DeleteOnClose); // Auto-delete when closed
+        splash->show();
+        splash->showMessage("Refreshing dashboard...", Qt::AlignCenter, Qt::white);
+
+        // Ensure the splash screen is painted before the heavy work
+        QApplication::processEvents();
+
+        // Make sure models have the latest data
         gViewFilingsIncompleteModel->select();
         gViewResponsesIncompleteModel->select();
         gViewUpcomingAppointmentsModel->select();
 
         delete dash;
         SetupDashboard();
+
+        // Hide and delete the splash screen
+        splash->close();
     }
     else
     {
