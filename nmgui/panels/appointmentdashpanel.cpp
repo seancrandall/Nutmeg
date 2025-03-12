@@ -11,7 +11,7 @@ namespace Nutmeg {
 AppointmentDashPanel::AppointmentDashPanel(QWidget *parent)
     : Frame(parent)
 {
-    //Initialize();
+    // Default constructor does nothing significant
 }
 
 AppointmentDashPanel::AppointmentDashPanel(Key appointmentId, QWidget *parent)
@@ -19,9 +19,9 @@ AppointmentDashPanel::AppointmentDashPanel(Key appointmentId, QWidget *parent)
 {
     mAppointment = std::make_shared<Appointment>(appointmentId);
     mTask = std::make_shared<Task>(mAppointment->associatedObject);
-    PatentMatter mat(mTask->fkMatter);
-    mInterviewee = std::make_shared<Person>(mat.fkExaminer);
-
+    mMatter = std::make_shared<Matter>(mTask->fkMatter);
+    pMatter = std::make_shared<PatentMatter>(mMatter->MatterId);
+    mInterviewee = std::make_shared<Person>(pMatter->fkExaminer);
     Initialize();
 }
 
@@ -30,10 +30,83 @@ AppointmentDashPanel::AppointmentDashPanel(std::shared_ptr<Appointment> pAppt, Q
 {
     mAppointment = pAppt;
     mTask = std::make_shared<Task>(mAppointment->associatedObject);
-    PatentMatter mat(mTask->fkMatter);
-    mInterviewee = std::make_shared<Person>(mat.fkExaminer);
-
+    mMatter = std::make_shared<Matter>(mTask->fkMatter);
+    pMatter = std::make_shared<PatentMatter>(mMatter->MatterId);
+    mInterviewee = std::make_shared<Person>(pMatter->fkExaminer);
     Initialize();
+}
+
+void AppointmentDashPanel::Initialize()
+{
+    // Create all widgets
+    collapseButton = new CollapseButton(CollapseButtonState::Collapsed, this);
+    lAppointmentType = new QLabel(this);
+    lAppointmentType->setText(mAppointment->typeString);
+    lAppointmentType->setFont(QFont("Arial", 14, QFont::Bold));
+    docketNumberButton = new DocketNumberButton(mMatter, this);
+    cDate = new DateEdit(mAppointment->AppointmentTime.date(), this);
+    cDate->setDisplayFormat("ddd MMMM d");
+    cDate->setMaximumWidth(300);
+    ccDate = new DateEdit(mAppointment->AppointmentTime.date(), this);
+    ccDate->setDisplayFormat("ddd MMMM d");
+    ccDate->setMaximumWidth(300);
+    lDate = new LabeledWidgetLeft("Date", ccDate);
+    cTime = new TimeEdit(mAppointment->AppointmentTime.time(), this);
+    cTime->setMaximumWidth(300);
+    ccTime = new TimeEdit(mAppointment->AppointmentTime.time(), this);
+    ccTime->setMaximumWidth(300);
+    lTime = new LabeledWidgetLeft("Time", ccTime);
+    bDone = new PushButton(this);
+    bDone->setText("Done");
+    bDone->setMaximumWidth(60);
+    pExaminerInfo = new ExaminerInfoPanel(mInterviewee->EntityId, this);
+    pTask = new AppointmentTaskPanel(mAppointment->AppointmentId, this);
+    pFlags = new FlagsPanel(mAppointment->AppointmentId, this);
+
+    // Set background color
+    QPalette pal;
+    QDate apptDate(mAppointment->AppointmentTime.date());
+    QColor background = Deadline::getDateColor(apptDate);
+    pal.setColor(QPalette::Window, background);
+    setPalette(pal);
+    setAutoFillBackground(true);
+
+    // Create DynamicStackedWidget for state management
+    stackedWidget = new DynamicStackedWidget(this);
+
+    // Collapsed page
+    QWidget *collapsedPage = new QWidget();
+    QHBoxLayout *collapsedLayout = new QHBoxLayout(collapsedPage);
+    collapsedLayout->addWidget(docketNumberButton);
+    collapsedLayout->addLayout(lDate);
+    collapsedLayout->addLayout(lTime);
+    collapsedLayout->addStretch();  // Aligns widgets to the left
+    stackedWidget->addWidget(collapsedPage);
+
+    // Expanded page
+    QWidget *expandedPage = new QWidget();
+    QHBoxLayout *expandedLayout = new QHBoxLayout(expandedPage);
+    QVBoxLayout *dtLayout = new QVBoxLayout();  // Stack date, time, and done button
+    dtLayout->addWidget(cDate, 0, Qt::AlignHCenter);
+    dtLayout->addWidget(cTime, 0, Qt::AlignHCenter);
+    dtLayout->addWidget(bDone, 0, Qt::AlignHCenter);
+    expandedLayout->addLayout(dtLayout);
+    expandedLayout->addWidget(pExaminerInfo);
+    expandedLayout->addWidget(pTask);
+    expandedLayout->addWidget(pFlags);
+    stackedWidget->addWidget(expandedPage);
+
+    // Set initial state to collapsed
+    stackedWidget->setCurrentIndex(0);
+
+    // Main layout
+    QHBoxLayout *mainLayout = new QHBoxLayout(this);
+    mainLayout->addWidget(collapseButton);
+    mainLayout->addWidget(lAppointmentType);
+    mainLayout->addWidget(stackedWidget);
+    setLayout(mainLayout);
+
+    connectSignalsAndSlots();
 }
 
 void AppointmentDashPanel::markDone()
@@ -41,7 +114,7 @@ void AppointmentDashPanel::markDone()
     mAppointment->complete = true;
 }
 
-void AppointmentDashPanel::emailExmainer()
+void AppointmentDashPanel::emailExaminer()  // Fixed typo from emailExmainer
 {
     Settings set;
     const QString fromEmail = set.email;
@@ -50,17 +123,14 @@ void AppointmentDashPanel::emailExmainer()
 
     Email email;
 
-    // Format the appointment time as "Day Month Date"
     const QString apptTimeString = apptTime.toString("dddd MMMM d");
-
     const QString examinerLastName = mInterviewee->LastName;
-    PatentMatter mat(mTask->fkMatter);
-    const QString serialNumber = mat.ApplicationSerialNumber;
-    const QString docketNumber = mat.AttorneyDocketNumber;
+    const QString serialNumber = pMatter->ApplicationSerialNumber;
+    const QString docketNumber = mMatter->AttorneyDocketNumber;
 
     const QString subjectLine = QString("Examiner Interview for %1 (Our %2)")
-                                    .arg(serialNumber)
-                                    .arg(docketNumber);
+                                   .arg(serialNumber)
+                                   .arg(docketNumber);
 
     const QString emailBody = QString("Examiner %1,\n\nAttached is a claim markup for us to discuss during our interview on %2. Please let me know if you have any questions.\n\nThanks!\n")
                                   .arg(examinerLastName)
@@ -76,87 +146,51 @@ void AppointmentDashPanel::emailExmainer()
 
 void AppointmentDashPanel::changeDate(const QDate &newdate)
 {
-    QTime oldTime = QTime(mAppointment->AppointmentTime.time());
+    QTime oldTime = mAppointment->AppointmentTime.time();
     mAppointment->AppointmentTime = QDateTime(newdate, oldTime);
 }
 
 void AppointmentDashPanel::changeTime(const QTime &newtime)
 {
-    QDate oldDate = QDate(mAppointment->AppointmentTime.date());
+    QDate oldDate = mAppointment->AppointmentTime.date();
     mAppointment->AppointmentTime = QDateTime(oldDate, newtime);
 }
 
-void AppointmentDashPanel::InitializeControls()
+void AppointmentDashPanel::expand()
 {
-    lAppointmentType = new QLabel();
-    lAppointmentType->setText(mAppointment->typeString);
-    lAppointmentType->setFont(QFont("Arial", 14, QFont::Bold));
-
-    bDone = new PushButton();
-    bDone->setText("Done");
-    bDone->setMaximumWidth(60);
-
-    cDate = new DateEdit(mAppointment->AppointmentTime.date());
-    cDate->setDisplayFormat("ddd MMMM d");
-    cDate->setMaximumWidth(300);
-    cTime = new TimeEdit(mAppointment->AppointmentTime.time());
-    cTime->setMaximumWidth(300);
-
-    pExaminerInfo = new ExaminerInfoPanel(mInterviewee->EntityId);
-
-    pTask = new AppointmentTaskPanel(mAppointment->AppointmentId);
-    pFlags = new FlagsPanel(mAppointment->AppointmentId);
+    collapseButton->expand();
 }
 
-void AppointmentDashPanel::LayoutWidgets()
+void AppointmentDashPanel::collapse()
 {
-    //Give it the right color
-    QPalette pal;
-    QDate apptDate(mAppointment->AppointmentTime.date());
-    QColor background = Deadline::getDateColor(apptDate);
-    pal.setColor(QPalette::Window, background);
-    setPalette(pal);
-    setAutoFillBackground(true);
-
-    //Lay them out horizontally
-    QHBoxLayout *mainLayout = new QHBoxLayout(this);
-
-    mainLayout->addWidget(lAppointmentType);
-    //mainLayout->addWidget(bDone);
-
-    //Stack the date and time on each other
-    QVBoxLayout *dtLayout = new QVBoxLayout();
-    dtLayout->addWidget(cDate, 0, Qt::AlignHCenter);
-    dtLayout->addWidget(cTime, 0, Qt::AlignHCenter);
-    dtLayout->addWidget(bDone, 0, Qt::AlignHCenter);
-    mainLayout->addLayout(dtLayout);
-
-    mainLayout->addWidget(pExaminerInfo);
-
-    mainLayout->addWidget(pTask);
-    mainLayout->addWidget(pFlags);
+    collapseButton->collapse();
 }
 
-void AppointmentDashPanel::ConnectSignalsAndSlots()
+void AppointmentDashPanel::onCollapseButtonToggled()
 {
-    QObject::connect(bDone,     &PushButton::clicked,
-                    this,       &AppointmentDashPanel::markDone);
-
-    QObject::connect(pExaminerInfo,     &ExaminerInfoPanel::signalEmailExaminer,
-                     this,               &AppointmentDashPanel::emailExmainer);
-
-    QObject::connect(cDate,         &DateEdit::userDateChanged,
-                     this,           &AppointmentDashPanel::changeDate);
-
-    QObject::connect(cTime,         &TimeEdit::userTimeChanged,
-                     this,           &AppointmentDashPanel::changeTime);
+    if (collapseButton->state == CollapseButtonState::Expanded) {
+        stackedWidget->setCurrentIndex(1);  // Expanded page
+    } else {
+        stackedWidget->setCurrentIndex(0);  // Collapsed page
+    }
 }
 
-void AppointmentDashPanel::Initialize()
+void AppointmentDashPanel::connectSignalsAndSlots()
 {
-    InitializeControls();
-    LayoutWidgets();
-    ConnectSignalsAndSlots();
+    QObject::connect(bDone, &PushButton::clicked,
+                     this, &AppointmentDashPanel::markDone);
+    QObject::connect(pExaminerInfo, &ExaminerInfoPanel::signalEmailExaminer,
+                     this, &AppointmentDashPanel::emailExaminer);
+    QObject::connect(cDate, &DateEdit::userDateChanged,
+                     this, &AppointmentDashPanel::changeDate);
+    QObject::connect(ccDate, &DateEdit::userDateChanged,
+                     this, &AppointmentDashPanel::changeDate);
+    QObject::connect(cTime, &TimeEdit::userTimeChanged,
+                     this, &AppointmentDashPanel::changeTime);
+    QObject::connect(ccTime, &TimeEdit::userTimeChanged,
+                     this, &AppointmentDashPanel::changeTime);
+    QObject::connect(collapseButton, &CollapseButton::toggled,
+                     this, &AppointmentDashPanel::onCollapseButtonToggled);
 }
 
 } // namespace Nutmeg
