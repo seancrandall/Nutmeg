@@ -32,15 +32,18 @@ class ResponseDashPanel : public Frame
     explicit ResponseDashPanel(Key responseId, QWidget *parent = nullptr);
 
   public slots:
-    void slotUpdateParalegal(Key newkey);
-    void slotUpdateWorkAttorney(Key newkey);
-    void slotUpdateClient(Key newkey);
-    void slotUpdateCompletion(void);
-    void slotRefreshView(void);
+    void UpdateParalegal(Key newkey);
+    void UpdateWorkAttorney(Key newkey);
+    void UpdateClient(Key newkey);
+    void UpdateCompletion(void);
+    void RefreshView(void);
+    void Expand(void);
+    void Collapse(void);
 
   signals:
     void signalAddNewResponse(void);
-    void signalSomethingChanged(void);
+    void signalExpand(void);
+    void signalCollapse(void);
 
   protected:
     std::shared_ptr<Deadline> mDeadline;

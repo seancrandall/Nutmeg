@@ -43,29 +43,41 @@ void ResponseDashPanel::LoadData(void)
     ConnectSignalsAndSlots();
 }
 
-void ResponseDashPanel::slotUpdateParalegal(Key newkey)
+void ResponseDashPanel::UpdateParalegal(Key newkey)
 {
     mResponse->fkParalegal = newkey;
 }
 
-void ResponseDashPanel::slotUpdateWorkAttorney(Key newkey)
+void ResponseDashPanel::UpdateWorkAttorney(Key newkey)
 {
     mResponse->fkWorkAttorney = newkey;
 }
 
-void ResponseDashPanel::slotUpdateClient(Key newkey)
+void ResponseDashPanel::UpdateClient(Key newkey)
 {
     mMatter->fkClient = newkey;
 }
 
-void ResponseDashPanel::slotUpdateCompletion()
+void ResponseDashPanel::UpdateCompletion()
 {
-    emit signalSomethingChanged();
+    //Do nothing for now
+    return;
 }
 
-void ResponseDashPanel::slotRefreshView(void)
+void ResponseDashPanel::RefreshView(void)
 {
-    emit signalSomethingChanged();
+    //Do nothing for now
+    return;
+}
+
+void ResponseDashPanel::Expand()
+{
+
+}
+
+void ResponseDashPanel::Collapse()
+{
+
 }
 
 void ResponseDashPanel::ConnectSignalsAndSlots()

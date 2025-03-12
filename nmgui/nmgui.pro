@@ -86,6 +86,7 @@ SOURCES += \
     utils/icalbuilder.cpp \
     widgets/abstractremovablebutton.cpp \
     widgets/checkbox.cpp \
+    widgets/collapsebutton.cpp \
     widgets/comboeditadd.cpp \
     widgets/datetimeedit.cpp \
     widgets/disabledbutton.cpp \
@@ -263,6 +264,7 @@ HEADERS += \
     utils/icalbuilder.h \
     widgets/abstractremovablebutton.h \
     widgets/checkbox.h \
+    widgets/collapsebutton.h \
     widgets/comboeditadd.h \
     widgets/datetimeedit.h \
     widgets/disabledbutton.h \
