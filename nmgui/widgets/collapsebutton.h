@@ -6,7 +6,7 @@
 
 namespace Nutmeg {
 
-enum class ExpandButtonState{
+enum class CollapseButtonState {
     Expanded,
     Collapsed
 };
@@ -15,25 +15,25 @@ class CollapseButton : public Nutmeg::PushButton
 {
     Q_OBJECT
 public:
-    CollapseButton(QWidget *parent=nullptr);
-    CollapseButton(ExpandButtonState state, QWidget *parent=nullptr);
+    CollapseButton(QWidget *parent = nullptr);
+    CollapseButton(CollapseButtonState state, QWidget *parent = nullptr);
 
-    Property(getState, setState) ExpandButtonState state;
-    ExpandButtonState getState(void) {return mState;}
+    Property(getState, setState) CollapseButtonState state;
+    CollapseButtonState getState() { return mState; }
 
 signals:
-    void signalExpanded(void);
-    void signalCollapsed(void);
+    void expanded();
+    void collapsed();
 
 public slots:
-    void Expand(void);
-    void Collapse(void);
-    void setState(ExpandButtonState newstate);
+    void expand();
+    void collapse();
+    void setState(CollapseButtonState newState);
+    void toggle();
 
 private:
-    ExpandButtonState mState;
-    void UpdateGraphic(void);
-    void Initialize(void);
+    CollapseButtonState mState;
+    void updateGraphic();
 };
 
 } // namespace Nutmeg

@@ -3,52 +3,58 @@
 namespace Nutmeg {
 
 CollapseButton::CollapseButton(QWidget *parent)
-    : PushButton(parent)
-{
-    mState = ExpandButtonState::Collapsed;
-    Initialize();
-}
-
-CollapseButton::CollapseButton(ExpandButtonState state, QWidget *parent)
-    : PushButton(parent)
-{
-    mState = state;
-    Initialize();
-}
-
-void CollapseButton::Expand()
-{
-    setState(ExpandButtonState::Expanded);
-}
-
-void CollapseButton::Collapse()
-{
-    setState(ExpandButtonState::Collapsed);
-}
-
-void CollapseButton::setState(ExpandButtonState newstate)
-{
-    mState = newstate;
-    Initialize();
-}
-
-void CollapseButton::UpdateGraphic()
-{
-    if(mState == ExpandButtonState::Expanded){
-        QPushButton::setText("⮟");
-    } else if(mState == ExpandButtonState::Collapsed){
-        QPushButton::setText("⮞");
-    } else {
-        QPushButton::setText("?");
-    }
-}
-
-void CollapseButton::Initialize()
+    : PushButton(parent), mState(CollapseButtonState::Collapsed)
 {
     QFont font;
     font.setPointSize(16);
-    QPushButton::setFont(font);
-    UpdateGraphic();
+    setFont(font);
+    updateGraphic();
+    QObject::connect(this, &QPushButton::clicked, this, &CollapseButton::toggle);
+}
+
+CollapseButton::CollapseButton(CollapseButtonState initialState, QWidget *parent)
+    : PushButton(parent), mState(initialState)
+{
+    QFont font;
+    font.setPointSize(16);
+    setFont(font);
+    updateGraphic();
+    QObject::connect(this, &QPushButton::clicked, this, &CollapseButton::toggle);
+}
+
+void CollapseButton::expand()
+{
+    setState(CollapseButtonState::Expanded);
+}
+
+void CollapseButton::collapse()
+{
+    setState(CollapseButtonState::Collapsed);
+}
+
+void CollapseButton::setState(CollapseButtonState newState)
+{
+    if (mState != newState) {  // Avoid redundant updates
+        mState = newState;
+        updateGraphic();
+        if (mState == CollapseButtonState::Expanded) {
+            emit expanded();
+        } else {
+            emit collapsed();
+        }
+    }
+}
+
+void CollapseButton::toggle()
+{
+    setState(mState == CollapseButtonState::Collapsed ?
+             CollapseButtonState::Expanded :
+             CollapseButtonState::Collapsed);
+}
+
+void CollapseButton::updateGraphic()
+{
+    setText(mState == CollapseButtonState::Expanded ? "⮟" : "⮞");
 }
 
 } // namespace Nutmeg
