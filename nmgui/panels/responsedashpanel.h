@@ -51,7 +51,6 @@ signals:
     void collapsed();
 
 protected slots:
-    void openMatter();
     void changeResponseType();
     void changeNextDeadline();
 

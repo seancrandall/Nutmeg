@@ -80,8 +80,6 @@ void ResponseDashPanel::connectSignalsAndSlots()
                      doneButton, &DoneButton::slotHandleClicked);
     QObject::connect(collapseButton, &CollapseButton::toggled,
                      this, &ResponseDashPanel::collapseButtonToggled);
-    QObject::connect(docketNumberButton,    &DocketNumberButton::clicked,
-                     this,                   &ResponseDashPanel::openMatter);
     QObject::connect(taskTypeCombo,         &TaskTypeCombo::currentIndexChanged,
                      this,                   &ResponseDashPanel::changeResponseType);
     QObject::connect(dateEdit,              &DateEdit::dateChanged,
@@ -107,10 +105,6 @@ void ResponseDashPanel::expand()
 void ResponseDashPanel::collapse()
 {
     collapseButton->collapse();
-}
-
-void ResponseDashPanel::openMatter()
-{
 }
 
 void ResponseDashPanel::changeResponseType()
