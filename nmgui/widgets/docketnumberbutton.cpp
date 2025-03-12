@@ -20,9 +20,25 @@ DocketNumberButton::DocketNumberButton(std::shared_ptr<Matter> matter, QWidget *
 void DocketNumberButton::clicked()
 {
     switch(mMatter->fkObjectType){
-    case ObjectType::patentMatter :
+    case ObjectType::patentMatter:
+    {
+        std::shared_ptr<PatentMatter> pMatter = std::make_shared<PatentMatter>(mMatter->MatterId);
+        PatentMatterDialog diag(pMatter);
+        diag.setModal(true);
+        diag.exec();
         break;
-
+    }
+    case ObjectType::trademarkMatter:
+    case ObjectType::copyrightMatter:
+    case ObjectType::generalMatter:
+    {
+        MatterDialog diag(mMatter);
+        diag.setModal(true);
+        diag.exec();
+    }
+    default:
+        //do nothing
+        break;
     }
 }
 

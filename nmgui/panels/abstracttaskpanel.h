@@ -47,7 +47,7 @@ class AbstractTaskPanel : public Frame
     void slotUpdateTitle(void);
     void slotUpdateTaskType(Key newval);
     void slotOpenTaskWindow(void);
-    void slotOpenMatterWindow(void);
+    //void slotOpenMatterWindow(void);
     virtual void slotExtraButtonAction(void) = 0;
 
   protected:

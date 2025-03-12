@@ -53,9 +53,6 @@ void AbstractTaskPanel::setExtraButton(PushButton *newButton)
 
 void Nutmeg::AbstractTaskPanel::ConnectSigalsAndSlots()
 {
-    QObject::connect(docketNumberButton, &QPushButton::clicked,
-                    this,                &Nutmeg::AbstractTaskPanel::slotOpenMatterWindow);
-
     QObject::connect(titleEdit, &QTextEdit::textChanged,
                      this,   &Nutmeg::AbstractTaskPanel::slotUpdateTitle);
 
@@ -86,13 +83,6 @@ void AbstractTaskPanel::slotOpenTaskWindow()
     TaskDialog diag(mTask, this);
     diag.setModal(true);
     diag.exec();
-}
-
-void Nutmeg::AbstractTaskPanel::slotOpenMatterWindow()
-{
-    PatentMatterDialog mdiag(mMatter->MatterId, this);
-    mdiag.exec();
-    return;
 }
 
 void Nutmeg::AbstractTaskPanel::SetupDisplay()
