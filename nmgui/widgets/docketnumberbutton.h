@@ -16,6 +16,9 @@ class DocketNumberButton : public Nutmeg::PushButton
   public:
     DocketNumberButton(std::shared_ptr<Matter> matter, QWidget *parent);
 
+  public slots:
+    void clicked();
+
   protected:
     std::shared_ptr<Matter> mMatter;
 };

@@ -18,7 +18,6 @@ class ResponseTaskPanel : public Nutmeg::AbstractTaskPanel
     ResponseTaskPanel(std::shared_ptr<Response> response, QWidget *parent = nullptr);
 
   signals:
-    void signalSomethingChanged(void);
 
   public slots:
     virtual void slotExtraButtonAction(void);

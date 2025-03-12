@@ -15,6 +15,8 @@
 namespace Nutmeg
 {
 
+
+
 /**
  * @brief The Object class is the base class for database objects.
  *
@@ -45,7 +47,7 @@ class Object
     virtual ~Object() = default;
 
     Property(getId, slotSetId) Key ObjectId;
-    Property(getfkObjectType, setfkObjectType) Key fkObjectType;
+    Property(getfkObjectType, setfkObjectType) ObjectType fkObjectType;
     Property(getObjectType, setObjectType) String objectType;
     ReadOnlyProperty(getObjectFlags) QList<FlagData> flags;
     Property(getFlag, SetFlagValue) bool flag[];
@@ -61,10 +63,9 @@ class Object
 
     // Getters
     virtual Key getId(void) const { return mDat.ObjectId; }
-    Key getfkObjectType(void) const { return mDat.fkObjectType; }
-
-    bool setfkObjectType(Key newfk);
-    void holdfkObjectType(Key newfk);
+    ObjectType getfkObjectType(void) const { return mDat.fkObjectType; }
+    bool setfkObjectType(ObjectType newfk);
+    void holdfkObjectType(ObjectType newfk);
 
     QString getObjectType(void) const { return mObjectType; }
 

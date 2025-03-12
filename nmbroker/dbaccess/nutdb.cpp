@@ -1107,7 +1107,8 @@ ObjectData Nutdb::GetObject(Key id)
         return dat;
 
     dat.ObjectId = rec.KeyField("ObjectId");
-    dat.fkObjectType = rec.KeyField("fkObjectType");
+    Key tempKey = rec.KeyField("fkObjectType");
+    dat.fkObjectType = ObjectType(tempKey);
 
     return dat;
 }
@@ -1621,7 +1622,8 @@ bool Nutdb::UpdateObject(ObjectData dat)
     QVariantList params;
 
     params.append(QVariant::fromValue(dat.ObjectId));
-    params.append(NullableInteger(dat.fkObjectType));
+    Key tempKey = static_cast<unsigned int>(dat.fkObjectType);
+    params.append(NullableInteger(tempKey));
 
     CallStoredProcedure("UpdateObject", params);
     return mLastOperationSuccessful;

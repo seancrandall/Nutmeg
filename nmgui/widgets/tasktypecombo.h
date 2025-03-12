@@ -19,7 +19,7 @@
 namespace Nutmeg
 {
 
-typedef enum
+enum class TaskClass
 {
     PatentFiling,
     PatentResponse,
@@ -29,7 +29,7 @@ typedef enum
     CopyrightResponse,
     Litigation,
     Other
-} TaskClass;
+};
 
 class TaskTypeCombo : public Nutmeg::ComboBox
 {

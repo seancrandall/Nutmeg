@@ -5,6 +5,31 @@
 
 namespace Nutmeg
 {
+enum class ObjectType{
+    object = 1,
+    matter = 1000,
+    patentMatter = 1100,
+    copyrightMatter = 1200,
+    trademarkMatter  = 1300,
+    generalMatter = 1400,
+    filing = 2000,
+    trademarkFiling = 2100,
+    patentFiling = 2200,
+    copyrightFiling = 2300,
+    user = 3100,
+    entity = 4000,
+    enterprise = 4100,
+    lawclient = 4150,
+    jurisdiction = 5000,
+    document = 6000,
+    portfolio = 7000,
+    task = 9000,
+    response = 9100,
+    patentResponse = 9120,
+    trademarkResponse = 9140,
+    copyrightResponse = 9160,
+    appointment = 10000
+};
 
 typedef struct{
     Key ActionId;
@@ -189,7 +214,7 @@ typedef struct
 typedef struct
 {
     Key ObjectId;
-    Key fkObjectType;
+    ObjectType fkObjectType;
 } ObjectData;
 
 typedef struct

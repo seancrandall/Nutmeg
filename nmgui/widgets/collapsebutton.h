@@ -24,6 +24,7 @@ public:
 signals:
     void expanded();
     void collapsed();
+    void toggled();
 
 public slots:
     void expand();
@@ -34,6 +35,7 @@ public slots:
 private:
     CollapseButtonState mState;
     void updateGraphic();
+    void Initialize();
 };
 
 } // namespace Nutmeg

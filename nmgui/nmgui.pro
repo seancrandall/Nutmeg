@@ -91,6 +91,7 @@ SOURCES += \
     widgets/datetimeedit.cpp \
     widgets/disabledbutton.cpp \
     widgets/doublespinbox.cpp \
+    widgets/dynamicstackedwidget.cpp \
     widgets/editbutton.cpp \
     widgets/emailinventorsbutton.cpp \
     widgets/examinereditadd.cpp \
@@ -269,6 +270,7 @@ HEADERS += \
     widgets/datetimeedit.h \
     widgets/disabledbutton.h \
     widgets/doublespinbox.h \
+    widgets/dynamicstackedwidget.h \
     widgets/editbutton.h \
     widgets/emailinventorsbutton.h \
     widgets/examinereditadd.h \

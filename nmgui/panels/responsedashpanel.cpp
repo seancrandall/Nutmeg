@@ -1,5 +1,6 @@
 #include "responsedashpanel.h"
 #include "responsetaskpanel.h"
+#include "windows/patentmatterdialog.h"
 
 namespace Nutmeg
 {
@@ -9,81 +10,132 @@ ResponseDashPanel::ResponseDashPanel(Key responseId, QWidget *parent)
 {
     mResponse = std::make_shared<Response>(responseId);
     mMatter = std::make_shared<Matter>(mResponse->fkMatter);
-    LoadData();
+    collapseButton = new CollapseButton(CollapseButtonState::Collapsed, this);
+    loadData();
+    connectSignalsAndSlots();
 }
 
-void ResponseDashPanel::LoadData(void)
+void ResponseDashPanel::loadData()
 {
-    // Objects
     mDeadline = std::make_shared<Deadline>(mResponse->fkDeadline);
 
-    // Set Color
+    // Set background color
     QPalette pal;
-    QColor background = Deadline(mResponse->fkDeadline).color;
+    QColor background = mDeadline->color;
     pal.setColor(QPalette::Window, background);
     setPalette(pal);
     setAutoFillBackground(true);
 
-    // Change window color according to deadline
-    QLabel *label = new ResponseTypeLabel(mResponse);
-    doneButton = new DoneButton(mResponse);
-    ResponseTaskPanel *taskPanel = new ResponseTaskPanel(mResponse);
-    DeadlinesPanel *deadlinePanel = new DeadlinesPanel(mDeadline);
-    EntitiesPanel *epanel = new EntitiesPanel(mResponse->TaskId);
-    FlagsPanel *fpanel = new FlagsPanel(mResponse->ResponseId);
+    // Create widgets
+    responseTypeLabel = new ResponseTypeLabel(mResponse, this);
+    doneButton = new DoneButton(mResponse, this);
+    taskPanel = new ResponseTaskPanel(mResponse, this);
+    deadlinePanel = new DeadlinesPanel(mDeadline, this);
+    entitiesPanel = new EntitiesPanel(mResponse->TaskId, this);
+    flagsPanel = new FlagsPanel(mResponse->ResponseId, this);
+    docketNumberButton = new DocketNumberButton(mMatter, this);
+    taskTypeCombo = new TaskTypeCombo(mResponse, this);
+    //nextDeadlineLabel = new QLabel("Next Deadline", this);
+    dateEdit = new DateEdit(mDeadline->NextDeadline, this);
+    labeledDateEdit = new LabeledWidgetLeft("Next Deadline", dateEdit);
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->addWidget(label);
-    layout->addWidget(doneButton);
-    layout->addWidget(taskPanel);
-    layout->addWidget(deadlinePanel);
-    layout->addWidget(epanel);
-    layout->addWidget(fpanel);
 
-    ConnectSignalsAndSlots();
+    // Create QStackedWidget for state management
+    stackedWidget = new DynamicStackedWidget(this);
+
+    // Collapsed page
+    QWidget *collapsedPage = new QWidget();
+    QHBoxLayout *collapsedLayout = new QHBoxLayout(collapsedPage);
+    collapsedLayout->addWidget(docketNumberButton);
+    collapsedLayout->addWidget(taskTypeCombo);
+    collapsedLayout->addLayout(labeledDateEdit);
+    collapsedLayout->addStretch();
+    stackedWidget->addWidget(collapsedPage);
+
+    // Expanded page
+    QWidget *expandedPage = new QWidget();
+    QHBoxLayout *expandedLayout = new QHBoxLayout(expandedPage);
+    expandedLayout->addWidget(doneButton);
+    expandedLayout->addWidget(taskPanel);
+    expandedLayout->addWidget(deadlinePanel);
+    expandedLayout->addWidget(entitiesPanel);
+    expandedLayout->addWidget(flagsPanel);
+    stackedWidget->addWidget(expandedPage);
+
+    // Initial state: collapsed
+    stackedWidget->setCurrentIndex(0);
+
+    // Main layout
+    QHBoxLayout *mainLayout = new QHBoxLayout(this);
+    mainLayout->addWidget(collapseButton);
+    mainLayout->addWidget(responseTypeLabel);
+    mainLayout->addWidget(stackedWidget);
+
+    connectSignalsAndSlots();
 }
 
-void ResponseDashPanel::UpdateParalegal(Key newkey)
+void ResponseDashPanel::connectSignalsAndSlots()
+{
+    QObject::connect(doneButton, &QPushButton::clicked,
+                     doneButton, &DoneButton::slotHandleClicked);
+    QObject::connect(collapseButton, &CollapseButton::toggled,
+                     this, &ResponseDashPanel::collapseButtonToggled);
+    QObject::connect(docketNumberButton,    &DocketNumberButton::clicked,
+                     this,                   &ResponseDashPanel::openMatter);
+    QObject::connect(taskTypeCombo,         &TaskTypeCombo::currentIndexChanged,
+                     this,                   &ResponseDashPanel::changeResponseType);
+    QObject::connect(dateEdit,              &DateEdit::dateChanged,
+                     this,                   &ResponseDashPanel::changeNextDeadline);
+}
+
+void ResponseDashPanel::collapseButtonToggled()
+{
+    if (collapseButton->state == CollapseButtonState::Expanded) {
+        stackedWidget->setCurrentIndex(1);  // Expanded page
+        emit expanded();
+    } else {
+        stackedWidget->setCurrentIndex(0);  // Collapsed page
+        emit collapsed();
+    }
+}
+
+void ResponseDashPanel::expand()
+{
+    collapseButton->expand();
+}
+
+void ResponseDashPanel::collapse()
+{
+    collapseButton->collapse();
+}
+
+void ResponseDashPanel::openMatter()
+{
+}
+
+void ResponseDashPanel::changeResponseType()
+{
+    mResponse->fkTaskType = taskTypeCombo->key;
+}
+
+void ResponseDashPanel::changeNextDeadline()
+{
+    mDeadline->NextDeadline = dateEdit->getDate();
+}
+
+void ResponseDashPanel::updateParalegal(Key newkey)
 {
     mResponse->fkParalegal = newkey;
 }
 
-void ResponseDashPanel::UpdateWorkAttorney(Key newkey)
+void ResponseDashPanel::updateWorkAttorney(Key newkey)
 {
     mResponse->fkWorkAttorney = newkey;
 }
 
-void ResponseDashPanel::UpdateClient(Key newkey)
+void ResponseDashPanel::updateClient(Key newkey)
 {
     mMatter->fkClient = newkey;
-}
-
-void ResponseDashPanel::UpdateCompletion()
-{
-    //Do nothing for now
-    return;
-}
-
-void ResponseDashPanel::RefreshView(void)
-{
-    //Do nothing for now
-    return;
-}
-
-void ResponseDashPanel::Expand()
-{
-
-}
-
-void ResponseDashPanel::Collapse()
-{
-
-}
-
-void ResponseDashPanel::ConnectSignalsAndSlots()
-{
-    QObject::connect(doneButton, &QPushButton::clicked,
-                     doneButton, &Nutmeg::DoneButton::slotHandleClicked);
 }
 
 } // namespace Nutmeg

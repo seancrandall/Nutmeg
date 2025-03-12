@@ -5,6 +5,8 @@
 #include <QObject>
 #include <QSqlDatabase>
 #include <QWidget>
+#include <QStackedWidget>
+#include <QLabel>
 
 #include "nutmeg.h"
 #include "frame.h"
@@ -21,6 +23,11 @@
 #include "widgets/combobox.h"
 #include "widgets/donebutton.h"
 #include "widgets/responsetypelabel.h"
+#include "widgets/collapsebutton.h"
+#include "widgets/docketnumberbutton.h"
+#include "widgets/tasktypecombo.h"
+#include "widgets/dateedit.h"
+#include "widgets/dynamicstackedwidget.h"
 
 namespace Nutmeg
 {
@@ -28,34 +35,49 @@ namespace Nutmeg
 class ResponseDashPanel : public Frame
 {
     Q_OBJECT
-  public:
+public:
     explicit ResponseDashPanel(Key responseId, QWidget *parent = nullptr);
 
-  public slots:
-    void UpdateParalegal(Key newkey);
-    void UpdateWorkAttorney(Key newkey);
-    void UpdateClient(Key newkey);
-    void UpdateCompletion(void);
-    void RefreshView(void);
-    void Expand(void);
-    void Collapse(void);
+public slots:
+    void updateParalegal(Key newkey);
+    void updateWorkAttorney(Key newkey);
+    void updateClient(Key newkey);
+    void expand();
+    void collapse();
 
-  signals:
-    void signalAddNewResponse(void);
-    void signalExpand(void);
-    void signalCollapse(void);
+signals:
+    void addNewResponse();
+    void expanded();
+    void collapsed();
 
-  protected:
+protected slots:
+    void openMatter();
+    void changeResponseType();
+    void changeNextDeadline();
+
+protected:
     std::shared_ptr<Deadline> mDeadline;
     std::shared_ptr<Response> mResponse;
     std::shared_ptr<Matter> mMatter;
 
+    CollapseButton *collapseButton;
     DoneButton *doneButton;
-    // Need a flags panel too
+    DynamicStackedWidget *stackedWidget;
+    ResponseTypeLabel *responseTypeLabel;
+    DocketNumberButton *docketNumberButton;
+    TaskTypeCombo *taskTypeCombo;
+    QLabel *nextDeadlineLabel;
+    DateEdit *dateEdit;
+    LabeledWidgetLeft *labeledDateEdit;
+    ResponseTaskPanel *taskPanel;
+    DeadlinesPanel *deadlinePanel;
+    EntitiesPanel *entitiesPanel;
+    FlagsPanel *flagsPanel;
 
-  private:
-    void ConnectSignalsAndSlots(void);
-    void LoadData(void);
+private:
+    void loadData();
+    void connectSignalsAndSlots();
+    void collapseButtonToggled();
 };
 
 } // namespace Nutmeg

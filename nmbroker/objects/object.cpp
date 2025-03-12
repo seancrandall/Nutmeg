@@ -103,14 +103,17 @@ void Object::FetchDocuments()
 }
 
 
-bool Object::setfkObjectType(Key newfk)
+bool Object::setfkObjectType(ObjectType newfk)
 {
-    bool result = WriteKey("object", "objectType", newfk);
-    if(result) mDat.fkObjectType = newfk;
+    Key key = static_cast<unsigned int>(newfk);
+    bool result = WriteKey("object", "objectType", key);
+    if(result) {
+        mDat.fkObjectType = newfk;
+    }
     return result;
 }
 
-void Object::holdfkObjectType(Key newfk)
+void Object::holdfkObjectType(ObjectType newfk)
 {
     mDat.fkObjectType = newfk;
 }
@@ -257,7 +260,8 @@ bool Object::SetId(Key newid)
 void Object::ChangeObjectType(QString newObjectType)
 {
     mObjectType = newObjectType;
-    mDat.fkObjectType = Nutdb::GetObjectTypeId(newObjectType);
+    Key key = Nutdb::GetObjectTypeId(newObjectType);
+    mDat.fkObjectType = ObjectType(key);
     commit();
 }
 
@@ -276,7 +280,8 @@ bool Object::checkFields(QSqlRecord &record)
 void Object::populate(QSqlRecord &record)
 {
     mDat.ObjectId = record.value("ObjectId").toUInt();
-    mDat.fkObjectType = record.value("fkObjectType").toUInt();
+    Key key = record.value("fkObjectType").toUInt();
+    mDat.fkObjectType = ObjectType(key);
 }
 
 bool Object::WriteAbstractValue(QString table, QString fieldName, QString value)
@@ -384,7 +389,8 @@ bool Object::InitializeObject(Key newid)
         return InitializeObject(0);
     }
 
-    mObjectType = Nutdb::GetObjectTypeString(mDat.fkObjectType);
+    Key key = static_cast<unsigned int>(mDat.fkObjectType);
+    mObjectType = Nutdb::GetObjectTypeString(key);
     if(mObjectType == QString()) return false;
 
     mObjectIsNull = false;

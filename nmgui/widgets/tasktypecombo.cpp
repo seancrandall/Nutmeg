@@ -15,37 +15,37 @@ TaskTypeCombo::TaskTypeCombo(std::shared_ptr<Task> task, QWidget *parent)
     //Then set the current key of the combo box to the right value
     switch (task->fkObjectType)
     {
-    case 2000: // General filing
+    case ObjectType::filing:
         model = gViewFilingTaskTypesModel.get();
         column = 2;
         setToKey(task->fkTaskType);
         break;
-    case 2100: // Trademark filing
+    case ObjectType::trademarkFiling:
         model = gViewTrademarkFilingTypesModel.get();
         column = 2;
         setToKey(task->fkTaskType);
         break;
-    case 2200: // Patent Filing
+    case ObjectType::patentFiling:
         model = gViewPatentFilingTypesModel.get();
         column = 2;
         setToKey(task->fkTaskType);
         break;
-    case 2300: // Copyright filing
+    case ObjectType::copyrightFiling:
         model = gViewCopyrightFilingTypesModel.get();
         column = 2;
         setToKey(task->fkTaskType);
         break;
-    case 9100: // General response
+    case ObjectType::response:
         model = gViewResponseTaskTypesModel.get();
         column = 2;
         setToKey(task->fkTaskType);
         break;
-    case 9120: // Patent Response
+    case ObjectType::patentResponse:
         model = gViewPatentTaskTypesModel.get();
         column = 2;
         setToKey(task->fkTaskType);
         break;
-    case 9160: // Copyright response
+    case ObjectType::copyrightResponse:
         model = gViewCopyrightTaskTypesModel.get();
         column = 2;
         setToKey(task->fkTaskType);
