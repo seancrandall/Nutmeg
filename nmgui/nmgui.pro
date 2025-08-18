@@ -45,6 +45,8 @@ SOURCES += \
     ../nmbroker/dbaccess/viewupcomingappointmentsmodel.cpp \
     ../nmbroker/logger.cpp \
     ../nmbroker/nutmeg.cpp \
+    ../nmbroker/objects/filingsdashboardentry.cpp \
+    ../nmbroker/objects/responsesdashboardentry.cpp \
     completers/completer.cpp \
     completers/entitiescompleter.cpp \
     completers/examinercompleter.cpp \
@@ -224,6 +226,8 @@ HEADERS += \
     ../nmbroker/dbaccess/viewtrademarkmattersmodel.h \
     ../nmbroker/dbaccess/viewupcomingappointmentsmodel.h \
     ../nmbroker/logger.h \
+    ../nmbroker/objects/filingsdashboardentry.h \
+    ../nmbroker/objects/responsesdashboardentry.h \
     completers/completer.h \
     completers/entitiescompleter.h \
     completers/examinercompleter.h \

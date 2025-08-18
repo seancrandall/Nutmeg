@@ -14,14 +14,13 @@
  *  - bool for 0/1 flags
  */
 
+#include "nutmeg.h"
 #include "property.h"
 #include <QString>
 #include <QDate>
 #include <cstdint>
 
-// If you already provide Key in a common header, remove the line below.
-using Key = uint32_t;
-
+namespace Nutmeg{
 class filingsDashboardEntry {
 public:
     filingsDashboardEntry() = default;
@@ -129,3 +128,5 @@ private:
     bool m_NeedsExaminerInterview {false};
     bool m_ExaminerInterviewScheduled {false};
 };
+
+}

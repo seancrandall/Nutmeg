@@ -1,4 +1,6 @@
-#include "responsesDashboardEntry.h"
+#include "responsesdashboardentry.h"
+
+namespace Nutmeg{
 
 // --- TaskId ---
 Key responsesDashboardEntry::getTaskId() const { return m_TaskId; }
@@ -37,20 +39,20 @@ QDate responsesDashboardEntry::getHardDeadline() const { return m_HardDeadline; 
 void responsesDashboardEntry::slotSetHardDeadline(const QDate& v) { m_HardDeadline = v; }
 
 // --- client_EntityId ---
-Key responsesDashboardEntry::getclient_EntityId() const { return m_client_EntityId; }
-void responsesDashboardEntry::slotSetclient_EntityId(Key v) { m_client_EntityId = v; }
+Key responsesDashboardEntry::getClientEntityId() const { return m_ClientEntityId; }
+void responsesDashboardEntry::slotSetClientEntityId(Key v) { m_ClientEntityId = v; }
 
 // --- client_EntityName ---
-const QString& responsesDashboardEntry::getclient_EntityName() const { return m_client_EntityName; }
-void responsesDashboardEntry::slotSetclient_EntityName(const QString& v) { m_client_EntityName = v; }
+const QString& responsesDashboardEntry::getClientEntityName() const { return m_ClientEntityName; }
+void responsesDashboardEntry::slotSetClientEntityName(const QString& v) { m_ClientEntityName = v; }
 
 // --- paralegal_EntityName ---
-const QString& responsesDashboardEntry::getparalegal_EntityName() const { return m_paralegal_EntityName; }
-void responsesDashboardEntry::slotSetparalegal_EntityName(const QString& v) { m_paralegal_EntityName = v; }
+const QString& responsesDashboardEntry::getParalegalEntityName() const { return m_ParalegalEntityName; }
+void responsesDashboardEntry::slotSetParalegalEntityName(const QString& v) { m_ParalegalEntityName = v; }
 
 // --- workAttorney_EntityName ---
-const QString& responsesDashboardEntry::getworkAttorney_EntityName() const { return m_workAttorney_EntityName; }
-void responsesDashboardEntry::slotSetworkAttorney_EntityName(const QString& v) { m_workAttorney_EntityName = v; }
+const QString& responsesDashboardEntry::getWorkAttorneyEntityName() const { return m_WorkAttorneyEntityName; }
+void responsesDashboardEntry::slotSetWorkAttorneyEntityName(const QString& v) { m_WorkAttorneyEntityName = v; }
 
 // --- WithParalegal ---
 bool responsesDashboardEntry::getWithParalegal() const { return m_WithParalegal; }
@@ -64,3 +66,4 @@ void responsesDashboardEntry::slotSetNeedsExaminerInterview(bool v) { m_NeedsExa
 bool responsesDashboardEntry::getExaminerInterviewScheduled() const { return m_ExaminerInterviewScheduled; }
 void responsesDashboardEntry::slotSetExaminerInterviewScheduled(bool v) { m_ExaminerInterviewScheduled = v; }
 
+} //namespace Nutmeg

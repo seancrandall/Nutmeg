@@ -1,4 +1,6 @@
-#include "filingsDashboardEntry.h"
+#include "filingsdashboardentry.h"
+
+namespace Nutmeg{
 
 // --- TaskId ---
 Key filingsDashboardEntry::getTaskId() const { return m_TaskId; }
@@ -64,3 +66,4 @@ void filingsDashboardEntry::slotSetNeedsExaminerInterview(bool v) { m_NeedsExami
 bool filingsDashboardEntry::getExaminerInterviewScheduled() const { return m_ExaminerInterviewScheduled; }
 void filingsDashboardEntry::slotSetExaminerInterviewScheduled(bool v) { m_ExaminerInterviewScheduled = v; }
 
+} //namespace Nutmeg
