@@ -14,6 +14,7 @@
 #include "objects/matter.h"
 #include "objects/response.h"
 #include "objects/task.h"
+#include "objects/responsesdashboardentry.h"
 
 #include "panels/flagspanel.h"
 #include "panels/entitiespanel.h"
@@ -36,7 +37,7 @@ class ResponseDashPanel : public Frame
 {
     Q_OBJECT
 public:
-    explicit ResponseDashPanel(Key responseId, QWidget *parent = nullptr);
+    explicit ResponseDashPanel(const responsesDashboardEntry &entry, QWidget *parent = nullptr);
 
 public slots:
     void updateParalegal(Key newkey);
@@ -55,6 +56,7 @@ protected slots:
     void changeNextDeadline();
 
 protected:
+    responsesDashboardEntry mEntry;
     std::shared_ptr<Deadline> mDeadline;
     std::shared_ptr<Response> mResponse;
     std::shared_ptr<Matter> mMatter;

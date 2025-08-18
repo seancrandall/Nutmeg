@@ -5,10 +5,11 @@
 namespace Nutmeg
 {
 
-ResponseDashPanel::ResponseDashPanel(Key responseId, QWidget *parent)
+ResponseDashPanel::ResponseDashPanel(const responsesDashboardEntry &entry, QWidget *parent)
     : Frame{parent}
+    , mEntry(entry)
 {
-    mResponse = std::make_shared<Response>(responseId);
+    mResponse = std::make_shared<Response>(entry.getTaskId());
     mMatter = std::make_shared<Matter>(mResponse->fkMatter);
     collapseButton = new CollapseButton(CollapseButtonState::Collapsed, this);
     loadData();
@@ -28,15 +29,17 @@ void ResponseDashPanel::loadData()
 
     // Create widgets
     responseTypeLabel = new ResponseTypeLabel(mResponse, this);
+    responseTypeLabel->setText(mEntry.getTaskClassName());
     doneButton = new DoneButton(mResponse, this);
     taskPanel = new ResponseTaskPanel(mResponse, this);
     deadlinePanel = new DeadlinesPanel(mDeadline, this);
     entitiesPanel = new EntitiesPanel(mResponse->TaskId, this);
     flagsPanel = new FlagsPanel(mResponse->ResponseId, this);
     docketNumberButton = new DocketNumberButton(mMatter, this);
+    docketNumberButton->setText(mEntry.getAttorneyDocketNumber());
     taskTypeCombo = new TaskTypeCombo(mResponse, this);
-    //nextDeadlineLabel = new QLabel("Next Deadline", this);
-    dateEdit = new DateEdit(mDeadline->NextDeadline, this);
+    taskTypeCombo->setCurrentText(mEntry.getTaskName());
+    dateEdit = new DateEdit(mEntry.getNextDeadline(), this);
     labeledDateEdit = new LabeledWidgetLeft("Next Deadline", dateEdit);
 
 

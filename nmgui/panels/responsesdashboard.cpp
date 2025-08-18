@@ -1,5 +1,6 @@
 #include "responsesdashboard.h"
 #include "windows/newresponsedialog.h"
+#include "objects/responsesdashboardentry.h"
 
 namespace Nutmeg {
 
@@ -42,10 +43,25 @@ void ResponsesDashboard::SetupResponses()
     auto rows = gViewResponsesIncompleteModel->rowCount();
     for (auto i = 0; i < rows; i++)
     {
-        QSqlRecord fieldNames = gViewResponsesIncompleteModel->record();
         QSqlRecord rec = gViewResponsesIncompleteModel->record(i);
-        Key id = rec.field(0).value().toUInt();
-        ResponseDashPanel *rpanel = new ResponseDashPanel(id, responsesContainer);
+        responsesDashboardEntry entry;
+        entry.slotSetTaskId(rec.field("TaskId").value().toUInt());
+        entry.slotSetTaskClassName(rec.field("TaskClassName").value().toString());
+        entry.slotSetAttorneyDocketNumber(rec.field("AttorneyDocketNumber").value().toString());
+        entry.slotSetTaskName(rec.field("TaskName").value().toString());
+        entry.slotSetTitle(rec.field("Title").value().toString());
+        entry.slotSetTriggerDate(rec.field("TriggerDate").value().toDate());
+        entry.slotSetNextDeadline(rec.field("NextDeadline").value().toDate());
+        entry.slotSetSoftDeadline(rec.field("SoftDeadline").value().toDate());
+        entry.slotSetHardDeadline(rec.field("HardDeadline").value().toDate());
+        entry.slotSetClientEntityId(rec.field("ClientEntityId").value().toUInt());
+        entry.slotSetClientEntityName(rec.field("ClientEntityName").value().toString());
+        entry.slotSetParalegalEntityName(rec.field("ParalegalEntityName").value().toString());
+        entry.slotSetWorkAttorneyEntityName(rec.field("WorkAttorneyEntityName").value().toString());
+        entry.slotSetWithParalegal(rec.field("WithParalegal").value().toBool());
+        entry.slotSetNeedsExaminerInterview(rec.field("NeedsExaminerInterview").value().toBool());
+        entry.slotSetExaminerInterviewScheduled(rec.field("ExaminerInterviewScheduled").value().toBool());
+        ResponseDashPanel *rpanel = new ResponseDashPanel(entry, responsesContainer);
         responseDashPanels.append(rpanel);
         responsesLayout->addWidget(rpanel);
     }
