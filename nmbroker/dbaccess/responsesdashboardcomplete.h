@@ -13,7 +13,7 @@ class ResponsesDashboardComplete : public Nutmeg::TableModel
 public:
     explicit ResponsesDashboardComplete(QObject *parent = nullptr);
 
-    static QSqlRecord record(Key primaryKey);
+    //static QSqlRecord record(Key primaryKey);
 };
 
 } // namespace Nutmeg

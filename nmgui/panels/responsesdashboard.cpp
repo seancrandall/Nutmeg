@@ -39,6 +39,7 @@ void ResponsesDashboard::SetupResponses()
 
     // Create the global responses model if it hasn't already been loaded
     gResponsesDashboardComplete = std::make_unique<ResponsesDashboardComplete>();
+    gResponsesDashboardComplete->select();
 
     // Populate the responses container with ResponsePanels
     auto rows = gResponsesDashboardComplete->rowCount();

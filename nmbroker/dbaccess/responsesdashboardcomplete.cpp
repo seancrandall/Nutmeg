@@ -14,9 +14,10 @@ ResponsesDashboardComplete::ResponsesDashboardComplete(QObject *parent)
     }
 }
 
-QSqlRecord ResponsesDashboardComplete::record(Key primaryKey)
-{
-        return Nutmeg::record<ResponsesDashboardComplete>(primaryKey, gResponsesDashboardComplete);
-}
+//QSqlRecord ResponsesDashboardComplete::record(Key primaryKey)
+//{
+        //return Nutmeg::record<ResponsesDashboardComplete>(primaryKey, gResponsesDashboardComplete);
+    //return this->QSqlRelationalTableModel::record();
+//}
 
 } // namespace Nutmeg
