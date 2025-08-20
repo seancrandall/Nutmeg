@@ -1,5 +1,6 @@
 #include "docketnumberbutton.h"
 
+#include "objects/task.h"
 #include "windows/matterdialog.h"
 #include "windows/patentmatterdialog.h"
 
@@ -13,6 +14,18 @@ DocketNumberButton::DocketNumberButton(std::shared_ptr<Matter> matter, QWidget *
     setText(matter->AttorneyDocketNumber);
     // setFixedWidth(200);
 
+    QObject::connect(this,      &QPushButton::clicked,
+                     this,       &DocketNumberButton::clicked);
+}
+
+DocketNumberButton::DocketNumberButton(const responsesDashboardEntry &entry, QWidget *parent)
+    : Nutmeg::PushButton(parent)
+    , mMatter([&entry]() {
+          Task t(entry.getTaskId());
+          return std::make_shared<Matter>(t.fkMatter);
+      }())
+{
+    setText(entry.getAttorneyDocketNumber());
     QObject::connect(this,      &QPushButton::clicked,
                      this,       &DocketNumberButton::clicked);
 }

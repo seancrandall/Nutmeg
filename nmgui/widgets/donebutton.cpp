@@ -18,6 +18,21 @@ DoneButton::DoneButton(std::shared_ptr<Task> task, QWidget *parent)
     setMaximumWidth(100);
 }
 
+DoneButton::DoneButton(const responsesDashboardEntry &entry, QWidget *parent)
+    : Nutmeg::PushButton(parent)
+    , mTask(std::make_shared<Task>(entry.getTaskId()))
+{
+    if (!entry.getWithParalegal())
+    {
+        setText("Send to\nParalegal");
+    }
+    else
+    {
+        setText("Done");
+    }
+    setMaximumWidth(100);
+}
+
 void DoneButton::slotHandleClicked()
 {
     if (mTask->flag["WithParalegal"] == false)

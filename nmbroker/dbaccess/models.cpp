@@ -34,7 +34,6 @@ std::unique_ptr<viewPatentMattersModel> gViewPatentMattersModel;
 std::unique_ptr<viewPatentTaskTypesModel> gViewPatentTaskTypesModel;
 std::unique_ptr<viewPeopleModel> gViewPeopleModel;
 std::unique_ptr<viewResponsesModel> gViewResponsesModel;
-std::unique_ptr<viewResponsesIncompleteModel> gViewResponsesIncompleteModel;
 std::unique_ptr<viewResponseTaskTypesModel> gViewResponseTaskTypesModel;
 std::unique_ptr<viewTasksModel> gViewTasksModel;
 std::unique_ptr<viewTaskClassModel> gViewTaskClassModel;
@@ -44,5 +43,6 @@ std::unique_ptr<viewTrademarkMattersModel> gViewTrademarkMattersModel;
 std::unique_ptr<viewUpcomingAppointmentsModel> gViewUpcomingAppointmentsModel;
 std::unique_ptr<viewTrademarkTaskTypesModel> gViewTrademarkTaskTypesModel;
 std::unique_ptr<viewWorkAttorneysModel> gViewWorkAttorneysModel;
+std::unique_ptr<ResponsesDashboardComplete> gResponsesDashboardComplete;
 
 } //namespace Nutmeg

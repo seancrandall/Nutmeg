@@ -52,7 +52,7 @@ void MainWindow::Refresh()
 
         // Make sure models have the latest data
         gViewFilingsIncompleteModel->select();
-        gViewResponsesIncompleteModel->select();
+        gResponsesDashboardComplete->select();
         gViewUpcomingAppointmentsModel->select();
 
         delete dash;

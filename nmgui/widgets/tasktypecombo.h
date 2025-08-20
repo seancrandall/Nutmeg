@@ -13,6 +13,7 @@
 #include "dbaccess/viewtrademarkfilingtypesmodel.h"
 #include "dbaccess/viewtrademarktasktypesmodel.h"
 #include "objects/task.h"
+#include "objects/responsesdashboardentry.h"
 #include <QObject>
 #include <QWidget>
 
@@ -36,6 +37,7 @@ class TaskTypeCombo : public Nutmeg::ComboBox
     Q_OBJECT
 public:
     TaskTypeCombo(std::shared_ptr<Task> task, QWidget *parent = nullptr);
+    TaskTypeCombo(const responsesDashboardEntry &entry, QWidget *parent = nullptr);
 
 protected:
     std::shared_ptr<Task> mTask;

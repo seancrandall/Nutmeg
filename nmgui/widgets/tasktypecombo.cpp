@@ -60,6 +60,12 @@ TaskTypeCombo::TaskTypeCombo(std::shared_ptr<Task> task, QWidget *parent)
 
 }
 
+TaskTypeCombo::TaskTypeCombo(const responsesDashboardEntry &entry, QWidget *parent)
+    : TaskTypeCombo(std::make_shared<Task>(entry.getTaskId()), parent)
+{
+    setCurrentText(entry.getTaskName());
+}
+
 void TaskTypeCombo::CheckModels()
 {
     if(!gViewFilingTaskTypesModel)

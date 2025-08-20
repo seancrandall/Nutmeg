@@ -10,6 +10,11 @@ FlagsPanel::FlagsPanel(Key objectid, QWidget *parent)
     SetupPanel();
 }
 
+FlagsPanel::FlagsPanel(const responsesDashboardEntry &entry, QWidget *parent)
+    : FlagsPanel(entry.getTaskId(), parent)
+{
+}
+
 void FlagsPanel::SetupPanel()
 {
     QList<FlagData> flagList = mObject->flags;

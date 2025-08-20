@@ -2,6 +2,7 @@
 #define NUTMEG_RESPONSETASKPANEL_H
 
 #include "objects/response.h"
+#include "objects/responsesdashboardentry.h"
 #include "abstracttaskpanel.h"
 #include <QObject>
 #include <QWidget>
@@ -16,6 +17,7 @@ class ResponseTaskPanel : public Nutmeg::AbstractTaskPanel
     Q_OBJECT
   public:
     ResponseTaskPanel(std::shared_ptr<Response> response, QWidget *parent = nullptr);
+    ResponseTaskPanel(const responsesDashboardEntry &entry, QWidget *parent = nullptr);
 
   signals:
 

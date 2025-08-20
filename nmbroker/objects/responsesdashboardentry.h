@@ -18,6 +18,7 @@
 #include "property.h"
 #include <QString>
 #include <QDate>
+#include <QSqlRecord>
 #include <cstdint>
 
 namespace Nutmeg{
@@ -30,6 +31,7 @@ public:
     responsesDashboardEntry& operator=(const responsesDashboardEntry&) = default;
     responsesDashboardEntry(responsesDashboardEntry&&) noexcept = default;
     responsesDashboardEntry& operator=(responsesDashboardEntry&&) noexcept = default;
+    explicit responsesDashboardEntry(const QSqlRecord &record);
 
     // --- TaskId ---
     Key getTaskId() const;

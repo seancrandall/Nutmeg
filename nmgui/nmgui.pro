@@ -23,6 +23,7 @@ SOURCES += \
     ../nmbroker/dbaccess/exception.cpp \
     ../nmbroker/dbaccess/flagclassmodel.cpp \
     ../nmbroker/dbaccess/models.cpp \
+    ../nmbroker/dbaccess/responsesdashboardcomplete.cpp \
     ../nmbroker/dbaccess/objectmodel.cpp \
     ../nmbroker/dbaccess/objecttypemodel.cpp \
     ../nmbroker/dbaccess/tagmodel.cpp \
@@ -123,7 +124,6 @@ SOURCES += \
     ../nmbroker/dbaccess/viewpatentexaminersmodel.cpp \
     ../nmbroker/dbaccess/viewpatenttasktypesmodel.cpp \
     ../nmbroker/dbaccess/viewpeoplemodel.cpp \
-    ../nmbroker/dbaccess/viewresponsesincompletemodel.cpp \
     ../nmbroker/dbaccess/viewtaskclassmodel.cpp \
     ../nmbroker/dbaccess/viewtasktypesmodel.cpp \
     ../nmbroker/dbaccess/viewtrademarktasktypesmodel.cpp \
@@ -204,6 +204,7 @@ HEADERS += \
     ../nmbroker/dbaccess/exception.h \
     ../nmbroker/dbaccess/flagclassmodel.h \
     ../nmbroker/dbaccess/models.h \
+    ../nmbroker/dbaccess/responsesdashboardcomplete.h \
     ../nmbroker/dbaccess/objectmodel.h \
     ../nmbroker/dbaccess/objecttypemodel.h \
     ../nmbroker/dbaccess/record.h \
@@ -307,7 +308,6 @@ HEADERS += \
     ../nmbroker/dbaccess/viewparalegalsmodel.h \
     ../nmbroker/dbaccess/viewpatenttasktypesmodel.h \
     ../nmbroker/dbaccess/viewpeoplemodel.h \
-    ../nmbroker/dbaccess/viewresponsesincompletemodel.h \
     ../nmbroker/dbaccess/viewtrademarktasktypesmodel.h \
     ../nmbroker/dbaccess/viewworkattorneysmodel.h \
     ../nmbroker/nutmeg.h \

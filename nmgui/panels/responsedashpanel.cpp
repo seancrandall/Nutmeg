@@ -28,17 +28,14 @@ void ResponseDashPanel::loadData()
     setAutoFillBackground(true);
 
     // Create widgets
-    responseTypeLabel = new ResponseTypeLabel(mResponse, this);
-    responseTypeLabel->setText(mEntry.getTaskClassName());
-    doneButton = new DoneButton(mResponse, this);
-    taskPanel = new ResponseTaskPanel(mResponse, this);
-    deadlinePanel = new DeadlinesPanel(mDeadline, this);
-    entitiesPanel = new EntitiesPanel(mResponse->TaskId, this);
-    flagsPanel = new FlagsPanel(mResponse->ResponseId, this);
-    docketNumberButton = new DocketNumberButton(mMatter, this);
-    docketNumberButton->setText(mEntry.getAttorneyDocketNumber());
-    taskTypeCombo = new TaskTypeCombo(mResponse, this);
-    taskTypeCombo->setCurrentText(mEntry.getTaskName());
+    responseTypeLabel = new ResponseTypeLabel(mEntry, this);
+    doneButton = new DoneButton(mEntry, this);
+    taskPanel = new ResponseTaskPanel(mEntry, this);
+    deadlinePanel = new DeadlinesPanel(mEntry, this);
+    entitiesPanel = new EntitiesPanel(mEntry, this);
+    flagsPanel = new FlagsPanel(mEntry, this);
+    docketNumberButton = new DocketNumberButton(mEntry, this);
+    taskTypeCombo = new TaskTypeCombo(mEntry, this);
     dateEdit = new DateEdit(mEntry.getNextDeadline(), this);
     labeledDateEdit = new LabeledWidgetLeft("Next Deadline", dateEdit);
 
