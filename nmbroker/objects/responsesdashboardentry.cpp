@@ -2,6 +2,26 @@
 
 namespace Nutmeg{
 
+responsesDashboardEntry::responsesDashboardEntry(const QSqlRecord &record)
+{
+    m_TaskId = record.value("TaskId").toUInt();
+    m_TaskClassName = record.value("TaskClassName").toString();
+    m_AttorneyDocketNumber = record.value("AttorneyDocketNumber").toString();
+    m_TaskName = record.value("TaskName").toString();
+    m_Title = record.value("Title").toString();
+    m_TriggerDate = record.value("TriggerDate").toDate();
+    m_NextDeadline = record.value("NextDeadline").toDate();
+    m_SoftDeadline = record.value("SoftDeadline").toDate();
+    m_HardDeadline = record.value("HardDeadline").toDate();
+    m_ClientEntityId = record.value("ClientEntityId").toUInt();
+    m_ClientEntityName = record.value("ClientEntityName").toString();
+    m_ParalegalEntityName = record.value("ParalegalEntityName").toString();
+    m_WorkAttorneyEntityName = record.value("WorkAttorneyEntityName").toString();
+    m_WithParalegal = record.value("WithParalegal").toBool();
+    m_NeedsExaminerInterview = record.value("NeedsExaminerInterview").toBool();
+    m_ExaminerInterviewScheduled = record.value("ExaminerInterviewScheduled").toBool();
+}
+
 // --- TaskId ---
 Key responsesDashboardEntry::getTaskId() const { return m_TaskId; }
 void responsesDashboardEntry::slotSetTaskId(Key v) { m_TaskId = v; }
