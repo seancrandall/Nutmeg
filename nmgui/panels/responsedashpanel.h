@@ -57,9 +57,9 @@ protected slots:
 
 protected:
     responsesDashboardEntry mEntry;
-    std::shared_ptr<Deadline> mDeadline;
-    std::shared_ptr<Response> mResponse;
-    std::shared_ptr<Matter> mMatter;
+    //std::shared_ptr<Deadline> mDeadline;
+    //std::shared_ptr<Response> mResponse;
+    //std::shared_ptr<Matter> mMatter;
 
     CollapseButton *collapseButton;
     DoneButton *doneButton;
