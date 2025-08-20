@@ -1,6 +1,7 @@
 #include "responsesdashboard.h"
 #include "windows/newresponsedialog.h"
 #include "objects/responsesdashboardentry.h"
+#include "dbaccess/models.h"
 
 namespace Nutmeg {
 
@@ -37,13 +38,13 @@ void ResponsesDashboard::SetupResponses()
     QVBoxLayout *responsesLayout = new QVBoxLayout(responsesContainer);
 
     // Create the global responses model if it hasn't already been loaded
-    gViewResponsesIncompleteModel = std::make_unique<viewResponsesIncompleteModel>();
+    gResponsesDashboardComplete = std::make_unique<ResponsesDashboardComplete>();
 
     // Populate the responses container with ResponsePanels
-    auto rows = gViewResponsesIncompleteModel->rowCount();
+    auto rows = gResponsesDashboardComplete->rowCount();
     for (auto i = 0; i < rows; i++)
     {
-        QSqlRecord rec = gViewResponsesIncompleteModel->record(i);
+        QSqlRecord rec = gResponsesDashboardComplete->record(i);
         responsesDashboardEntry entry;
         entry.slotSetTaskId(rec.field("TaskId").value().toUInt());
         entry.slotSetTaskClassName(rec.field("TaskClassName").value().toString());
