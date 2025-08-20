@@ -44,5 +44,6 @@ std::unique_ptr<viewTrademarkMattersModel> gViewTrademarkMattersModel;
 std::unique_ptr<viewUpcomingAppointmentsModel> gViewUpcomingAppointmentsModel;
 std::unique_ptr<viewTrademarkTaskTypesModel> gViewTrademarkTaskTypesModel;
 std::unique_ptr<viewWorkAttorneysModel> gViewWorkAttorneysModel;
+std::unique_ptr<ResponsesDashboardComplete> gResponsesDashboardComplete;
 
 } //namespace Nutmeg
