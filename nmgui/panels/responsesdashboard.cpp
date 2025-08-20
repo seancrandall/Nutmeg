@@ -44,24 +44,9 @@ void ResponsesDashboard::SetupResponses()
     auto rows = gResponsesDashboardComplete->rowCount();
     for (auto i = 0; i < rows; i++)
     {
+        //responsesDashboardEntry entry = gResponsesDashboardComplete->record[i];
         QSqlRecord rec = gResponsesDashboardComplete->record(i);
-        responsesDashboardEntry entry;
-        entry.slotSetTaskId(rec.field("TaskId").value().toUInt());
-        entry.slotSetTaskClassName(rec.field("TaskClassName").value().toString());
-        entry.slotSetAttorneyDocketNumber(rec.field("AttorneyDocketNumber").value().toString());
-        entry.slotSetTaskName(rec.field("TaskName").value().toString());
-        entry.slotSetTitle(rec.field("Title").value().toString());
-        entry.slotSetTriggerDate(rec.field("TriggerDate").value().toDate());
-        entry.slotSetNextDeadline(rec.field("NextDeadline").value().toDate());
-        entry.slotSetSoftDeadline(rec.field("SoftDeadline").value().toDate());
-        entry.slotSetHardDeadline(rec.field("HardDeadline").value().toDate());
-        entry.slotSetClientEntityId(rec.field("ClientEntityId").value().toUInt());
-        entry.slotSetClientEntityName(rec.field("ClientEntityName").value().toString());
-        entry.slotSetParalegalEntityName(rec.field("ParalegalEntityName").value().toString());
-        entry.slotSetWorkAttorneyEntityName(rec.field("WorkAttorneyEntityName").value().toString());
-        entry.slotSetWithParalegal(rec.field("WithParalegal").value().toBool());
-        entry.slotSetNeedsExaminerInterview(rec.field("NeedsExaminerInterview").value().toBool());
-        entry.slotSetExaminerInterviewScheduled(rec.field("ExaminerInterviewScheduled").value().toBool());
+        responsesDashboardEntry entry(rec);
         ResponseDashPanel *rpanel = new ResponseDashPanel(entry, responsesContainer);
         responseDashPanels.append(rpanel);
         responsesLayout->addWidget(rpanel);
