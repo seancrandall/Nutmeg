@@ -10,6 +10,7 @@ CONFIG += c++17 cmdline
 SOURCES += \
         main.cpp \
         websocketserver.cpp \
+        wsrouter.cpp \
         nutmeg.cpp \
         logger.cpp \
         settings.cpp \
@@ -30,6 +31,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     nutmeg.h \
     websocketserver.h \
+    wsrouter.h \
     property.h \
     settings.h \
     structures.h \

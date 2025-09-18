@@ -28,6 +28,27 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
 
     connect(m_server, &QWebSocketServer::newConnection,
             this, &WebSocketServer::onNewConnection);
+
+    // Register built-in actions on the router
+    m_router.registerAction(QStringLiteral("ping"), ActionSpec{
+        /*fields*/ {},
+        /*handler*/ [](const QJsonObject &){
+            return QJsonObject{
+                {"pong", true},
+                {"now", QDateTime::currentDateTimeUtc().toString(Qt::ISODate)}
+            };
+        }
+    });
+
+    m_router.registerAction(QStringLiteral("info.get"), ActionSpec{
+        /*fields*/ {},
+        /*handler*/ [this](const QJsonObject &){
+            return QJsonObject{
+                {"service", QStringLiteral("NutmegBroker")},
+                {"apiVersion", protocolVersion()}
+            };
+        }
+    });
 }
 
 WebSocketServer::~WebSocketServer()
@@ -173,25 +194,13 @@ void WebSocketServer::handleAction(QWebSocket *socket, const QJsonObject &req)
         return;
     }
 
-    if (action == QLatin1String("ping")) {
-        QJsonObject result{
-            {"pong", true},
-            {"now", QDateTime::currentDateTimeUtc().toString(Qt::ISODate)}
-        };
-        sendResponse(socket, makeOk(req, result));
-        return;
+    // Dispatch via router with validation
+    const DispatchResult r = m_router.dispatch(action, payload);
+    if (r.ok) {
+        sendResponse(socket, makeOk(req, r.result));
+    } else {
+        sendResponse(socket, makeErr(req, r.errorCode, r.errorMessage, r.errorDetails));
     }
-
-    if (action == QLatin1String("info.get")) {
-        QJsonObject result{
-            {"service", QStringLiteral("NutmegBroker")},
-            {"apiVersion", protocolVersion()}
-        };
-        sendResponse(socket, makeOk(req, result));
-        return;
-    }
-
-    sendResponse(socket, makeErr(req, QStringLiteral("ENOACTION"), QStringLiteral("Unknown action '") + action + QStringLiteral("'")));
 }
 
 } // namespace Nutmeg

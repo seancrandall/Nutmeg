@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QList>
 #include <QJsonObject>
+#include "wsrouter.h"
 
 class QWebSocketServer;
 class QWebSocket;
@@ -32,6 +33,7 @@ class WebSocketServer : public QObject
   private:
     QWebSocketServer *m_server;
     QList<QWebSocket*> m_clients;
+    WSRouter m_router;
 
     // Protocol helpers
     void sendEvent(QWebSocket *socket, const QString &event, const QJsonObject &payload);
