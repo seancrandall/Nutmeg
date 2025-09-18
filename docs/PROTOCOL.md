@@ -94,6 +94,14 @@ Initial Actions
   - Payload: `{ id: number, entityName?: string, fullLegalName?: string, primaryAddress?: string, secondaryAddress?: string, website?: string, primaryPhone?: string, secondaryPhone?: string, faxNumber?: string, primaryEmail?: string, secondaryEmail?: string, fkJurisdiction?: number, fkState?: number, docketPrefix?: string }`
   - Result: same shape as `entity.get`
   - Errors: `ENOTFOUND` if the id does not exist; `EBADREQ` reserved for future validation
+- `filing.get`
+  - Payload: `{ id: number }`
+  - Result: `{ id, fkFilingStatus, fkAsFiledDocument }`
+  - Errors: `ENOTFOUND` if the id does not exist
+- `filing.update`
+  - Payload: `{ id: number, fkFilingStatus?: number, fkAsFiledDocument?: number }`
+  - Result: same shape as `filing.get`
+  - Errors: `ENOTFOUND` if the id does not exist
 - `copyrightMatter.get`
   - Payload: `{ id: number }`
   - Result: `{ id, fkAuthor, created: YYYY-MM-DD, filed: YYYY-MM-DD, registered: YYYY-MM-DD, serialNumber, registrationNumber, fkDeposit, fkWorkType, isRegistered }`

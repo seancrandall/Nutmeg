@@ -15,6 +15,7 @@
 #include "objects/document.h"
 #include "objects/enterprise.h"
 #include "objects/entity.h"
+#include "objects/filing.h"
 
 namespace Nutmeg {
 
@@ -547,6 +548,51 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
                 {"fkState", static_cast<double>(e.fkState)},
                 {"fkJurisdiction", static_cast<double>(e.fkJurisdiction)},
                 {"docketPrefix", e.DocketPrefix}
+            };
+            return r;
+        }
+    });
+
+    // filing.get: by id
+    m_router.registerAction(QStringLiteral("filing.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            const FilingData f = Nutdb::GetFiling(id);
+            DispatchResult r;
+            if (f.FilingId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Filing not found"); return r; }
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(f.FilingId)},
+                {"fkFilingStatus", static_cast<double>(f.fkFilingStatus)},
+                {"fkAsFiledDocument", static_cast<double>(f.fkAsFiledDocument)}
+            };
+            return r;
+        }
+    });
+
+    // filing.update: update fields
+    m_router.registerAction(QStringLiteral("filing.update"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
+            FieldSpec{QStringLiteral("fkFilingStatus"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkAsFiledDocument"), QJsonValue::Double, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            Filing filing{id};
+            DispatchResult r;
+            if (filing.getId() == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Filing not found"); return r; }
+
+            if (payload.contains("fkFilingStatus")) filing.setfkFilingStatus(static_cast<Key>(payload.value("fkFilingStatus").toDouble()));
+            if (payload.contains("fkAsFiledDocument")) filing.setfkAsFiledDocument(static_cast<Key>(payload.value("fkAsFiledDocument").toDouble()));
+
+            const FilingData f = Nutdb::GetFiling(id);
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(f.FilingId)},
+                {"fkFilingStatus", static_cast<double>(f.fkFilingStatus)},
+                {"fkAsFiledDocument", static_cast<double>(f.fkAsFiledDocument)}
             };
             return r;
         }
