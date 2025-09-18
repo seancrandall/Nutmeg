@@ -29,7 +29,20 @@ WebSocket Server
 - Default port: `8787`.
 - Config order: environment `NUTMEG_WS_PORT` → `QSettings` key `websocket/port` → default.
 - Docker: pass `-e NUTMEG_WS_PORT=9010` and map `-p 9010:9010` (or desired port).
-- Behavior: replies `pong` to `ping`; echoes text in a JSON envelope while protocol evolves.
+- Startup event: emits `server.hello { service, apiVersion }`.
+- Protocol: request/response envelope with `type=req|res|event`. See `docs/PROTOCOL.md`.
+
+Backend Status (WS endpoints)
+- Core: `info.get`, `ping`.
+- Objects (get/update where it makes sense): `appointment`, `copyrightMatter`, `deadline`, `document`, `enterprise`, `entity`, `filing`, `matter`, `object`, `person`, `response`, `task`, `trademarkMatter`, `patentMatter`.
+- Flags/Tags: `flag.get`, `flag.set`, `tag.get`, `tag.search`, `object.tag`.
+- Taxonomies: `taskClass.get`, `taskType.get`.
+- Dashboards (read-only): `filingsDashboardEntry.get`, `responsesDashboardEntry.get`.
+- Details, payloads, and examples are in `docs/PROTOCOL.md` (also includes a small JS client snippet).
+
+Project File notes (nmbroker.pro)
+- Clang-only flags are assumed; translations build steps are disabled by default to avoid `lrelease` requirement.
+- Db/model sources are curated to satisfy links for Nutdb-backed calls. GUI-dependent objects (e.g., some email utils) are excluded from the backend build.
 
 Protocol
 - Transport: WebSocket, JSON over UTF‑8 text.
@@ -38,10 +51,15 @@ Protocol
 - See `docs/PROTOCOL.md` for the detailed schema, examples, and error codes.
 
 Backend WebSocket Plan (initial guidance)
-- Add a WebSocket server inside `nmbroker` (Qt 6 provides `QtWebSockets`).
-- Serve application data and operations via messages (e.g., JSON payloads).
 - Keep domain/model code in `nmbroker` and expose it through the socket layer (no direct DB logic in the UI).
 - Maintain compatibility with the existing GUI during the transition (feature flags or separate entry points).
+- To add endpoints, extend `nmbroker/websocketserver.cpp` (Router registrations) and document in `docs/PROTOCOL.md`.
+
+Dev Tips
+- Router lives in `websocketserver.cpp` via a simple schema + handler registry (see `WSRouter`).
+- Validate payloads and return structured errors: `EBADREQ`, `ENOTFOUND`, etc.
+- Prefer using existing setters on domain objects; when unavailable or protected, use `Nutdb::UpdateField` as a thin persistence path.
+- After implementing endpoints, rebuild with Clang and update `docs/PROTOCOL.md` accordingly.
 
 Working Guidelines
 - Align with existing code style and structure; keep changes minimal and focused.
