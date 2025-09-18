@@ -260,3 +260,62 @@ Client Example (JavaScript)
 Compatibility with current server
 - Current implementation sends a greeting and supports text `ping` → `pong` and echoing messages.
 - It will be updated to use the `type=req/res/event` envelope; existing text `ping` will continue to work during transition.
+
+
+Batch Models — Tables and Views (lightweight)
+- Tables are read/write; views are read‑only. Unless stated, list actions return `{ items: [...] }` and get actions return an object representing the row.
+
+- Tables
+  - `appointmentType.get|list|create|update|delete`
+    - Get/List: `{ id? }` → object/`{ items }`
+    - Create: `{ appointmentTypeName }` → created row
+    - Update: `{ id, appointmentTypeName? }` → updated row
+    - Delete: `{ id }` → `{ id, deleted: true }`
+  - `objectType.get|list|update`
+    - Get/List: by id or all
+    - Update: `{ id, objectTypeName? }` → updated row
+
+- Views (read‑only; each returns full view columns)
+  - Appointment/Object mapping
+    - `appointmentObject.get` `{ appointmentId }` → `{ appointmentId, objectId, appointmentTypeName }`
+    - `appointmentObject.listForObject` `{ objectId }` → `{ objectId, items }`
+  - Clients/Firms
+    - `client.get|list` (viewClients) — get by `ClientEntityId` or `EntityId`
+    - `contractingFirm.get|list` (viewContractingFirms) — get by `ContractingFirmEntityId` or `EntityId`
+  - Copyright types
+    - `copyrightFilingType.get|list` (viewCopyrightFilingTypes)
+    - `copyrightTaskType.get|list` (viewCopyrightTaskTypes)
+  - Entities/People/Paralegals/Examiners/Work Attorneys
+    - `entityView.get|list` (viewEntities)
+    - `peopleView.get|list` (viewPeople)
+    - `paralegalView.get|list` (viewParalegals)
+    - `patentExaminerView.get|list` (viewPatentExaminers)
+    - `workAttorneyView.get|list` (viewWorkAttorneys)
+  - Filings
+    - `filingView.get|list` (viewFilings)
+    - `filingIncompleteView.get|list` (viewFilingsIncomplete)
+    - `filingTaskType.get|list` (viewFilingTaskTypes)
+    - `filingType.get|list` (viewFilingTypes)
+  - Matters
+    - `matterView.get|list` (viewMatters)
+    - `patentMatterView.get|list` (viewPatentMatters)
+    - `trademarkMatterView.get|list` (viewTrademarkMatters)
+  - Responses
+    - `responseView.get|list` (viewResponses)
+    - `responsesIncompleteView.get|list` (viewResponsesIncomplete)
+    - `responseTaskTypeView.get|list` (viewResponseTaskTypes)
+  - Tasks
+    - `taskView.get|list` (viewTasks)
+    - `taskClass.list` (viewTaskClass) — result: `{ items: [{ id, taskClassName }] }`
+    - `taskTypeView.get|list` (viewTaskTypes)
+  - Flags/Tags
+    - `objectFlagView.get` `{ id }` or `{ objectId, camelCase }`
+    - `objectFlagView.listForObject` `{ objectId }` → `{ objectId, items }`
+    - `objectTagView.get` `{ id }` or `{ objectId, tagId? | tagText? }`
+    - `objectTagView.listForObject` `{ objectId }` → `{ objectId, items }`
+  - Appointments
+    - `upcomingAppointmentView.get|list` (viewUpcomingAppointments)
+
+Notes
+- All view `.get` actions try common id columns (e.g., `Id`, `…Id`) to locate the row and return `ENOTFOUND` if not present.
+- Dates in views are encoded as ISO strings (YYYY‑MM‑DD or ISO‑8601).

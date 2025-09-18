@@ -2859,6 +2859,65 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
         }
     });
 
+    // deadline.list (table, read-only)
+    m_router.registerAction(QStringLiteral("deadline.list"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{},
+        /*handler*/ [](const QJsonObject &){
+            QSqlQuery q(QSqlDatabase::database());
+            DispatchResult r; r.ok = true; QJsonArray items;
+            if (q.exec(QStringLiteral("SELECT DeadlineId, TriggerDate, SoftDeadline, HardDeadline, NextDeadline FROM deadline ORDER BY NextDeadline ASC, DeadlineId ASC"))) {
+                while (q.next()) {
+                    items.append(QJsonObject{
+                        {"id", static_cast<double>(q.value(0).toUInt())},
+                        {"triggerDate", q.value(1).toDate().toString(Qt::ISODate)},
+                        {"softDeadline", q.value(2).toDate().toString(Qt::ISODate)},
+                        {"hardDeadline", q.value(3).toDate().toString(Qt::ISODate)},
+                        {"nextDeadline", q.value(4).toDate().toString(Qt::ISODate)}
+                    });
+                }
+            }
+            r.result = QJsonObject{{"items", items}}; return r;
+        }
+    });
+
+    // deadline.create (table insert)
+    m_router.registerAction(QStringLiteral("deadline.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("triggerDate"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("softDeadline"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("hardDeadline"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("nextDeadline"), QJsonValue::String, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            auto parseDateVar = [&](const char *k)->QVariant{ if (!payload.contains(QString::fromUtf8(k))) return QVariant(); QDate d = QDate::fromString(payload.value(QString::fromUtf8(k)).toString(), Qt::ISODate); return d.isValid() ? QVariant(d) : QVariant(); };
+            QSqlQuery q(QSqlDatabase::database());
+            q.prepare(QStringLiteral("INSERT INTO deadline (TriggerDate, SoftDeadline, HardDeadline, NextDeadline) VALUES (:trig, :soft, :hard, :next)"));
+            q.bindValue(":trig", parseDateVar("triggerDate"));
+            q.bindValue(":soft", parseDateVar("softDeadline"));
+            q.bindValue(":hard", parseDateVar("hardDeadline"));
+            q.bindValue(":next", parseDateVar("nextDeadline"));
+            DispatchResult r; if (!q.exec()) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = q.lastError().text(); return r; }
+            Key id = q.lastInsertId().toUInt();
+            QSqlQuery qr(QSqlDatabase::database());
+            qr.prepare(QStringLiteral("SELECT DeadlineId, TriggerDate, SoftDeadline, HardDeadline, NextDeadline FROM deadline WHERE DeadlineId = :id"));
+            qr.bindValue(":id", QVariant::fromValue(id));
+            if (!qr.exec() || !qr.next()) { r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}}; return r; }
+            r.ok = true; r.result = QJsonObject{
+                {"id", static_cast<double>(qr.value(0).toUInt())},
+                {"triggerDate", qr.value(1).toDate().toString(Qt::ISODate)},
+                {"softDeadline", qr.value(2).toDate().toString(Qt::ISODate)},
+                {"hardDeadline", qr.value(3).toDate().toString(Qt::ISODate)},
+                {"nextDeadline", qr.value(4).toDate().toString(Qt::ISODate)}
+            }; return r;
+        }
+    });
+
+    // deadline.delete (table)
+    m_router.registerAction(QStringLiteral("deadline.delete"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){ const Key id = static_cast<Key>(payload.value("id").toDouble()); QSqlQuery q(QSqlDatabase::database()); q.prepare(QStringLiteral("DELETE FROM deadline WHERE DeadlineId = :id")); q.bindValue(":id", QVariant::fromValue(id)); DispatchResult r; if (!q.exec()) { r.ok = false; r.errorCode = QStringLiteral("EDELETE"); r.errorMessage = q.lastError().text(); return r; } r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"deleted", true}}; return r; }
+    });
+
     // document.get: by id
     m_router.registerAction(QStringLiteral("document.get"), ActionSpec{
         /*fields*/ QList<FieldSpec>{
@@ -3260,6 +3319,21 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
             return r;
         }
     });
+    // flagClass.list (table)
+    m_router.registerAction(QStringLiteral("flagClass.list"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{},
+        /*handler*/ [](const QJsonObject &){ QSqlQuery q(QSqlDatabase::database()); DispatchResult r; r.ok = true; QJsonArray items; if (q.exec(QStringLiteral("SELECT FlagClassId, CamelCase, Label, Description FROM flagClass ORDER BY CamelCase"))) { while (q.next()) { items.append(QJsonObject{{"id", static_cast<double>(q.value(0).toUInt())}, {"camelCase", q.value(1).toString()}, {"label", q.value(2).toString()}, {"description", q.value(3).toString()}}); } } r.result = QJsonObject{{"items", items}}; return r; }
+    });
+    // flagClass.create (table)
+    m_router.registerAction(QStringLiteral("flagClass.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("camelCase"), QJsonValue::String, true}, FieldSpec{QStringLiteral("label"), QJsonValue::String, false}, FieldSpec{QStringLiteral("description"), QJsonValue::String, false} },
+        /*handler*/ [](const QJsonObject &payload){ QSqlQuery q(QSqlDatabase::database()); q.prepare(QStringLiteral("INSERT INTO flagClass (CamelCase, Label, Description) VALUES (:cc, :lbl, :desc)")); q.bindValue(":cc", payload.value("camelCase").toString()); q.bindValue(":lbl", payload.value("label").toString()); q.bindValue(":desc", payload.value("description").toString()); DispatchResult r; if (!q.exec()) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = q.lastError().text(); return r; } const Key id = q.lastInsertId().toUInt(); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"camelCase", payload.value("camelCase").toString()}, {"label", payload.value("label").toString()}, {"description", payload.value("description").toString()}}; return r; }
+    });
+    // flagClass.delete (table)
+    m_router.registerAction(QStringLiteral("flagClass.delete"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){ const Key id = static_cast<Key>(payload.value("id").toDouble()); QSqlQuery q(QSqlDatabase::database()); q.prepare(QStringLiteral("DELETE FROM flagClass WHERE FlagClassId = :id")); q.bindValue(":id", QVariant::fromValue(id)); DispatchResult r; if (!q.exec()) { r.ok = false; r.errorCode = QStringLiteral("EDELETE"); r.errorMessage = q.lastError().text(); return r; } r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"deleted", true}}; return r; }
+    });
 
     // object.get: base object info with related lists
     m_router.registerAction(QStringLiteral("object.get"), ActionSpec{
@@ -3305,6 +3379,21 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
             };
             return r;
         }
+    });
+    // object.list (table)
+    m_router.registerAction(QStringLiteral("object.list"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{},
+        /*handler*/ [](const QJsonObject &){ QSqlQuery q(QSqlDatabase::database()); DispatchResult r; r.ok = true; QJsonArray items; if (q.exec(QStringLiteral("SELECT ObjectId, fkObjectType FROM object ORDER BY ObjectId"))) { while (q.next()) { items.append(QJsonObject{{"id", static_cast<double>(q.value(0).toUInt())}, {"fkObjectType", static_cast<double>(q.value(1).toUInt())}}); } } r.result = QJsonObject{{"items", items}}; return r; }
+    });
+    // object.create
+    m_router.registerAction(QStringLiteral("object.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("objectType"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){ const QString type = payload.value("objectType").toString(); DispatchResult r; if (type.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("objectType required"); return r; } const Key id = Nutdb::InsertObject(type); if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert object"); return r; } QSqlQuery q(QSqlDatabase::database()); q.prepare(QStringLiteral("SELECT ObjectId, fkObjectType FROM object WHERE ObjectId = :id")); q.bindValue(":id", QVariant::fromValue(id)); if (q.exec() && q.next()) { r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(q.value(0).toUInt())}, {"fkObjectType", static_cast<double>(q.value(1).toUInt())}, {"objectType", type}}; return r; } r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"objectType", type}}; return r; }
+    });
+    // object.delete (table)
+    m_router.registerAction(QStringLiteral("object.delete"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){ const Key id = static_cast<Key>(payload.value("id").toDouble()); QSqlQuery q(QSqlDatabase::database()); q.prepare(QStringLiteral("DELETE FROM object WHERE ObjectId = :id")); q.bindValue(":id", QVariant::fromValue(id)); DispatchResult r; if (!q.exec()) { r.ok = false; r.errorCode = QStringLiteral("EDELETE"); r.errorMessage = q.lastError().text(); return r; } r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"deleted", true}}; return r; }
     });
 
     // object.update: change object type
@@ -3536,6 +3625,11 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
             };
             return r;
         }
+    });
+    // task.list (table)
+    m_router.registerAction(QStringLiteral("task.list"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{},
+        /*handler*/ [](const QJsonObject &){ QSqlQuery q(QSqlDatabase::database()); DispatchResult r; r.ok = true; QJsonArray items; if (q.exec(QStringLiteral("SELECT TaskId, fkTaskType, OldTaskId FROM task ORDER BY TaskId DESC LIMIT 500"))) { while (q.next()) items.append(QJsonObject{{"id", static_cast<double>(q.value(0).toUInt())}, {"fkTaskType", static_cast<double>(q.value(1).toUInt())}, {"oldTaskId", static_cast<double>(q.value(2).toUInt())}}); } r.result = QJsonObject{{"items", items}}; return r; }
     });
 
     // task.update
@@ -3943,6 +4037,26 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
             return r;
         }
     });
+    // tag.list (table)
+    m_router.registerAction(QStringLiteral("tag.list"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{},
+        /*handler*/ [](const QJsonObject &){ QSqlQuery q(QSqlDatabase::database()); DispatchResult r; r.ok = true; QJsonArray items; if (q.exec(QStringLiteral("SELECT TagId, TagText FROM tag ORDER BY TagText"))) { while (q.next()) items.append(QJsonObject{{"tagId", static_cast<double>(q.value(0).toUInt())}, {"tagText", q.value(1).toString()}}); } r.result = QJsonObject{{"items", items}}; return r; }
+    });
+    // tag.create (table)
+    m_router.registerAction(QStringLiteral("tag.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("tagText"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){ const QString text = payload.value("tagText").toString(); DispatchResult r; if (text.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("tagText required"); return r; } QSqlQuery q(QSqlDatabase::database()); q.prepare(QStringLiteral("INSERT INTO tag (TagText) VALUES (:t)")); q.bindValue(":t", text); if (!q.exec()) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = q.lastError().text(); return r; } const Key id = q.lastInsertId().toUInt(); r.ok = true; r.result = QJsonObject{{"tagId", static_cast<double>(id)}, {"tagText", text}}; return r; }
+    });
+    // tag.update (table)
+    m_router.registerAction(QStringLiteral("tag.update"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("tagText"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){ const Key id = static_cast<Key>(payload.value("id").toDouble()); const QString text = payload.value("tagText").toString(); DispatchResult r; if (text.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("tagText required"); return r; } QSqlQuery q(QSqlDatabase::database()); q.prepare(QStringLiteral("UPDATE tag SET TagText = :t WHERE TagId = :id")); q.bindValue(":t", text); q.bindValue(":id", QVariant::fromValue(id)); if (!q.exec()) { r.ok = false; r.errorCode = QStringLiteral("EUPDATE"); r.errorMessage = q.lastError().text(); return r; } r.ok = true; r.result = QJsonObject{{"tagId", static_cast<double>(id)}, {"tagText", text}}; return r; }
+    });
+    // tag.delete (table)
+    m_router.registerAction(QStringLiteral("tag.delete"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){ const Key id = static_cast<Key>(payload.value("id").toDouble()); QSqlQuery q(QSqlDatabase::database()); q.prepare(QStringLiteral("DELETE FROM tag WHERE TagId = :id")); q.bindValue(":id", QVariant::fromValue(id)); DispatchResult r; if (!q.exec()) { r.ok = false; r.errorCode = QStringLiteral("EDELETE"); r.errorMessage = q.lastError().text(); return r; } r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"deleted", true}}; return r; }
+    });
 
     // taskClass.get: by id
     m_router.registerAction(QStringLiteral("taskClass.get"), ActionSpec{
@@ -3981,6 +4095,26 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
             };
             return r;
         }
+    });
+    // taskType.list (table)
+    m_router.registerAction(QStringLiteral("taskType.list"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{},
+        /*handler*/ [](const QJsonObject &){ QSqlQuery q(QSqlDatabase::database()); DispatchResult r; r.ok = true; QJsonArray items; if (q.exec(QStringLiteral("SELECT TaskTypeId, fkTaskClass, TaskName FROM taskType ORDER BY TaskName"))) { while (q.next()) items.append(QJsonObject{{"id", static_cast<double>(q.value(0).toUInt())}, {"fkTaskClass", static_cast<double>(q.value(1).toUInt())}, {"taskName", q.value(2).toString()}}); } r.result = QJsonObject{{"items", items}}; return r; }
+    });
+    // taskType.create (table)
+    m_router.registerAction(QStringLiteral("taskType.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("fkTaskClass"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("taskName"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){ const Key fk = static_cast<Key>(payload.value("fkTaskClass").toDouble()); const QString name = payload.value("taskName").toString(); DispatchResult r; if (name.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("taskName required"); return r; } QSqlQuery q(QSqlDatabase::database()); q.prepare(QStringLiteral("INSERT INTO taskType (fkTaskClass, TaskName) VALUES (:fk, :name)")); q.bindValue(":fk", QVariant::fromValue(fk)); q.bindValue(":name", name); if (!q.exec()) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = q.lastError().text(); return r; } const Key id = q.lastInsertId().toUInt(); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"fkTaskClass", static_cast<double>(fk)}, {"taskName", name}}; return r; }
+    });
+    // taskType.update (table)
+    m_router.registerAction(QStringLiteral("taskType.update"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("fkTaskClass"), QJsonValue::Double, false}, FieldSpec{QStringLiteral("taskName"), QJsonValue::String, false} },
+        /*handler*/ [](const QJsonObject &payload){ const Key id = static_cast<Key>(payload.value("id").toDouble()); QSqlQuery q(QSqlDatabase::database()); QList<QString> sets; if (payload.contains("fkTaskClass")) sets << QStringLiteral("fkTaskClass = :fk"); if (payload.contains("taskName")) sets << QStringLiteral("TaskName = :name"); if (sets.isEmpty()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("No updatable fields"); return r; } const QString sql = QStringLiteral("UPDATE taskType SET ") + sets.join(QStringLiteral(", ")) + QStringLiteral(" WHERE TaskTypeId = :id"); q.prepare(sql); if (payload.contains("fkTaskClass")) q.bindValue(":fk", QVariant::fromValue(static_cast<Key>(payload.value("fkTaskClass").toDouble()))); if (payload.contains("taskName")) q.bindValue(":name", payload.value("taskName").toString()); q.bindValue(":id", QVariant::fromValue(id)); DispatchResult r; if (!q.exec()) { r.ok = false; r.errorCode = QStringLiteral("EUPDATE"); r.errorMessage = q.lastError().text(); return r; } QSqlQuery qr(QSqlDatabase::database()); qr.prepare(QStringLiteral("SELECT TaskTypeId, fkTaskClass, TaskName FROM taskType WHERE TaskTypeId = :id")); qr.bindValue(":id", QVariant::fromValue(id)); if (!qr.exec() || !qr.next()) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("TaskType not found"); return r; } r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(qr.value(0).toUInt())}, {"fkTaskClass", static_cast<double>(qr.value(1).toUInt())}, {"taskName", qr.value(2).toString()}}; return r; }
+    });
+    // taskType.delete (table)
+    m_router.registerAction(QStringLiteral("taskType.delete"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){ const Key id = static_cast<Key>(payload.value("id").toDouble()); QSqlQuery q(QSqlDatabase::database()); q.prepare(QStringLiteral("DELETE FROM taskType WHERE TaskTypeId = :id")); q.bindValue(":id", QVariant::fromValue(id)); DispatchResult r; if (!q.exec()) { r.ok = false; r.errorCode = QStringLiteral("EDELETE"); r.errorMessage = q.lastError().text(); return r; } r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"deleted", true}}; return r; }
     });
 
     // matter.get: by id
