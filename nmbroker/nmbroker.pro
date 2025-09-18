@@ -1,5 +1,5 @@
 QT = core
-QT += sql
+QT += sql websockets
 
 CONFIG += c++17 cmdline
 
@@ -12,6 +12,7 @@ SOURCES += \
         dbaccess/responsesdashboardtablemodel.cpp \
         dbaccess/tablemodel.cpp \
         main.cpp \
+        websocketserver.cpp \
         objects/appointment.cpp \
         objects/copyrightmatter.cpp \
         objects/document.cpp \
@@ -45,6 +46,7 @@ HEADERS += \
     dbaccess/responsesdashboardtablemodel.h \
     dbaccess/tablemodel.h \
     nutmeg.h \
+    websocketserver.h \
     objects/appointment.h \
     objects/copyrightmatter.h \
     objects/document.h \

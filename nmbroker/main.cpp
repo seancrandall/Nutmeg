@@ -4,6 +4,7 @@
 
 #include "dbaccess/nmdatabase.h"
 #include "settings.h"
+#include "websocketserver.h"
 
 int main(int argc, char *argv[])
 {
@@ -30,8 +31,20 @@ int main(int argc, char *argv[])
     dm->password = s.password;
     dm->connect();
 
-    // dm->TestBed();
-    // Nutmeg::TableModel model(*dm);
+    // Determine WebSocket port: env var overrides settings, else default 8787
+    quint16 wsPort = static_cast<quint16>(
+        qvariant_cast<uint>(s.value("websocket/port", 8787))
+    );
+    const QByteArray envPort = qgetenv("NUTMEG_WS_PORT");
+    if (!envPort.isEmpty()) {
+        bool ok = false;
+        const int p = QString::fromUtf8(envPort).toInt(&ok);
+        if (ok && p > 0 && p <= 65535) {
+            wsPort = static_cast<quint16>(p);
+        }
+    }
+
+    Nutmeg::WebSocketServer wsServer(wsPort);
 
     return a.exec();
 }
