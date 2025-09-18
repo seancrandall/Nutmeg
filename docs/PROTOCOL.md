@@ -40,20 +40,22 @@ Examples
 - Error (unknown action)
   `{ "type": "res", "id": "99", "ok": false, "error": { "code": "ENOACTION", "message": "Unknown action 'foo.bar'" } }`
 
-Initial Actions (read‑only)
+Initial Actions
 - `info.get`
   - Result: `{ service, apiVersion, build? }`
 - `ping`
   - Result: `{ pong: true, now: <timestamp> }`
 - `matter.get`
-  - Payload: `{ id }`
-  - Result: `{ id, docketNumber, type, title?, createdAt, updatedAt, ... }`
-- `matters.search`
-  - Payload: `{ q, page? }`
-  - Result: `{ items: [ { id, docketNumber, type, title? } ], page }`
-- `tasks.upcoming`
-  - Payload: `{ since?, until?, page? }`
-  - Result: `{ items: [ { id, matterId, title, dueAt, status } ], page }`
+  - Payload: `{ id: number }`
+  - Result: `{ id, fkParent, attorneyDocketNumber, clientDocketNumber, title, fkClient, fkAssigningFirm, fkDefaultWorkAttorney, fkDefaultParalegal, fkKeyDocument, fkMatterJurisdiction, oldMatterId }`
+  - Errors: `ENOTFOUND` if the id does not exist
+- `matter.update`
+  - Payload: `{ id: number, fkParent?: number, attorneyDocketNumber?: string, clientDocketNumber?: string, title?: string, fkClient?: number, fkAssigningFirm?: number, fkDefaultWorkAttorney?: number, fkDefaultParalegal?: number, fkKeyDocument?: number, fkMatterJurisdiction?: number, oldMatterId?: number }`
+  - Result: same shape as `matter.get` (the updated record)
+  - Errors: `ENOTFOUND` if the id does not exist; `EBADREQ` for validation/type errors
+- Planned
+  - `matters.search { q, page? }` → `{ items, page }`
+  - `tasks.upcoming { since?, until?, page? }` → `{ items, page }`
 
 Authentication (planned)
 - Phase 0: no auth required in trusted environments (LAN/dev).
@@ -67,7 +69,13 @@ Error Codes
 - `EUNAUTHORIZED`: missing/invalid auth
 - `EINTERNAL`: unexpected error
 
+Examples
+- matter.get (ok)
+  Request: `{ "type": "req", "id": "42", "action": "matter.get", "payload": { "id": 123 }, "version": "0.1" }`
+  Response: `{ "type": "res", "id": "42", "ok": true, "result": { "id": 123, "title": "Sample", ... } }`
+- matter.get (not found)
+  Response: `{ "type": "res", "id": "42", "ok": false, "error": { "code": "ENOTFOUND", "message": "Matter not found" } }`
+
 Compatibility with current server
 - Current implementation sends a greeting and supports text `ping` → `pong` and echoing messages.
 - It will be updated to use the `type=req/res/event` envelope; existing text `ping` will continue to work during transition.
-
