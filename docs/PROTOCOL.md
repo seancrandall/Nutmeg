@@ -61,6 +61,14 @@ Initial Actions
   - Payload: `{ id: number, appointmentTime?: ISO-8601 string, fkAppointmentType?: number, complete?: boolean, needsAgenda?: boolean, agendaSent?: boolean, confirmed?: boolean }`
   - Result: same shape as `appointment.get`
   - Errors: `ENOTFOUND` if the id does not exist; `EBADREQ` if `appointmentTime` is not a valid ISO-8601 string
+- `copyrightMatter.get`
+  - Payload: `{ id: number }`
+  - Result: `{ id, fkAuthor, created: YYYY-MM-DD, filed: YYYY-MM-DD, registered: YYYY-MM-DD, serialNumber, registrationNumber, fkDeposit, fkWorkType, isRegistered }`
+  - Errors: `ENOTFOUND` if the id does not exist
+- `copyrightMatter.update`
+  - Payload: `{ id: number, fkAuthor?: number, created?: YYYY-MM-DD, filed?: YYYY-MM-DD, registered?: YYYY-MM-DD, serialNumber?: string, registrationNumber?: string, fkDeposit?: number, fkWorkType?: number, isRegistered?: boolean }`
+  - Result: same shape as `copyrightMatter.get`
+  - Errors: `ENOTFOUND` if the id does not exist; `EBADREQ` on invalid date strings
 - Planned
   - `matters.search { q, page? }` → `{ items, page }`
   - `tasks.upcoming { since?, until?, page? }` → `{ items, page }`
@@ -88,6 +96,38 @@ Examples
   Response: `{ "type": "res", "id": "1001", "ok": true, "result": { "id": 77, "appointmentTime": "2025-05-01T16:00:00Z", ... } }`
 - appointment.get (not found)
   Response: `{ "type": "res", "id": "1002", "ok": false, "error": { "code": "ENOTFOUND", "message": "Appointment not found" } }`
+
+Client Example (JavaScript)
+- Minimal browser client that connects, logs `server.hello`, and performs get/update calls.
+  ```js
+  const ws = new WebSocket("ws://localhost:8787");
+
+  ws.onmessage = (ev) => {
+    try { console.log("<-", JSON.parse(ev.data)); }
+    catch { console.log("<-", ev.data); }
+  };
+
+  ws.onopen = () => {
+    // appointment.get
+    ws.send(JSON.stringify({
+      type: "req",
+      id: "get-1",
+      action: "appointment.get",
+      payload: { id: 77 },
+      version: "0.1",
+    }));
+
+    // appointment.update
+    ws.send(JSON.stringify({
+      type: "req",
+      id: "upd-1",
+      action: "appointment.update",
+      payload: { id: 77, confirmed: true },
+      version: "0.1",
+    }));
+  };
+  ```
+
 
 Compatibility with current server
 - Current implementation sends a greeting and supports text `ping` → `pong` and echoing messages.

@@ -10,6 +10,7 @@
 #include <QDebug>
 #include "objects/matter.h"
 #include "objects/appointment.h"
+#include "objects/copyrightmatter.h"
 
 namespace Nutmeg {
 
@@ -146,6 +147,104 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
                 {"confirmed", Nutdb::GetFlag(id, QStringLiteral("Confirmed"))},
                 {"associatedObject", static_cast<double>(assoc)},
                 {"typeString", typeStr}
+            };
+            return r;
+        }
+    });
+
+    // copyrightMatter.get: by id
+    m_router.registerAction(QStringLiteral("copyrightMatter.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            const CopyrightMatterData m = Nutdb::GetCopyrightMatter(id);
+            DispatchResult r;
+            if (m.CopyrightMatterId == 0) {
+                r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("CopyrightMatter not found");
+                return r;
+            }
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(m.CopyrightMatterId)},
+                {"fkAuthor", static_cast<double>(m.fkAuthor)},
+                {"created", m.Created.toString(Qt::ISODate)},
+                {"filed", m.Filed.toString(Qt::ISODate)},
+                {"registered", m.Registered.toString(Qt::ISODate)},
+                {"serialNumber", m.SerialNumber},
+                {"registrationNumber", m.RegistrationNumber},
+                {"fkDeposit", static_cast<double>(m.fkDeposit)},
+                {"fkWorkType", static_cast<double>(m.fkWorkType)},
+                {"isRegistered", Nutdb::GetFlag(id, QStringLiteral("Registered"))}
+            };
+            return r;
+        }
+    });
+
+    // copyrightMatter.update: updates provided fields
+    m_router.registerAction(QStringLiteral("copyrightMatter.update"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
+            FieldSpec{QStringLiteral("fkAuthor"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("created"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("filed"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("registered"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("serialNumber"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("registrationNumber"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("fkDeposit"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkWorkType"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("isRegistered"), QJsonValue::Bool, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            CopyrightMatter cm{id};
+            DispatchResult r;
+            if (cm.getId() == 0) {
+                r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("CopyrightMatter not found");
+                return r;
+            }
+
+            if (payload.contains("fkAuthor")) cm.slotSetfkAuthor(static_cast<Key>(payload.value("fkAuthor").toDouble()));
+
+            auto parseDate = [](const QJsonObject &obj, const char *key, QDate &out, QString &err) -> bool {
+                if (!obj.contains(key)) return true;
+                const QString s = obj.value(QString::fromUtf8(key)).toString();
+                const QDate d = QDate::fromString(s, Qt::ISODate);
+                if (!d.isValid()) { err = QStringLiteral("Invalid date for '%1'").arg(QString::fromUtf8(key)); return false; }
+                out = d; return true;
+            };
+
+            QString perr;
+            QDate d;
+            if (!parseDate(payload, "created", d, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("created")) cm.slotSetCreated(d);
+
+            if (!parseDate(payload, "filed", d, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("filed")) cm.slotSetFiled(d);
+
+            if (!parseDate(payload, "registered", d, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("registered")) cm.slotSetRegistered(d);
+
+            if (payload.contains("serialNumber")) cm.slotSetSerialNumber(payload.value("serialNumber").toString());
+            if (payload.contains("registrationNumber")) cm.slotSetRegistrationNumber(payload.value("registrationNumber").toString());
+            if (payload.contains("fkDeposit")) cm.slotSetfkDeposit(static_cast<Key>(payload.value("fkDeposit").toDouble()));
+            if (payload.contains("fkWorkType")) cm.slotSetfkWorkType(static_cast<Key>(payload.value("fkWorkType").toDouble()));
+            if (payload.contains("isRegistered")) cm.slotSetIsRegistered(payload.value("isRegistered").toBool());
+
+            const CopyrightMatterData m = Nutdb::GetCopyrightMatter(id);
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(m.CopyrightMatterId)},
+                {"fkAuthor", static_cast<double>(m.fkAuthor)},
+                {"created", m.Created.toString(Qt::ISODate)},
+                {"filed", m.Filed.toString(Qt::ISODate)},
+                {"registered", m.Registered.toString(Qt::ISODate)},
+                {"serialNumber", m.SerialNumber},
+                {"registrationNumber", m.RegistrationNumber},
+                {"fkDeposit", static_cast<double>(m.fkDeposit)},
+                {"fkWorkType", static_cast<double>(m.fkWorkType)},
+                {"isRegistered", Nutdb::GetFlag(id, QStringLiteral("Registered"))}
             };
             return r;
         }
