@@ -2,7 +2,6 @@
 #include <QLocale>
 #include <QTranslator>
 
-#include "dbaccess/nmdatabase.h"
 #include "settings.h"
 #include "websocketserver.h"
 
@@ -23,13 +22,6 @@ int main(int argc, char *argv[])
     }
 
     Nutmeg::Settings s;
-    Nutmeg::NMDatabase *dm = new Nutmeg::NMDatabase();
-    dm->server = s.server;
-    dm->databasename = s.databaseName;
-    dm->port = s.port;
-    dm->username = s.username;
-    dm->password = s.password;
-    dm->connect();
 
     // Determine WebSocket port: env var overrides settings, else default 8787
     quint16 wsPort = static_cast<quint16>(
