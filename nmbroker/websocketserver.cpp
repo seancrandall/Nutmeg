@@ -13,6 +13,7 @@
 #include "objects/copyrightmatter.h"
 #include "objects/deadline.h"
 #include "objects/document.h"
+#include "objects/enterprise.h"
 
 namespace Nutmeg {
 
@@ -397,6 +398,65 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
                 {"filename", d.Filename},
                 {"extension", d.Extension},
                 {"title", d.Title}
+            };
+            return r;
+        }
+    });
+
+    // enterprise.get: by id
+    m_router.registerAction(QStringLiteral("enterprise.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            const EnterpriseData e = Nutdb::GetEnterprise(id);
+            DispatchResult r;
+            if (e.EnterpriseId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Enterprise not found"); return r; }
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(e.EnterpriseId)},
+                {"enterpriseName", e.EnterpriseName},
+                {"fkBusinessOrganizationType", static_cast<double>(e.fkBusinessOrganizationType)},
+                {"fkBusinessJurisdiction", static_cast<double>(e.fkBusinessJurisdiction)},
+                {"fkStateOfIncorporation", static_cast<double>(e.fkStateOfIncorporation)},
+                {"fkMainContact", static_cast<double>(e.fkMainContact)},
+                {"oldOrganizationId", static_cast<double>(e.OldOrganizationId)}
+            };
+            return r;
+        }
+    });
+
+    // enterprise.update: update selected fields
+    m_router.registerAction(QStringLiteral("enterprise.update"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
+            FieldSpec{QStringLiteral("enterpriseName"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("fkBusinessJurisdiction"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkStateOfIncorporation"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkMainContact"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("oldOrganizationId"), QJsonValue::Double, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            Enterprise ent{id};
+            DispatchResult r;
+            if (ent.getId() == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Enterprise not found"); return r; }
+
+            if (payload.contains("enterpriseName")) ent.slotSetEnterpriseName(payload.value("enterpriseName").toString());
+            if (payload.contains("fkBusinessJurisdiction")) ent.slotSetfkBusinessJurisdiction(static_cast<Key>(payload.value("fkBusinessJurisdiction").toDouble()));
+            if (payload.contains("fkStateOfIncorporation")) ent.slotSetfkStateOfIncorporation(static_cast<Key>(payload.value("fkStateOfIncorporation").toDouble()));
+            if (payload.contains("fkMainContact")) ent.slotSetfkMainContact(static_cast<Key>(payload.value("fkMainContact").toDouble()));
+            if (payload.contains("oldOrganizationId")) ent.slotSetOldOrganizationId(static_cast<Key>(payload.value("oldOrganizationId").toDouble()));
+
+            const EnterpriseData e = Nutdb::GetEnterprise(id);
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(e.EnterpriseId)},
+                {"enterpriseName", e.EnterpriseName},
+                {"fkBusinessOrganizationType", static_cast<double>(e.fkBusinessOrganizationType)},
+                {"fkBusinessJurisdiction", static_cast<double>(e.fkBusinessJurisdiction)},
+                {"fkStateOfIncorporation", static_cast<double>(e.fkStateOfIncorporation)},
+                {"fkMainContact", static_cast<double>(e.fkMainContact)},
+                {"oldOrganizationId", static_cast<double>(e.OldOrganizationId)}
             };
             return r;
         }

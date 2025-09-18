@@ -78,6 +78,14 @@ Initial Actions
   - Payload: `{ id: number, fullyQualifiedPath?: string, url?: string, filename?: string, extension?: string, title?: string }`
   - Result: same shape as `document.get`
   - Errors: `ENOTFOUND` if the id does not exist
+- `enterprise.get`
+  - Payload: `{ id: number }`
+  - Result: `{ id, enterpriseName, fkBusinessOrganizationType, fkBusinessJurisdiction, fkStateOfIncorporation, fkMainContact, oldOrganizationId }`
+  - Errors: `ENOTFOUND` if the id does not exist
+- `enterprise.update`
+  - Payload: `{ id: number, enterpriseName?: string, fkBusinessJurisdiction?: number, fkStateOfIncorporation?: number, fkMainContact?: number, oldOrganizationId?: number }`
+  - Result: same shape as `enterprise.get`
+  - Errors: `ENOTFOUND` if the id does not exist
 - `copyrightMatter.get`
   - Payload: `{ id: number }`
   - Result: `{ id, fkAuthor, created: YYYY-MM-DD, filed: YYYY-MM-DD, registered: YYYY-MM-DD, serialNumber, registrationNumber, fkDeposit, fkWorkType, isRegistered }`
