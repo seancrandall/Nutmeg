@@ -14,9 +14,9 @@ class Filing : public Nutmeg::Task
       explicit Filing(Key id);
 
     // Properties
-    Property(getId, slotSetId) Key FilingId;
-    Property(getfkFilingStatus, slotSetfkFilingStatus) Key fkFilingStatus;
-    Property(getfkAsFiledDocument, slotSetfkAsFiledDocument) Key fkAsFiledDocument;
+    Property(getId, SetId) Key FilingId;
+    Property(getfkFilingStatus, setfkFilingStatus) Key fkFilingStatus;
+    Property(getfkAsFiledDocument, setfkAsFiledDocument) Key fkAsFiledDocument;
 
     // Getters
     virtual Key getId(void) const override { return mDat.FilingId; }
@@ -31,7 +31,7 @@ class Filing : public Nutmeg::Task
     bool setfkAsFiledDocument(Key newval);
 
     void holdfkFilingStatus(Key newval){mDat.fkFilingStatus = newval; dirty["fkFilingStatus"] = true;}
-    void holdfkFiledDocument(Key newval){mDat.fkAsFiledDocument = newval; dirty["fkAsfiledDocument"] = true;};
+    void holdfkAsFiledDocument(Key newval){mDat.fkAsFiledDocument = newval; dirty["fkAsFiledDocument"] = true;}
 
 
   protected:
