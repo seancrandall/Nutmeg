@@ -15,7 +15,7 @@ class Entity : public Nutmeg::Object
     explicit Entity(String entityName);
 
     // Properties
-    Property(getId, slotSetId) Key EntityId;
+    Property(getId, SetId) Key EntityId;
     Property(getEntityName, slotSetEntityName) String EntityName;
     Property(getFullLegalName, slotSetFullLegalName) String FullLegalName;
     Property(getPrimaryAddress, slotSetPrimaryAddress) String PrimaryAddress;
