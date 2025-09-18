@@ -35,9 +35,13 @@ DispatchResult WSRouter::dispatch(const QString &action, const QJsonObject &payl
         return out;
     }
 
-    out.ok = true;
-    out.result = spec.handler ? spec.handler(payload) : QJsonObject{};
-    return out;
+    if (!spec.handler) {
+        out.ok = true;
+        out.result = QJsonObject{};
+        return out;
+    }
+
+    return spec.handler(payload);
 }
 
 bool WSRouter::validate(const QJsonObject &payload,
@@ -98,4 +102,3 @@ QString WSRouter::typeName(QJsonValue::Type t)
 }
 
 } // namespace Nutmeg
-

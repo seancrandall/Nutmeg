@@ -34,20 +34,24 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
     m_router.registerAction(QStringLiteral("ping"), ActionSpec{
         /*fields*/ {},
         /*handler*/ [](const QJsonObject &){
-            return QJsonObject{
+            DispatchResult r; r.ok = true;
+            r.result = QJsonObject{
                 {"pong", true},
                 {"now", QDateTime::currentDateTimeUtc().toString(Qt::ISODate)}
             };
+            return r;
         }
     });
 
     m_router.registerAction(QStringLiteral("info.get"), ActionSpec{
         /*fields*/ {},
         /*handler*/ [this](const QJsonObject &){
-            return QJsonObject{
+            DispatchResult r; r.ok = true;
+            r.result = QJsonObject{
                 {"service", QStringLiteral("NutmegBroker")},
                 {"apiVersion", protocolVersion()}
             };
+            return r;
         }
     });
 
@@ -59,11 +63,13 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
         /*handler*/ [](const QJsonObject &payload){
             const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
             const MatterData m = Nutdb::GetMatter(id);
+            DispatchResult r;
             if (m.MatterId == 0) {
-                // Error surfaced by dispatch caller via ENOTFOUND; we return an empty obj here.
-                return QJsonObject{};
+                r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Matter not found");
+                return r;
             }
-            QJsonObject obj{
+            r.ok = true;
+            r.result = QJsonObject{
                 {"id", static_cast<double>(m.MatterId)},
                 {"fkParent", static_cast<double>(m.fkParent)},
                 {"attorneyDocketNumber", m.AttorneyDocketNumber},
@@ -77,7 +83,7 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
                 {"fkMatterJurisdiction", static_cast<double>(m.fkMatterJurisdiction)},
                 {"oldMatterId", static_cast<double>(m.OldMatterId)}
             };
-            return obj;
+            return r;
         }
     });
 
@@ -100,8 +106,10 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
         /*handler*/ [](const QJsonObject &payload){
             const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
             Matter matter{id};
+            DispatchResult r;
             if (matter.getId() == 0) {
-                return QJsonObject{}; // ENOTFOUND handled by caller
+                r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Matter not found");
+                return r;
             }
 
             // Apply provided fields
@@ -131,7 +139,8 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
 
             // Return fresh record
             const MatterData m = Nutdb::GetMatter(id);
-            QJsonObject obj{
+            r.ok = true;
+            r.result = QJsonObject{
                 {"id", static_cast<double>(m.MatterId)},
                 {"fkParent", static_cast<double>(m.fkParent)},
                 {"attorneyDocketNumber", m.AttorneyDocketNumber},
@@ -145,7 +154,7 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
                 {"fkMatterJurisdiction", static_cast<double>(m.fkMatterJurisdiction)},
                 {"oldMatterId", static_cast<double>(m.OldMatterId)}
             };
-            return obj;
+            return r;
         }
     });
 }

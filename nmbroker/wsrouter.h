@@ -16,19 +16,19 @@ struct FieldSpec {
     bool required{false};
 };
 
-using Handler = std::function<QJsonObject(const QJsonObject& payload)>;
-
-struct ActionSpec {
-    QList<FieldSpec> fields; // schema
-    Handler handler;
-};
-
 struct DispatchResult {
     bool ok{false};
     QJsonObject result; // when ok
     QString errorCode;  // when !ok
     QString errorMessage;
     QJsonObject errorDetails; // e.g., validation issues
+};
+
+using Handler = std::function<DispatchResult(const QJsonObject& payload)>;
+
+struct ActionSpec {
+    QList<FieldSpec> fields; // schema
+    Handler handler;
 };
 
 class WSRouter {
@@ -53,4 +53,3 @@ class WSRouter {
 } // namespace Nutmeg
 
 #endif // NUTMEG_WSROUTER_H
-
