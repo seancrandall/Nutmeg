@@ -11,6 +11,7 @@
 #include "objects/matter.h"
 #include "objects/appointment.h"
 #include "objects/copyrightmatter.h"
+#include "objects/deadline.h"
 
 namespace Nutmeg {
 
@@ -245,6 +246,88 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
                 {"fkDeposit", static_cast<double>(m.fkDeposit)},
                 {"fkWorkType", static_cast<double>(m.fkWorkType)},
                 {"isRegistered", Nutdb::GetFlag(id, QStringLiteral("Registered"))}
+            };
+            return r;
+        }
+    });
+
+    // deadline.get: by id
+    m_router.registerAction(QStringLiteral("deadline.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            const DeadlineData d = Nutdb::GetDeadline(id);
+            DispatchResult r;
+            if (d.DeadlineId == 0) {
+                r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Deadline not found");
+                return r;
+            }
+            // Compute color from NextDeadline for convenience
+            const QColor c = Deadline::getDateColor(d.NextDeadline);
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(d.DeadlineId)},
+                {"triggerDate", d.TriggerDate.toString(Qt::ISODate)},
+                {"softDeadline", d.SoftDeadline.toString(Qt::ISODate)},
+                {"hardDeadline", d.HardDeadline.toString(Qt::ISODate)},
+                {"nextDeadline", d.NextDeadline.toString(Qt::ISODate)},
+                {"color", c.name(QColor::HexRgb)}
+            };
+            return r;
+        }
+    });
+
+    // deadline.update: update any of the date fields
+    m_router.registerAction(QStringLiteral("deadline.update"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
+            FieldSpec{QStringLiteral("triggerDate"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("softDeadline"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("hardDeadline"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("nextDeadline"), QJsonValue::String, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            DispatchResult r;
+            Deadline dl{id};
+            if (dl.getId() == 0) {
+                r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Deadline not found");
+                return r;
+            }
+
+            auto parseDate = [](const QJsonObject &obj, const char *key, QDate &out, QString &err) -> bool {
+                if (!obj.contains(key)) return true;
+                const QString s = obj.value(QString::fromUtf8(key)).toString();
+                const QDate d = QDate::fromString(s, Qt::ISODate);
+                if (!d.isValid()) { err = QStringLiteral("Invalid date for '%1'").arg(QString::fromUtf8(key)); return false; }
+                out = d; return true;
+            };
+
+            QString perr; QDate dt;
+            if (!parseDate(payload, "triggerDate", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("triggerDate")) dl.SetTriggerDate(dt);
+
+            if (!parseDate(payload, "softDeadline", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("softDeadline")) dl.SetSoftDeadline(dt);
+
+            if (!parseDate(payload, "hardDeadline", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("hardDeadline")) dl.SetHardDeadline(dt);
+
+            if (!parseDate(payload, "nextDeadline", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("nextDeadline")) dl.SetNextDeadline(dt);
+
+            const DeadlineData d = Nutdb::GetDeadline(id);
+            const QColor c = Deadline::getDateColor(d.NextDeadline);
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(d.DeadlineId)},
+                {"triggerDate", d.TriggerDate.toString(Qt::ISODate)},
+                {"softDeadline", d.SoftDeadline.toString(Qt::ISODate)},
+                {"hardDeadline", d.HardDeadline.toString(Qt::ISODate)},
+                {"nextDeadline", d.NextDeadline.toString(Qt::ISODate)},
+                {"color", c.name(QColor::HexRgb)}
             };
             return r;
         }

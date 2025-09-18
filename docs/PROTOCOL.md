@@ -61,6 +61,15 @@ Initial Actions
   - Payload: `{ id: number, appointmentTime?: ISO-8601 string, fkAppointmentType?: number, complete?: boolean, needsAgenda?: boolean, agendaSent?: boolean, confirmed?: boolean }`
   - Result: same shape as `appointment.get`
   - Errors: `ENOTFOUND` if the id does not exist; `EBADREQ` if `appointmentTime` is not a valid ISO-8601 string
+- `deadline.get`
+  - Payload: `{ id: number }`
+  - Result: `{ id, triggerDate: YYYY-MM-DD, softDeadline: YYYY-MM-DD, hardDeadline: YYYY-MM-DD, nextDeadline: YYYY-MM-DD, color: "#RRGGBB" }`
+  - Notes: `color` encodes urgency derived from `nextDeadline`.
+  - Errors: `ENOTFOUND` if the id does not exist
+- `deadline.update`
+  - Payload: `{ id: number, triggerDate?: YYYY-MM-DD, softDeadline?: YYYY-MM-DD, hardDeadline?: YYYY-MM-DD, nextDeadline?: YYYY-MM-DD }`
+  - Result: same shape as `deadline.get`
+  - Errors: `ENOTFOUND` if the id does not exist; `EBADREQ` on invalid date strings
 - `copyrightMatter.get`
   - Payload: `{ id: number }`
   - Result: `{ id, fkAuthor, created: YYYY-MM-DD, filed: YYYY-MM-DD, registered: YYYY-MM-DD, serialNumber, registrationNumber, fkDeposit, fkWorkType, isRegistered }`
