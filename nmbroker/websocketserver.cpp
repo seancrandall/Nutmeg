@@ -29,6 +29,7 @@
 #include "objects/patentmatter.h"
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QSqlError>
 
 namespace Nutmeg {
 
@@ -72,6 +73,143 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
                 {"apiVersion", protocolVersion()}
             };
             return r;
+        }
+    });
+
+    // appointmentType.get: by id (read-only fetch)
+    m_router.registerAction(QStringLiteral("appointmentType.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            QSqlQuery q(QSqlDatabase::database());
+            q.prepare(QStringLiteral("SELECT AppointmentTypeId, AppointmentTypeName FROM appointmentType WHERE AppointmentTypeId = :id"));
+            q.bindValue(":id", QVariant::fromValue(id));
+            DispatchResult r;
+            if (!q.exec() || !q.next()) {
+                r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("AppointmentType not found");
+                return r;
+            }
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(q.value(0).toUInt())},
+                {"appointmentTypeName", q.value(1).toString()}
+            };
+            return r;
+        }
+    });
+
+    // appointmentType.list: list all rows (read-only)
+    m_router.registerAction(QStringLiteral("appointmentType.list"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{},
+        /*handler*/ [](const QJsonObject &){
+            QSqlQuery q(QSqlDatabase::database());
+            DispatchResult r; r.ok = true;
+            QJsonArray items;
+            if (q.exec(QStringLiteral("SELECT AppointmentTypeId, AppointmentTypeName FROM appointmentType ORDER BY AppointmentTypeName"))) {
+                while (q.next()) {
+                    items.append(QJsonObject{
+                        {"id", static_cast<double>(q.value(0).toUInt())},
+                        {"appointmentTypeName", q.value(1).toString()}
+                    });
+                }
+            }
+            r.result = QJsonObject{{"items", items}};
+            return r;
+        }
+    });
+
+    // appointmentType.create: insert a new row (write)
+    m_router.registerAction(QStringLiteral("appointmentType.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("appointmentTypeName"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const QString name = payload.value(QStringLiteral("appointmentTypeName")).toString();
+            DispatchResult r;
+            if (name.trimmed().isEmpty()) {
+                r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("appointmentTypeName is required");
+                return r;
+            }
+            QSqlQuery q(QSqlDatabase::database());
+            q.prepare(QStringLiteral("INSERT INTO appointmentType (AppointmentTypeName) VALUES (:name)"));
+            q.bindValue(":name", name);
+            if (!q.exec()) {
+                r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = q.lastError().text();
+                return r;
+            }
+            const QVariant newIdVar = q.lastInsertId();
+            Key newId = 0;
+            if (newIdVar.isValid()) newId = newIdVar.toUInt();
+            // Fallback: select last row by name if driver didn't return lastInsertId
+            if (newId == 0) {
+                QSqlQuery q2(QSqlDatabase::database());
+                q2.prepare(QStringLiteral("SELECT AppointmentTypeId FROM appointmentType WHERE AppointmentTypeName = :name ORDER BY AppointmentTypeId DESC LIMIT 1"));
+                q2.bindValue(":name", name);
+                if (q2.exec() && q2.next()) newId = q2.value(0).toUInt();
+            }
+            // Return created row
+            QSqlQuery qr(QSqlDatabase::database());
+            qr.prepare(QStringLiteral("SELECT AppointmentTypeId, AppointmentTypeName FROM appointmentType WHERE AppointmentTypeId = :id"));
+            qr.bindValue(":id", QVariant::fromValue(newId));
+            if (!qr.exec() || !qr.next()) {
+                r.ok = true; // created, but failed to re-read
+                r.result = QJsonObject{{"id", static_cast<double>(newId)}, {"appointmentTypeName", name}};
+                return r;
+            }
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(qr.value(0).toUInt())},
+                {"appointmentTypeName", qr.value(1).toString()}
+            };
+            return r;
+        }
+    });
+
+    // appointmentType.update: update a row (write)
+    m_router.registerAction(QStringLiteral("appointmentType.update"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
+            FieldSpec{QStringLiteral("appointmentTypeName"), QJsonValue::String, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            bool any = false;
+            QSqlQuery q(QSqlDatabase::database());
+            if (payload.contains(QStringLiteral("appointmentTypeName"))) {
+                any = true;
+                QSqlQuery qu(QSqlDatabase::database());
+                qu.prepare(QStringLiteral("UPDATE appointmentType SET AppointmentTypeName = :name WHERE AppointmentTypeId = :id"));
+                qu.bindValue(":name", payload.value(QStringLiteral("appointmentTypeName")).toString());
+                qu.bindValue(":id", QVariant::fromValue(id));
+                if (!qu.exec()) {
+                    DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EUPDATE"); r.errorMessage = qu.lastError().text(); return r;
+                }
+            }
+            DispatchResult r;
+            if (!any) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("No updatable fields provided"); return r; }
+            // Return updated row
+            QSqlQuery qr(QSqlDatabase::database());
+            qr.prepare(QStringLiteral("SELECT AppointmentTypeId, AppointmentTypeName FROM appointmentType WHERE AppointmentTypeId = :id"));
+            qr.bindValue(":id", QVariant::fromValue(id));
+            if (!qr.exec() || !qr.next()) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("AppointmentType not found"); return r; }
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(qr.value(0).toUInt())},
+                {"appointmentTypeName", qr.value(1).toString()}
+            };
+            return r;
+        }
+    });
+
+    // appointmentType.delete: delete a row (write)
+    m_router.registerAction(QStringLiteral("appointmentType.delete"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            QSqlQuery q(QSqlDatabase::database());
+            q.prepare(QStringLiteral("DELETE FROM appointmentType WHERE AppointmentTypeId = :id"));
+            q.bindValue(":id", QVariant::fromValue(id));
+            DispatchResult r;
+            if (!q.exec()) { r.ok = false; r.errorCode = QStringLiteral("EDELETE"); r.errorMessage = q.lastError().text(); return r; }
+            r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"deleted", true}}; return r;
         }
     });
 
