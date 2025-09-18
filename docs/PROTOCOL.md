@@ -141,6 +141,22 @@ Initial Actions
 - `object.tag`
   - Payload: `{ objectId: number, tagText?: string, removeTagText?: string }`
   - Result: `{ objectId, tags: [{ tagId, tagText }] }`
+- `task.get`
+  - Payload: `{ id: number }`
+  - Result: `{ id, fkMatter, dateAssigned: YYYY-MM-DD, fkDeadline, expectedFee, feePercent, approvalRequested: YYYY-MM-DD, approvalReceived: YYYY-MM-DD, complete, fkWorkAttorney, fkParalegal, fkAuthorizationDocument, oldTaskId, fkTaskType, taskTypeString }`
+  - Errors: `ENOTFOUND` if the id does not exist
+- `task.update`
+  - Payload: `{ id: number, fkMatter?: number, dateAssigned?: YYYY-MM-DD, fkDeadline?: number, expectedFee?: number, feePercent?: number, approvalRequested?: YYYY-MM-DD, approvalReceived?: YYYY-MM-DD, complete?: boolean, fkWorkAttorney?: number, fkParalegal?: number, fkAuthorizationDocument?: number, oldTaskId?: number, fkTaskType?: number }`
+  - Result: same shape as `task.get`
+  - Errors: `ENOTFOUND` or `EBADREQ` for invalid dates
+- `trademarkMatter.get`
+  - Payload: `{ id: number }`
+  - Result: `{ id, firstUseInCommerce: YYYY-MM-DD, internationalClass, fkStatus, serialNumber, registrationNumber, publicationDate: YYYY-MM-DD, windowOpens: YYYY-MM-DD, nofeeWindowCloses: YYYY-MM-DD, finalWindowCloses: YYYY-MM-DD, fkTrademarkExaminer, fkFilingBasis, fkTrademarkJurisdiction, fkSpecimen, fkEvidenceOfUse, mark, goodsServices }`
+  - Errors: `ENOTFOUND` if the id does not exist
+- `trademarkMatter.update`
+  - Payload: `{ id: number, firstUseInCommerce?: YYYY-MM-DD, internationalClass?: number, fkStatus?: number, serialNumber?: string, registrationNumber?: string, publicationDate?: YYYY-MM-DD, windowOpens?: YYYY-MM-DD, nofeeWindowCloses?: YYYY-MM-DD, finalWindowCloses?: YYYY-MM-DD, fkTrademarkExaminer?: number, fkFilingBasis?: number, fkTrademarkJurisdiction?: number, fkSpecimen?: number, fkEvidenceOfUse?: number, mark?: string, goodsServices?: string }`
+  - Result: same shape as `trademarkMatter.get`
+  - Errors: `ENOTFOUND` or `EBADREQ` for invalid dates
 - `flagClass.get`
   - Payload: `{ id?: number, camelCase?: string }` (at least one required)
   - Result: `{ id, camelCase, label, description }`

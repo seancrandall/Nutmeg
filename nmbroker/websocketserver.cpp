@@ -24,6 +24,8 @@
 #include "objects/person.h"
 #include "objects/response.h"
 #include "objects/tag.h"
+#include "objects/task.h"
+#include "objects/trademarkmatter.h"
 #include <QSqlQuery>
 #include <QSqlRecord>
 
@@ -992,6 +994,221 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
             // Return updated tags
             QJsonArray tagsArr; for (const auto &tg : Nutdb::GetObjectTags(objectId)) tagsArr.append(QJsonObject{{"tagId", static_cast<double>(tg.TagId)}, {"tagText", tg.TagText}});
             r.result = QJsonObject{{"objectId", static_cast<double>(objectId)}, {"tags", tagsArr}};
+            return r;
+        }
+    });
+
+    // task.get
+    m_router.registerAction(QStringLiteral("task.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            const TaskData t = Nutdb::GetTask(id);
+            DispatchResult r;
+            if (t.TaskId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Task not found"); return r; }
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(t.TaskId)},
+                {"fkMatter", static_cast<double>(t.fkMatter)},
+                {"dateAssigned", t.DateAssigned.toString(Qt::ISODate)},
+                {"fkDeadline", static_cast<double>(t.fkDeadline)},
+                {"expectedFee", t.ExpectedFee},
+                {"feePercent", t.FeePercent},
+                {"approvalRequested", t.ApprovalRequested.toString(Qt::ISODate)},
+                {"approvalReceived", t.ApprovalReceived.toString(Qt::ISODate)},
+                {"complete", t.Complete},
+                {"fkWorkAttorney", static_cast<double>(t.fkWorkAttorney)},
+                {"fkParalegal", static_cast<double>(t.fkParalegal)},
+                {"fkAuthorizationDocument", static_cast<double>(t.fkAuthorizationDocument)},
+                {"oldTaskId", static_cast<double>(t.OldTaskId)},
+                {"fkTaskType", static_cast<double>(t.fkTaskType)},
+                {"taskTypeString", Task{id}.getTaskTypeString()}
+            };
+            return r;
+        }
+    });
+
+    // task.update
+    m_router.registerAction(QStringLiteral("task.update"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
+            FieldSpec{QStringLiteral("fkMatter"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("dateAssigned"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("fkDeadline"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("expectedFee"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("feePercent"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("approvalRequested"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("approvalReceived"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("complete"), QJsonValue::Bool, false},
+            FieldSpec{QStringLiteral("fkWorkAttorney"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkParalegal"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkAuthorizationDocument"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("oldTaskId"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkTaskType"), QJsonValue::Double, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            Task task{id};
+            DispatchResult r;
+            if (task.getId() == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Task not found"); return r; }
+            auto parseDate = [](const QJsonObject &obj, const char *key, QDate &out, QString &err) -> bool {
+                if (!obj.contains(key)) return true;
+                const QString s = obj.value(QString::fromUtf8(key)).toString();
+                const QDate d = QDate::fromString(s, Qt::ISODate);
+                if (!d.isValid()) { err = QStringLiteral("Invalid date for '%1'").arg(QString::fromUtf8(key)); return false; }
+                out = d; return true;
+            };
+            QString perr; QDate dt;
+            if (payload.contains("fkMatter")) task.SetfkMatter(static_cast<Key>(payload.value("fkMatter").toDouble()));
+            if (!parseDate(payload, "dateAssigned", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("dateAssigned")) task.SetDateAssigned(dt);
+            if (payload.contains("fkDeadline")) task.SetfkDeadline(static_cast<Key>(payload.value("fkDeadline").toDouble()));
+            if (payload.contains("expectedFee")) task.SetExpectedFee(static_cast<float>(payload.value("expectedFee").toDouble()));
+            if (payload.contains("feePercent")) task.SetFeePercent(static_cast<float>(payload.value("feePercent").toDouble()));
+            if (!parseDate(payload, "approvalRequested", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("approvalRequested")) task.SetApprovalRequested(dt);
+            if (!parseDate(payload, "approvalReceived", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("approvalReceived")) task.SetApprovalReceived(dt);
+            if (payload.contains("complete")) task.SetComplete(payload.value("complete").toBool());
+            if (payload.contains("fkWorkAttorney")) task.SetfkWorkAttorney(static_cast<Key>(payload.value("fkWorkAttorney").toDouble()));
+            if (payload.contains("fkParalegal")) task.SetfkParalegal(static_cast<Key>(payload.value("fkParalegal").toDouble()));
+            if (payload.contains("fkAuthorizationDocument")) task.SetfkAuthorizationDocument(static_cast<Key>(payload.value("fkAuthorizationDocument").toDouble()));
+            if (payload.contains("oldTaskId")) task.SetOldTaskId(static_cast<Key>(payload.value("oldTaskId").toDouble()));
+            if (payload.contains("fkTaskType")) task.SetfkTaskType(static_cast<Key>(payload.value("fkTaskType").toDouble()));
+
+            const TaskData t = Nutdb::GetTask(id);
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(t.TaskId)},
+                {"fkMatter", static_cast<double>(t.fkMatter)},
+                {"dateAssigned", t.DateAssigned.toString(Qt::ISODate)},
+                {"fkDeadline", static_cast<double>(t.fkDeadline)},
+                {"expectedFee", t.ExpectedFee},
+                {"feePercent", t.FeePercent},
+                {"approvalRequested", t.ApprovalRequested.toString(Qt::ISODate)},
+                {"approvalReceived", t.ApprovalReceived.toString(Qt::ISODate)},
+                {"complete", t.Complete},
+                {"fkWorkAttorney", static_cast<double>(t.fkWorkAttorney)},
+                {"fkParalegal", static_cast<double>(t.fkParalegal)},
+                {"fkAuthorizationDocument", static_cast<double>(t.fkAuthorizationDocument)},
+                {"oldTaskId", static_cast<double>(t.OldTaskId)},
+                {"fkTaskType", static_cast<double>(t.fkTaskType)},
+                {"taskTypeString", Task{id}.getTaskTypeString()}
+            };
+            return r;
+        }
+    });
+
+    // trademarkMatter.get
+    m_router.registerAction(QStringLiteral("trademarkMatter.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            const TrademarkMatterData m = Nutdb::GetTrademarkMatter(id);
+            DispatchResult r;
+            if (m.TrademarkMatterId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("TrademarkMatter not found"); return r; }
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(m.TrademarkMatterId)},
+                {"firstUseInCommerce", m.FirstUseInCommerce.toString(Qt::ISODate)},
+                {"internationalClass", m.InternationalClass},
+                {"fkStatus", static_cast<double>(m.fkStatus)},
+                {"serialNumber", m.SerialNumber},
+                {"registrationNumber", m.RegistrationNumber},
+                {"publicationDate", m.PublicationDate.toString(Qt::ISODate)},
+                {"windowOpens", m.WindowOpens.toString(Qt::ISODate)},
+                {"nofeeWindowCloses", m.NofeeWindowCloses.toString(Qt::ISODate)},
+                {"finalWindowCloses", m.FinalWindowCloses.toString(Qt::ISODate)},
+                {"fkTrademarkExaminer", static_cast<double>(m.fkTrademarkExaminer)},
+                {"fkFilingBasis", static_cast<double>(m.fkFilingBasis)},
+                {"fkTrademarkJurisdiction", static_cast<double>(m.fkTrademarkJurisdiction)},
+                {"fkSpecimen", static_cast<double>(m.fkSpecimen)},
+                {"fkEvidenceOfUse", static_cast<double>(m.fkEvidenceOfUse)},
+                {"mark", m.Mark},
+                {"goodsServices", m.GoodsServices}
+            };
+            return r;
+        }
+    });
+
+    // trademarkMatter.update
+    m_router.registerAction(QStringLiteral("trademarkMatter.update"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
+            FieldSpec{QStringLiteral("firstUseInCommerce"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("internationalClass"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkStatus"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("serialNumber"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("registrationNumber"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("publicationDate"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("windowOpens"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("nofeeWindowCloses"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("finalWindowCloses"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("fkTrademarkExaminer"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkFilingBasis"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkTrademarkJurisdiction"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkSpecimen"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkEvidenceOfUse"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("mark"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("goodsServices"), QJsonValue::String, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            TrademarkMatter tm{id};
+            DispatchResult r;
+            if (tm.getId() == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("TrademarkMatter not found"); return r; }
+
+            auto parseDate = [](const QJsonObject &obj, const char *key, QDate &out, QString &err) -> bool {
+                if (!obj.contains(key)) return true;
+                const QString s = obj.value(QString::fromUtf8(key)).toString();
+                const QDate d = QDate::fromString(s, Qt::ISODate);
+                if (!d.isValid()) { err = QStringLiteral("Invalid date for '%1'").arg(QString::fromUtf8(key)); return false; }
+                out = d; return true;
+            };
+            QString perr; QDate dt;
+            if (!parseDate(payload, "firstUseInCommerce", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("firstUseInCommerce")) tm.slotSetFirstUseInCommerce(dt);
+            if (payload.contains("internationalClass")) tm.slotSetInternationalClass(static_cast<int>(payload.value("internationalClass").toDouble()));
+            if (payload.contains("fkStatus")) tm.slotSetfkStatus(static_cast<Key>(payload.value("fkStatus").toDouble()));
+            if (payload.contains("serialNumber")) tm.slotSetSerialNumber(payload.value("serialNumber").toString());
+            if (payload.contains("registrationNumber")) tm.slotSetRegistrationNumber(payload.value("registrationNumber").toString());
+            if (!parseDate(payload, "publicationDate", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("publicationDate")) tm.slotSetPublicationDate(dt);
+            if (!parseDate(payload, "windowOpens", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("windowOpens")) tm.slotSetWindowOpens(dt);
+            if (!parseDate(payload, "nofeeWindowCloses", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("nofeeWindowCloses")) tm.slotSetNofeeWindowCloses(dt);
+            if (!parseDate(payload, "finalWindowCloses", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("finalWindowCloses")) tm.slotSetFinalWindowCloses(dt);
+            if (payload.contains("fkTrademarkExaminer")) tm.slotSetfkTrademarkExaminer(static_cast<Key>(payload.value("fkTrademarkExaminer").toDouble()));
+            if (payload.contains("fkFilingBasis")) tm.slotSetfkFilingBasis(static_cast<Key>(payload.value("fkFilingBasis").toDouble()));
+            if (payload.contains("fkTrademarkJurisdiction")) tm.slotSetfkTrademarkJurisdiction(static_cast<Key>(payload.value("fkTrademarkJurisdiction").toDouble()));
+            if (payload.contains("fkSpecimen")) tm.slotSetfkSpecimen(static_cast<Key>(payload.value("fkSpecimen").toDouble()));
+            if (payload.contains("fkEvidenceOfUse")) tm.slotSetfkEvidenceOfUse(static_cast<Key>(payload.value("fkEvidenceOfUse").toDouble()));
+            if (payload.contains("mark")) tm.slotSetMark(payload.value("mark").toString());
+            if (payload.contains("goodsServices")) tm.slotSetGoodsServices(payload.value("goodsServices").toString());
+
+            const TrademarkMatterData m = Nutdb::GetTrademarkMatter(id);
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(m.TrademarkMatterId)},
+                {"firstUseInCommerce", m.FirstUseInCommerce.toString(Qt::ISODate)},
+                {"internationalClass", m.InternationalClass},
+                {"fkStatus", static_cast<double>(m.fkStatus)},
+                {"serialNumber", m.SerialNumber},
+                {"registrationNumber", m.RegistrationNumber},
+                {"publicationDate", m.PublicationDate.toString(Qt::ISODate)},
+                {"windowOpens", m.WindowOpens.toString(Qt::ISODate)},
+                {"nofeeWindowCloses", m.NofeeWindowCloses.toString(Qt::ISODate)},
+                {"finalWindowCloses", m.FinalWindowCloses.toString(Qt::ISODate)},
+                {"fkTrademarkExaminer", static_cast<double>(m.fkTrademarkExaminer)},
+                {"fkFilingBasis", static_cast<double>(m.fkFilingBasis)},
+                {"fkTrademarkJurisdiction", static_cast<double>(m.fkTrademarkJurisdiction)},
+                {"fkSpecimen", static_cast<double>(m.fkSpecimen)},
+                {"fkEvidenceOfUse", static_cast<double>(m.fkEvidenceOfUse)},
+                {"mark", m.Mark},
+                {"goodsServices", m.GoodsServices}
+            };
             return r;
         }
     });
