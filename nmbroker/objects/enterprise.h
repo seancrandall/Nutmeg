@@ -15,7 +15,7 @@ class Enterprise : public Nutmeg::Entity
     explicit Enterprise(String enterpriseName);
 
     // Properties
-    Property(getId, slotSetId) Key EnterpriseId;
+    Property(getId, SetId) Key EnterpriseId;
     Property(getEnterpriseName, slotSetEnterpriseName) String EnterpriseName;
     Property(getfkBusinessJurisdiction, slotSetfkBusinessJurisdiction) Key fkBusinessJurisdiction;
     Property(getfkStateOfIncorporation, slotSetfkStateOfIncorporation) Key fkStateOfIncorporation;
