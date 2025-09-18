@@ -16,13 +16,13 @@ class CopyrightMatter : public Nutmeg::Matter
     explicit CopyrightMatter(String docketNumber);
 
     // Properties
-    Property(getId, slotSetId) Key CopyrightMatterId;
+    Property(getId, SetId) Key CopyrightMatterId;
     Property(getfkAuthor, slotSetfkAuthor) Key fkAuthor;
     Property(getCreated, slotSetCreated) Date Created;
     Property(getFiled, slotSetFiled) Date Filed;
     Property(getRegistered, slotSetRegistered) Date Registered;
     Property(getSerialNumber, slotSetSerialNumber) String SerialNumber;
-    Property(getRegistrationNumer, slotSetRegistrationNumber) String RegistrationNumber;
+    Property(getRegistrationNumber, slotSetRegistrationNumber) String RegistrationNumber;
     Property(getfkDeposit, slotSetfkDeposit) Key fkDeposit;
     Property(getfkWorkType, slotSetfkWorkType) Key fkWorkType;
 
