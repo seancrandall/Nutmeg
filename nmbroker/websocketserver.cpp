@@ -8,6 +8,7 @@
 #include <QJsonValue>
 #include <QDateTime>
 #include <QDebug>
+#include "objects/matter.h"
 
 namespace Nutmeg {
 
@@ -47,6 +48,104 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
                 {"service", QStringLiteral("NutmegBroker")},
                 {"apiVersion", protocolVersion()}
             };
+        }
+    });
+
+    // matter.get: by id
+    m_router.registerAction(QStringLiteral("matter.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            const MatterData m = Nutdb::GetMatter(id);
+            if (m.MatterId == 0) {
+                // Error surfaced by dispatch caller via ENOTFOUND; we return an empty obj here.
+                return QJsonObject{};
+            }
+            QJsonObject obj{
+                {"id", static_cast<double>(m.MatterId)},
+                {"fkParent", static_cast<double>(m.fkParent)},
+                {"attorneyDocketNumber", m.AttorneyDocketNumber},
+                {"clientDocketNumber", m.ClientDocketNumber},
+                {"title", m.Title},
+                {"fkClient", static_cast<double>(m.fkClient)},
+                {"fkAssigningFirm", static_cast<double>(m.fkAssigningFirm)},
+                {"fkDefaultWorkAttorney", static_cast<double>(m.fkDefaultWorkAttorney)},
+                {"fkDefaultParalegal", static_cast<double>(m.fkDefaultParalegal)},
+                {"fkKeyDocument", static_cast<double>(m.fkKeyDocument)},
+                {"fkMatterJurisdiction", static_cast<double>(m.fkMatterJurisdiction)},
+                {"oldMatterId", static_cast<double>(m.OldMatterId)}
+            };
+            return obj;
+        }
+    });
+
+    // matter.update: updates provided fields; returns updated record
+    m_router.registerAction(QStringLiteral("matter.update"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
+            FieldSpec{QStringLiteral("fkParent"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("attorneyDocketNumber"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("clientDocketNumber"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("title"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("fkClient"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkAssigningFirm"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkDefaultWorkAttorney"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkDefaultParalegal"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkKeyDocument"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkMatterJurisdiction"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("oldMatterId"), QJsonValue::Double, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            Matter matter{id};
+            if (matter.getId() == 0) {
+                return QJsonObject{}; // ENOTFOUND handled by caller
+            }
+
+            // Apply provided fields
+            auto setIf = [&payload](const char *name, auto setter){
+                const QString key = QString::fromUtf8(name);
+                if (payload.contains(key)) {
+                    const QJsonValue v = payload.value(key);
+                    if (v.isString()) {
+                        setter(v.toString());
+                    } else if (v.isDouble()) {
+                        setter(static_cast<Key>(v.toDouble()));
+                    }
+                }
+            };
+
+            setIf("fkParent", [&](Key k){ matter.SetfkParent(k); });
+            setIf("attorneyDocketNumber", [&](const QString &s){ matter.SetAttorneyDocketNumber(s); });
+            setIf("clientDocketNumber", [&](const QString &s){ matter.SetClientDocketNumber(s); });
+            setIf("title", [&](const QString &s){ matter.SetTitle(s); });
+            setIf("fkClient", [&](Key k){ matter.SetfkClient(k); });
+            setIf("fkAssigningFirm", [&](Key k){ matter.SetfkAssigningFirm(k); });
+            setIf("fkDefaultWorkAttorney", [&](Key k){ matter.SetfkDefaultWorkAttorney(k); });
+            setIf("fkDefaultParalegal", [&](Key k){ matter.SetfkDefaultParalegal(k); });
+            setIf("fkKeyDocument", [&](Key k){ matter.SetfkKeyDocument(k); });
+            setIf("fkMatterJurisdiction", [&](Key k){ matter.SetfkMatterJurisdiction(k); });
+            setIf("oldMatterId", [&](Key k){ matter.SetOldId(k); });
+
+            // Return fresh record
+            const MatterData m = Nutdb::GetMatter(id);
+            QJsonObject obj{
+                {"id", static_cast<double>(m.MatterId)},
+                {"fkParent", static_cast<double>(m.fkParent)},
+                {"attorneyDocketNumber", m.AttorneyDocketNumber},
+                {"clientDocketNumber", m.ClientDocketNumber},
+                {"title", m.Title},
+                {"fkClient", static_cast<double>(m.fkClient)},
+                {"fkAssigningFirm", static_cast<double>(m.fkAssigningFirm)},
+                {"fkDefaultWorkAttorney", static_cast<double>(m.fkDefaultWorkAttorney)},
+                {"fkDefaultParalegal", static_cast<double>(m.fkDefaultParalegal)},
+                {"fkKeyDocument", static_cast<double>(m.fkKeyDocument)},
+                {"fkMatterJurisdiction", static_cast<double>(m.fkMatterJurisdiction)},
+                {"oldMatterId", static_cast<double>(m.OldMatterId)}
+            };
+            return obj;
         }
     });
 }
