@@ -53,6 +53,14 @@ Initial Actions
   - Payload: `{ id: number, fkParent?: number, attorneyDocketNumber?: string, clientDocketNumber?: string, title?: string, fkClient?: number, fkAssigningFirm?: number, fkDefaultWorkAttorney?: number, fkDefaultParalegal?: number, fkKeyDocument?: number, fkMatterJurisdiction?: number, oldMatterId?: number }`
   - Result: same shape as `matter.get` (the updated record)
   - Errors: `ENOTFOUND` if the id does not exist; `EBADREQ` for validation/type errors
+- `appointment.get`
+  - Payload: `{ id: number }`
+  - Result: `{ id, appointmentTime: ISO-8601 UTC string, fkAppointmentType, complete, needsAgenda, agendaSent, confirmed, associatedObject, typeString }`
+  - Errors: `ENOTFOUND` if the id does not exist
+- `appointment.update`
+  - Payload: `{ id: number, appointmentTime?: ISO-8601 string, fkAppointmentType?: number, complete?: boolean, needsAgenda?: boolean, agendaSent?: boolean, confirmed?: boolean }`
+  - Result: same shape as `appointment.get`
+  - Errors: `ENOTFOUND` if the id does not exist; `EBADREQ` if `appointmentTime` is not a valid ISO-8601 string
 - Planned
   - `matters.search { q, page? }` → `{ items, page }`
   - `tasks.upcoming { since?, until?, page? }` → `{ items, page }`
@@ -75,6 +83,11 @@ Examples
   Response: `{ "type": "res", "id": "42", "ok": true, "result": { "id": 123, "title": "Sample", ... } }`
 - matter.get (not found)
   Response: `{ "type": "res", "id": "42", "ok": false, "error": { "code": "ENOTFOUND", "message": "Matter not found" } }`
+- appointment.update (ok)
+  Request: `{ "type": "req", "id": "1001", "action": "appointment.update", "payload": { "id": 77, "appointmentTime": "2025-05-01T16:00:00Z", "confirmed": true }, "version": "0.1" }`
+  Response: `{ "type": "res", "id": "1001", "ok": true, "result": { "id": 77, "appointmentTime": "2025-05-01T16:00:00Z", ... } }`
+- appointment.get (not found)
+  Response: `{ "type": "res", "id": "1002", "ok": false, "error": { "code": "ENOTFOUND", "message": "Appointment not found" } }`
 
 Compatibility with current server
 - Current implementation sends a greeting and supports text `ping` → `pong` and echoing messages.
