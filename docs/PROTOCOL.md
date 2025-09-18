@@ -70,6 +70,14 @@ Initial Actions
   - Payload: `{ id: number, triggerDate?: YYYY-MM-DD, softDeadline?: YYYY-MM-DD, hardDeadline?: YYYY-MM-DD, nextDeadline?: YYYY-MM-DD }`
   - Result: same shape as `deadline.get`
   - Errors: `ENOTFOUND` if the id does not exist; `EBADREQ` on invalid date strings
+- `document.get`
+  - Payload: `{ id: number }`
+  - Result: `{ id, fullyQualifiedPath, url, filename, extension, title }`
+  - Errors: `ENOTFOUND` if the id does not exist
+- `document.update`
+  - Payload: `{ id: number, fullyQualifiedPath?: string, url?: string, filename?: string, extension?: string, title?: string }`
+  - Result: same shape as `document.get`
+  - Errors: `ENOTFOUND` if the id does not exist
 - `copyrightMatter.get`
   - Payload: `{ id: number }`
   - Result: `{ id, fkAuthor, created: YYYY-MM-DD, filed: YYYY-MM-DD, registered: YYYY-MM-DD, serialNumber, registrationNumber, fkDeposit, fkWorkType, isRegistered }`

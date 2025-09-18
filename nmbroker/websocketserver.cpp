@@ -12,6 +12,7 @@
 #include "objects/appointment.h"
 #include "objects/copyrightmatter.h"
 #include "objects/deadline.h"
+#include "objects/document.h"
 
 namespace Nutmeg {
 
@@ -328,6 +329,74 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
                 {"hardDeadline", d.HardDeadline.toString(Qt::ISODate)},
                 {"nextDeadline", d.NextDeadline.toString(Qt::ISODate)},
                 {"color", c.name(QColor::HexRgb)}
+            };
+            return r;
+        }
+    });
+
+    // document.get: by id
+    m_router.registerAction(QStringLiteral("document.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            const DocumentData d = Nutdb::GetDocument(id);
+            DispatchResult r;
+            if (d.DocumentId == 0) {
+                r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Document not found");
+                return r;
+            }
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(d.DocumentId)},
+                {"fullyQualifiedPath", d.FullyQualifiedPath},
+                {"url", d.URL},
+                {"filename", d.Filename},
+                {"extension", d.Extension},
+                {"title", d.Title}
+            };
+            return r;
+        }
+    });
+
+    // document.update: update fields on a document
+    m_router.registerAction(QStringLiteral("document.update"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
+            FieldSpec{QStringLiteral("fullyQualifiedPath"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("url"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("filename"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("extension"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("title"), QJsonValue::String, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            Document doc{id};
+            DispatchResult r;
+            if (doc.getId() == 0) {
+                r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Document not found");
+                return r;
+            }
+
+            if (payload.contains("fullyQualifiedPath")) doc.slotSetFullyQualifiedPath(payload.value("fullyQualifiedPath").toString());
+            if (payload.contains("url")) doc.slotSetURL(payload.value("url").toString());
+            if (payload.contains("filename"))
+                Nutdb::UpdateField(QStringLiteral("document"), QStringLiteral("Filename"), id, payload.value("filename").toString());
+            if (payload.contains("extension"))
+                Nutdb::UpdateField(QStringLiteral("document"), QStringLiteral("Extension"), id, payload.value("extension").toString());
+            if (payload.contains("title"))
+                Nutdb::UpdateField(QStringLiteral("document"), QStringLiteral("Title"), id, payload.value("title").toString());
+
+            const DocumentData d = Nutdb::GetDocument(id);
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(d.DocumentId)},
+                {"fullyQualifiedPath", d.FullyQualifiedPath},
+                {"url", d.URL},
+                {"filename", d.Filename},
+                {"extension", d.Extension},
+                {"title", d.Title}
             };
             return r;
         }
