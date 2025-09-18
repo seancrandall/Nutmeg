@@ -656,6 +656,30 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
         }
     });
 
+    // flag.set: set/clear a boolean flag by object and camelCase
+    m_router.registerAction(QStringLiteral("flag.set"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("objectId"), QJsonValue::Double, true},
+            FieldSpec{QStringLiteral("camelCase"), QJsonValue::String, true},
+            FieldSpec{QStringLiteral("value"), QJsonValue::Bool, true}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key objectId = static_cast<Key>(payload.value(QStringLiteral("objectId")).toDouble());
+            const QString camel = payload.value(QStringLiteral("camelCase")).toString();
+            const bool value = payload.value(QStringLiteral("value")).toBool();
+            DispatchResult r;
+            if (camel.isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("camelCase is required"); return r; }
+            if (value) Nutdb::SetFlag(objectId, camel); else Nutdb::ClearFlag(objectId, camel);
+            r.ok = true;
+            r.result = QJsonObject{
+                {"objectId", static_cast<double>(objectId)},
+                {"camelCase", camel},
+                {"value", value}
+            };
+            return r;
+        }
+    });
+
     // matter.get: by id
     m_router.registerAction(QStringLiteral("matter.get"), ActionSpec{
         /*fields*/ QList<FieldSpec>{

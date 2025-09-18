@@ -109,6 +109,9 @@ Initial Actions
 - `flag.get`
   - Payload: `{ objectId: number, camelCase: string }`
   - Result: `{ objectId, camelCase, value: boolean }`
+- `flag.set`
+  - Payload: `{ objectId: number, camelCase: string, value: boolean }`
+  - Result: `{ objectId, camelCase, value }`
 - `copyrightMatter.get`
   - Payload: `{ id: number }`
   - Result: `{ id, fkAuthor, created: YYYY-MM-DD, filed: YYYY-MM-DD, registered: YYYY-MM-DD, serialNumber, registrationNumber, fkDeposit, fkWorkType, isRegistered }`
