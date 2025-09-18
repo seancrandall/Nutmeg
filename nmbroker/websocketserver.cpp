@@ -6,6 +6,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QJsonArray>
 #include <QDateTime>
 #include <QDebug>
 #include "objects/matter.h"
@@ -19,6 +20,8 @@
 #include "objects/filingsdashboardentry.h"
 #include "objects/flag.h"
 #include "objects/flagclass.h"
+#include "objects/object.h"
+#include "objects/person.h"
 #include <QSqlQuery>
 #include <QSqlRecord>
 
@@ -739,6 +742,142 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
                 {"camelCase", out.CamelCase},
                 {"label", out.Label},
                 {"description", out.Description}
+            };
+            return r;
+        }
+    });
+
+    // object.get: base object info with related lists
+    m_router.registerAction(QStringLiteral("object.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            const QSqlRecord rec = Nutdb::GetRecord(QStringLiteral("object"), id);
+            DispatchResult r;
+            if (!rec.isEmpty() && rec.field(0).isNull()) { /* fall through */ }
+            if (rec.isEmpty() || rec.field(QStringLiteral("ObjectId")).isNull()) {
+                r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Object not found"); return r; }
+
+            Object obj{id};
+            // Flags
+            QJsonArray flagsArr;
+            for (const auto &fd : obj.getObjectFlags()) {
+                flagsArr.append(QJsonObject{
+                    {"flagClassId", static_cast<double>(fd.FlagClassId)},
+                    {"camelCase", fd.CamelCase},
+                    {"label", fd.Label},
+                    {"description", fd.Description},
+                    {"value", fd.FlagValue}
+                });
+            }
+            // Tags
+            QJsonArray tagsArr;
+            for (const auto &tg : obj.getObjectTags()) {
+                tagsArr.append(QJsonObject{{"tagId", static_cast<double>(tg.TagId)}, {"tagText", tg.TagText}});
+            }
+            // Docs and appointments
+            QJsonArray docsArr; for (Key k : obj.getObjectDocuments()) docsArr.append(static_cast<double>(k));
+            QJsonArray apptArr; for (Key k : obj.getObjectAppointments()) apptArr.append(static_cast<double>(k));
+
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(obj.getId())},
+                {"fkObjectType", static_cast<double>(obj.getfkObjectType())},
+                {"objectType", obj.getObjectType()},
+                {"flags", flagsArr},
+                {"tags", tagsArr},
+                {"documents", docsArr},
+                {"appointments", apptArr}
+            };
+            return r;
+        }
+    });
+
+    // object.update: change object type
+    m_router.registerAction(QStringLiteral("object.update"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
+            FieldSpec{QStringLiteral("fkObjectType"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("objectType"), QJsonValue::String, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            Object obj{id};
+            DispatchResult r;
+            if (obj.getId() == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Object not found"); return r; }
+            if (payload.contains("fkObjectType")) obj.setfkObjectType(static_cast<ObjectType>(payload.value("fkObjectType").toDouble()));
+            if (payload.contains("objectType")) obj.ChangeObjectType(payload.value("objectType").toString());
+
+            // respond with current state
+            QJsonArray flagsArr; for (const auto &fd : obj.getObjectFlags()) flagsArr.append(QJsonObject{{"flagClassId", static_cast<double>(fd.FlagClassId)}, {"camelCase", fd.CamelCase}, {"label", fd.Label}, {"description", fd.Description}, {"value", fd.FlagValue}});
+            QJsonArray tagsArr; for (const auto &tg : obj.getObjectTags()) tagsArr.append(QJsonObject{{"tagId", static_cast<double>(tg.TagId)}, {"tagText", tg.TagText}});
+            QJsonArray docsArr; for (Key k : obj.getObjectDocuments()) docsArr.append(static_cast<double>(k));
+            QJsonArray apptArr; for (Key k : obj.getObjectAppointments()) apptArr.append(static_cast<double>(k));
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(obj.getId())},
+                {"fkObjectType", static_cast<double>(obj.getfkObjectType())},
+                {"objectType", obj.getObjectType()},
+                {"flags", flagsArr},
+                {"tags", tagsArr},
+                {"documents", docsArr},
+                {"appointments", apptArr}
+            };
+            return r;
+        }
+    });
+
+    // person.get: person-specific fields
+    m_router.registerAction(QStringLiteral("person.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            const PersonData p = Nutdb::GetPerson(id);
+            DispatchResult r;
+            if (p.PersonId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Person not found"); return r; }
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(p.PersonId)},
+                {"firstName", p.FirstName},
+                {"lastName", p.LastName},
+                {"fkResidence", static_cast<double>(p.fkResidence)},
+                {"fkCitizenship", static_cast<double>(p.fkCitizenship)},
+                {"oldId", static_cast<double>(p.OldId)}
+            };
+            return r;
+        }
+    });
+
+    // person.update: update person-specific fields
+    m_router.registerAction(QStringLiteral("person.update"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
+            FieldSpec{QStringLiteral("firstName"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("lastName"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("fkResidence"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkCitizenship"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("oldId"), QJsonValue::Double, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            Person person{id};
+            DispatchResult r;
+            if (person.getId() == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Person not found"); return r; }
+            if (payload.contains("firstName")) person.slotSetFirstName(payload.value("firstName").toString());
+            if (payload.contains("lastName")) person.slotSetLastName(payload.value("lastName").toString());
+            if (payload.contains("fkResidence")) person.slotSetfkResidence(static_cast<Key>(payload.value("fkResidence").toDouble()));
+            if (payload.contains("fkCitizenship")) person.slotSetfkCitizenship(static_cast<Key>(payload.value("fkCitizenship").toDouble()));
+            if (payload.contains("oldId")) person.slotSetOldId(static_cast<Key>(payload.value("oldId").toDouble()));
+
+            const PersonData p = Nutdb::GetPerson(id);
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(p.PersonId)},
+                {"firstName", p.FirstName},
+                {"lastName", p.LastName},
+                {"fkResidence", static_cast<double>(p.fkResidence)},
+                {"fkCitizenship", static_cast<double>(p.fkCitizenship)},
+                {"oldId", static_cast<double>(p.OldId)}
             };
             return r;
         }

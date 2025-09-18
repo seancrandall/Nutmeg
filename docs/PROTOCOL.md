@@ -112,6 +112,21 @@ Initial Actions
 - `flag.set`
   - Payload: `{ objectId: number, camelCase: string, value: boolean }`
   - Result: `{ objectId, camelCase, value }`
+- `object.get`
+  - Payload: `{ id: number }`
+  - Result: `{ id, fkObjectType, objectType, flags: [{ flagClassId, camelCase, label, description, value }], tags: [{ tagId, tagText }], documents: number[], appointments: number[] }`
+  - Errors: `ENOTFOUND` if the id does not exist
+- `object.update`
+  - Payload: `{ id: number, fkObjectType?: number, objectType?: string }`
+  - Result: same shape as `object.get`
+  - Notes: `objectType` changes the textual type and updates `fkObjectType` accordingly.
+- `person.get`
+  - Payload: `{ id: number }`
+  - Result: `{ id, firstName, lastName, fkResidence, fkCitizenship, oldId }`
+  - Errors: `ENOTFOUND` if the id does not exist
+- `person.update`
+  - Payload: `{ id: number, firstName?: string, lastName?: string, fkResidence?: number, fkCitizenship?: number, oldId?: number }`
+  - Result: same shape as `person.get`
 - `flagClass.get`
   - Payload: `{ id?: number, camelCase?: string }` (at least one required)
   - Result: `{ id, camelCase, label, description }`
