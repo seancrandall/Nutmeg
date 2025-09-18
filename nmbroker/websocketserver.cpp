@@ -1213,6 +1213,69 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
         }
     });
 
+    // tag.get: by id or text
+    m_router.registerAction(QStringLiteral("tag.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("text"), QJsonValue::String, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            DispatchResult r;
+            const bool hasId = payload.contains(QStringLiteral("id"));
+            const bool hasText = payload.contains(QStringLiteral("text"));
+            if (!hasId && !hasText) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Provide 'id' or 'text'"); return r; }
+            TagData td;
+            if (hasId) td = Nutdb::GetTag(static_cast<Key>(payload.value(QStringLiteral("id")).toDouble()));
+            else {
+                const Key id = Nutdb::GetTagId(payload.value(QStringLiteral("text")).toString());
+                td = Nutdb::GetTag(id);
+            }
+            if (td.TagId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Tag not found"); return r; }
+            r.ok = true;
+            r.result = QJsonObject{{"tagId", static_cast<double>(td.TagId)}, {"tagText", td.TagText}};
+            return r;
+        }
+    });
+
+    // taskClass.get: by id
+    m_router.registerAction(QStringLiteral("taskClass.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            QSqlQuery q(QSqlDatabase::database());
+            q.prepare(QStringLiteral("SELECT TaskClassId, TaskClassName FROM viewTaskClass WHERE TaskClassId = :id"));
+            q.bindValue(":id", QVariant::fromValue(id));
+            DispatchResult r;
+            if (!q.exec() || !q.next()) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("TaskClass not found"); return r; }
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(q.value(0).toUInt())},
+                {"taskClassName", q.value(1).toString()}
+            };
+            return r;
+        }
+    });
+
+    // taskType.get: by id
+    m_router.registerAction(QStringLiteral("taskType.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            QSqlQuery q(QSqlDatabase::database());
+            q.prepare(QStringLiteral("SELECT TaskTypeId, fkTaskClass, TaskName FROM taskType WHERE TaskTypeId = :id"));
+            q.bindValue(":id", QVariant::fromValue(id));
+            DispatchResult r;
+            if (!q.exec() || !q.next()) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("TaskType not found"); return r; }
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(q.value(0).toUInt())},
+                {"fkTaskClass", static_cast<double>(q.value(1).toUInt())},
+                {"taskName", q.value(2).toString()}
+            };
+            return r;
+        }
+    });
+
     // matter.get: by id
     m_router.registerAction(QStringLiteral("matter.get"), ActionSpec{
         /*fields*/ QList<FieldSpec>{

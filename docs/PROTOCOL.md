@@ -157,6 +157,18 @@ Initial Actions
   - Payload: `{ id: number, firstUseInCommerce?: YYYY-MM-DD, internationalClass?: number, fkStatus?: number, serialNumber?: string, registrationNumber?: string, publicationDate?: YYYY-MM-DD, windowOpens?: YYYY-MM-DD, nofeeWindowCloses?: YYYY-MM-DD, finalWindowCloses?: YYYY-MM-DD, fkTrademarkExaminer?: number, fkFilingBasis?: number, fkTrademarkJurisdiction?: number, fkSpecimen?: number, fkEvidenceOfUse?: number, mark?: string, goodsServices?: string }`
   - Result: same shape as `trademarkMatter.get`
   - Errors: `ENOTFOUND` or `EBADREQ` for invalid dates
+- `tag.get`
+  - Payload: `{ id?: number, text?: string }` (at least one required)
+  - Result: `{ tagId, tagText }`
+  - Errors: `ENOTFOUND` if no match; `EBADREQ` if neither provided
+- `taskClass.get`
+  - Payload: `{ id: number }`
+  - Result: `{ id, taskClassName }`
+  - Errors: `ENOTFOUND` if the id does not exist
+- `taskType.get`
+  - Payload: `{ id: number }`
+  - Result: `{ id, fkTaskClass, taskName }`
+  - Errors: `ENOTFOUND` if the id does not exist
 - `flagClass.get`
   - Payload: `{ id?: number, camelCase?: string }` (at least one required)
   - Result: `{ id, camelCase, label, description }`
