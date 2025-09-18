@@ -49,11 +49,6 @@ bool WSRouter::validate(const QJsonObject &payload,
                         QJsonObject &details,
                         QString &message) const
 {
-    if (!payload.isEmpty() && !payload.isObject()) {
-        message = QStringLiteral("Payload must be an object");
-        return false;
-    }
-
     QJsonArray missing;
     QJsonArray typeErrors;
 

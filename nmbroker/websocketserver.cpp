@@ -112,30 +112,29 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
                 return r;
             }
 
-            // Apply provided fields
-            auto setIf = [&payload](const char *name, auto setter){
-                const QString key = QString::fromUtf8(name);
-                if (payload.contains(key)) {
-                    const QJsonValue v = payload.value(key);
-                    if (v.isString()) {
-                        setter(v.toString());
-                    } else if (v.isDouble()) {
-                        setter(static_cast<Key>(v.toDouble()));
-                    }
-                }
-            };
-
-            setIf("fkParent", [&](Key k){ matter.SetfkParent(k); });
-            setIf("attorneyDocketNumber", [&](const QString &s){ matter.SetAttorneyDocketNumber(s); });
-            setIf("clientDocketNumber", [&](const QString &s){ matter.SetClientDocketNumber(s); });
-            setIf("title", [&](const QString &s){ matter.SetTitle(s); });
-            setIf("fkClient", [&](Key k){ matter.SetfkClient(k); });
-            setIf("fkAssigningFirm", [&](Key k){ matter.SetfkAssigningFirm(k); });
-            setIf("fkDefaultWorkAttorney", [&](Key k){ matter.SetfkDefaultWorkAttorney(k); });
-            setIf("fkDefaultParalegal", [&](Key k){ matter.SetfkDefaultParalegal(k); });
-            setIf("fkKeyDocument", [&](Key k){ matter.SetfkKeyDocument(k); });
-            setIf("fkMatterJurisdiction", [&](Key k){ matter.SetfkMatterJurisdiction(k); });
-            setIf("oldMatterId", [&](Key k){ matter.SetOldId(k); });
+            // Apply provided fields with explicit type checks
+            if (payload.contains("fkParent") && payload.value("fkParent").isDouble())
+                matter.SetfkParent(static_cast<Key>(payload.value("fkParent").toDouble()));
+            if (payload.contains("attorneyDocketNumber") && payload.value("attorneyDocketNumber").isString())
+                matter.SetAttorneyDocketNumber(payload.value("attorneyDocketNumber").toString());
+            if (payload.contains("clientDocketNumber") && payload.value("clientDocketNumber").isString())
+                matter.SetClientDocketNumber(payload.value("clientDocketNumber").toString());
+            if (payload.contains("title") && payload.value("title").isString())
+                matter.SetTitle(payload.value("title").toString());
+            if (payload.contains("fkClient") && payload.value("fkClient").isDouble())
+                matter.SetfkClient(static_cast<Key>(payload.value("fkClient").toDouble()));
+            if (payload.contains("fkAssigningFirm") && payload.value("fkAssigningFirm").isDouble())
+                matter.SetfkAssigningFirm(static_cast<Key>(payload.value("fkAssigningFirm").toDouble()));
+            if (payload.contains("fkDefaultWorkAttorney") && payload.value("fkDefaultWorkAttorney").isDouble())
+                matter.SetfkDefaultWorkAttorney(static_cast<Key>(payload.value("fkDefaultWorkAttorney").toDouble()));
+            if (payload.contains("fkDefaultParalegal") && payload.value("fkDefaultParalegal").isDouble())
+                matter.SetfkDefaultParalegal(static_cast<Key>(payload.value("fkDefaultParalegal").toDouble()));
+            if (payload.contains("fkKeyDocument") && payload.value("fkKeyDocument").isDouble())
+                matter.SetfkKeyDocument(static_cast<Key>(payload.value("fkKeyDocument").toDouble()));
+            if (payload.contains("fkMatterJurisdiction") && payload.value("fkMatterJurisdiction").isDouble())
+                matter.SetfkMatterJurisdiction(static_cast<Key>(payload.value("fkMatterJurisdiction").toDouble()));
+            if (payload.contains("oldMatterId") && payload.value("oldMatterId").isDouble())
+                matter.SetOldId(static_cast<Key>(payload.value("oldMatterId").toDouble()));
 
             // Return fresh record
             const MatterData m = Nutdb::GetMatter(id);
