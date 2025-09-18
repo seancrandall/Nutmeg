@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QList>
+#include <QJsonObject>
 
 class QWebSocketServer;
 class QWebSocket;
@@ -31,6 +32,14 @@ class WebSocketServer : public QObject
   private:
     QWebSocketServer *m_server;
     QList<QWebSocket*> m_clients;
+
+    // Protocol helpers
+    void sendEvent(QWebSocket *socket, const QString &event, const QJsonObject &payload);
+    void sendResponse(QWebSocket *socket, const QJsonObject &res);
+    QJsonObject makeOk(const QJsonObject &req, const QJsonObject &result);
+    QJsonObject makeErr(const QJsonObject &req, const QString &code, const QString &message, const QJsonObject &details = {});
+    void handleAction(QWebSocket *socket, const QJsonObject &req);
+    QString protocolVersion() const { return QStringLiteral("0.1"); }
 };
 
 } // namespace Nutmeg

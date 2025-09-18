@@ -5,6 +5,8 @@
 #include <QHostAddress>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonValue>
+#include <QDateTime>
 #include <QDebug>
 
 namespace Nutmeg {
@@ -62,12 +64,12 @@ void WebSocketServer::onNewConnection()
     emit clientConnected(socket->peerAddress().toString());
     qInfo() << "WebSocket client connected:" << socket->peerAddress().toString();
 
-    QJsonObject hello {
+    // Protocol v0: send server.hello event
+    QJsonObject helloPayload{
         {"service", QStringLiteral("NutmegBroker")},
-        {"version", QStringLiteral("pre-alpha")},
-        {"message", QStringLiteral("hello")}
+        {"apiVersion", protocolVersion()}
     };
-    socket->sendTextMessage(QString::fromUtf8(QJsonDocument(hello).toJson(QJsonDocument::Compact)));
+    sendEvent(socket, QStringLiteral("server.hello"), helloPayload);
 }
 
 void WebSocketServer::processTextMessage(const QString &message)
@@ -76,16 +78,28 @@ void WebSocketServer::processTextMessage(const QString &message)
     if (!socket)
         return;
 
-    if (message.trimmed().compare(QStringLiteral("ping"), Qt::CaseInsensitive) == 0) {
+    const QString trimmed = message.trimmed();
+    if (trimmed.compare(QStringLiteral("ping"), Qt::CaseInsensitive) == 0) {
         socket->sendTextMessage(QStringLiteral("pong"));
         return;
     }
 
-    QJsonObject resp {
-        {"ok", true},
-        {"echo", message}
-    };
-    socket->sendTextMessage(QString::fromUtf8(QJsonDocument(resp).toJson(QJsonDocument::Compact)));
+    // Expect JSON envelope
+    QJsonParseError perr{};
+    const QJsonDocument doc = QJsonDocument::fromJson(message.toUtf8(), &perr);
+    if (perr.error != QJsonParseError::NoError || !doc.isObject()) {
+        QJsonObject req; // empty
+        sendResponse(socket, makeErr(req, QStringLiteral("EBADREQ"), QStringLiteral("Invalid JSON")));
+        return;
+    }
+    const QJsonObject req = doc.object();
+    const QString type = req.value(QStringLiteral("type")).toString();
+    if (!(type.compare(QStringLiteral("req"), Qt::CaseInsensitive) == 0)) {
+        sendResponse(socket, makeErr(req, QStringLiteral("EBADREQ"), QStringLiteral("Expected type 'req'")));
+        return;
+    }
+
+    handleAction(socket, req);
 }
 
 void WebSocketServer::socketDisconnected()
@@ -98,6 +112,86 @@ void WebSocketServer::socketDisconnected()
     emit clientDisconnected();
     qInfo() << "WebSocket client disconnected";
     socket->deleteLater();
+}
+
+} // namespace Nutmeg
+
+// ===== Protocol helpers & dispatch =====
+
+namespace Nutmeg {
+
+void WebSocketServer::sendEvent(QWebSocket *socket, const QString &event, const QJsonObject &payload)
+{
+    QJsonObject evt{
+        {"type", QStringLiteral("event")},
+        {"event", event},
+        {"payload", payload}
+    };
+    socket->sendTextMessage(QString::fromUtf8(QJsonDocument(evt).toJson(QJsonDocument::Compact)));
+}
+
+void WebSocketServer::sendResponse(QWebSocket *socket, const QJsonObject &res)
+{
+    socket->sendTextMessage(QString::fromUtf8(QJsonDocument(res).toJson(QJsonDocument::Compact)));
+}
+
+QJsonObject WebSocketServer::makeOk(const QJsonObject &req, const QJsonObject &result)
+{
+    QJsonObject res{
+        {"type", QStringLiteral("res")},
+        {"ok", true},
+        {"result", result}
+    };
+    if (req.contains("id")) res.insert("id", req.value("id"));
+    return res;
+}
+
+QJsonObject WebSocketServer::makeErr(const QJsonObject &req, const QString &code, const QString &message, const QJsonObject &details)
+{
+    QJsonObject err{
+        {"code", code},
+        {"message", message}
+    };
+    if (!details.isEmpty()) err.insert("details", details);
+
+    QJsonObject res{
+        {"type", QStringLiteral("res")},
+        {"ok", false},
+        {"error", err}
+    };
+    if (req.contains("id")) res.insert("id", req.value("id"));
+    return res;
+}
+
+void WebSocketServer::handleAction(QWebSocket *socket, const QJsonObject &req)
+{
+    const QString action = req.value(QStringLiteral("action")).toString();
+    const QJsonObject payload = req.value(QStringLiteral("payload")).toObject();
+
+    if (action.isEmpty()) {
+        sendResponse(socket, makeErr(req, QStringLiteral("EBADREQ"), QStringLiteral("Missing action")));
+        return;
+    }
+
+    if (action == QLatin1String("ping")) {
+        QJsonObject result{
+            {"pong", true},
+            {"now", QDateTime::currentDateTimeUtc().toString(Qt::ISODate)}
+        };
+        sendResponse(socket, makeOk(req, result));
+        return;
+    }
+
+    if (action == QLatin1String("info.get")) {
+        QJsonObject result{
+            {"service", QStringLiteral("NutmegBroker")},
+            {"apiVersion", protocolVersion()}
+        };
+        sendResponse(socket, makeOk(req, result));
+        return;
+    }
+
+    sendResponse(socket, makeErr(req, QStringLiteral("ENOACTION"), QStringLiteral("Unknown action '") + action + QStringLiteral("'")));
 }
 
 } // namespace Nutmeg
