@@ -1691,6 +1691,61 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
         }
     });
 
+    // responsesDashboardEntry.list (read-only)
+    m_router.registerAction(QStringLiteral("responsesDashboardEntry.list"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("limit"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("offset"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("clientEntityId"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("withParalegal"), QJsonValue::Bool, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            int limit = payload.contains("limit") ? qBound(1, payload.value("limit").toInt(), 500) : 200;
+            int offset = payload.contains("offset") ? qMax(0, payload.value("offset").toInt()) : 0;
+
+            QString sql = QStringLiteral("SELECT * FROM responsesDashboardComplete");
+            QStringList where;
+            if (payload.contains("clientEntityId")) where << QStringLiteral("ClientEntityId = :clientEntityId");
+            if (payload.contains("withParalegal")) where << QStringLiteral("WithParalegal = :withParalegal");
+            if (!where.isEmpty()) sql += QStringLiteral(" WHERE ") + where.join(QStringLiteral(" AND "));
+            sql += QStringLiteral(" ORDER BY NextDeadline ASC, TaskId ASC LIMIT :limit OFFSET :offset");
+
+            QSqlQuery q(QSqlDatabase::database());
+            q.prepare(sql);
+            if (payload.contains("clientEntityId")) q.bindValue(":clientEntityId", payload.value("clientEntityId").toInt());
+            if (payload.contains("withParalegal")) q.bindValue(":withParalegal", payload.value("withParalegal").toBool());
+            q.bindValue(":limit", limit);
+            q.bindValue(":offset", offset);
+
+            DispatchResult r; r.ok = true;
+            QJsonArray items;
+            if (q.exec()) {
+                while (q.next()) {
+                    const QSqlRecord rec = q.record();
+                    items.append(QJsonObject{
+                        {"taskId", static_cast<double>(rec.field("TaskId").value().toUInt())},
+                        {"taskClassName", rec.field("TaskClassName").value().toString()},
+                        {"attorneyDocketNumber", rec.field("AttorneyDocketNumber").value().toString()},
+                        {"taskName", rec.field("TaskName").value().toString()},
+                        {"title", rec.field("Title").value().toString()},
+                        {"triggerDate", rec.field("TriggerDate").value().toDate().toString(Qt::ISODate)},
+                        {"nextDeadline", rec.field("NextDeadline").value().toDate().toString(Qt::ISODate)},
+                        {"softDeadline", rec.field("SoftDeadline").value().toDate().toString(Qt::ISODate)},
+                        {"hardDeadline", rec.field("HardDeadline").value().toDate().toString(Qt::ISODate)},
+                        {"clientEntityId", static_cast<double>(rec.field("ClientEntityId").value().toUInt())},
+                        {"clientEntityName", rec.field("ClientEntityName").value().toString()},
+                        {"paralegalEntityName", rec.field("ParalegalEntityName").value().toString()},
+                        {"workAttorneyEntityName", rec.field("WorkAttorneyEntityName").value().toString()},
+                        {"withParalegal", rec.field("WithParalegal").value().toBool()},
+                        {"examinerInterviewScheduled", rec.field("ExaminerInterviewScheduled").value().toBool()}
+                    });
+                }
+            }
+            r.result = QJsonObject{{"items", items}, {"limit", limit}, {"offset", offset}};
+            return r;
+        }
+    });
+
     // tag.get: by id or text
     m_router.registerAction(QStringLiteral("tag.get"), ActionSpec{
         /*fields*/ QList<FieldSpec>{
