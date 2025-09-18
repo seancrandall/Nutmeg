@@ -22,6 +22,8 @@
 #include "objects/flagclass.h"
 #include "objects/object.h"
 #include "objects/person.h"
+#include "objects/response.h"
+#include "objects/tag.h"
 #include <QSqlQuery>
 #include <QSqlRecord>
 
@@ -879,6 +881,117 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
                 {"fkCitizenship", static_cast<double>(p.fkCitizenship)},
                 {"oldId", static_cast<double>(p.OldId)}
             };
+            return r;
+        }
+    });
+
+    // response.get
+    m_router.registerAction(QStringLiteral("response.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            const ResponseData rdat = Nutdb::GetResponse(id);
+            DispatchResult r;
+            if (rdat.ResponseId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Response not found"); return r; }
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(rdat.ResponseId)},
+                {"fkClientOfficeHours", static_cast<double>(rdat.fkClientOfficeHours)},
+                {"fkExaminerInterview", static_cast<double>(rdat.fkExaminerInterview)},
+                {"mailingDate", rdat.MailingDate.toString(Qt::ISODate)},
+                {"dateFiled", rdat.DateFiled.toString(Qt::ISODate)},
+                {"fkResponseAsFiled", static_cast<double>(rdat.fkResponseAsFiled)},
+                {"fkActionDocument", static_cast<double>(rdat.fkActionDocument)}
+            };
+            return r;
+        }
+    });
+
+    // response.update
+    m_router.registerAction(QStringLiteral("response.update"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
+            FieldSpec{QStringLiteral("fkClientOfficeHours"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkExaminerInterview"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("mailingDate"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("dateFiled"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("fkResponseAsFiled"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkActionDocument"), QJsonValue::Double, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            Response resp{id};
+            DispatchResult r;
+            if (resp.getId() == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Response not found"); return r; }
+
+            if (payload.contains("fkClientOfficeHours")) resp.slotSetfkClientOfficeHours(static_cast<Key>(payload.value("fkClientOfficeHours").toDouble()));
+            if (payload.contains("fkExaminerInterview")) resp.slotSetfkExaminerInterview(static_cast<Key>(payload.value("fkExaminerInterview").toDouble()));
+            auto parseDate = [](const QJsonObject &obj, const char *key, QDate &out, QString &err) -> bool {
+                if (!obj.contains(key)) return true;
+                const QString s = obj.value(QString::fromUtf8(key)).toString();
+                const QDate d = QDate::fromString(s, Qt::ISODate);
+                if (!d.isValid()) { err = QStringLiteral("Invalid date for '%1'").arg(QString::fromUtf8(key)); return false; }
+                out = d; return true;
+            };
+            QString perr; QDate dt;
+            if (!parseDate(payload, "mailingDate", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("mailingDate")) resp.slotSetMailingDate(dt);
+            if (!parseDate(payload, "dateFiled", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("dateFiled")) resp.slotSetDateFiled(dt);
+            if (payload.contains("fkResponseAsFiled")) resp.slotSetfkResponseAsFiled(static_cast<Key>(payload.value("fkResponseAsFiled").toDouble()));
+            if (payload.contains("fkActionDocument")) resp.slotSetfkActionDocument(static_cast<Key>(payload.value("fkActionDocument").toDouble()));
+
+            const ResponseData rdat = Nutdb::GetResponse(id);
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(rdat.ResponseId)},
+                {"fkClientOfficeHours", static_cast<double>(rdat.fkClientOfficeHours)},
+                {"fkExaminerInterview", static_cast<double>(rdat.fkExaminerInterview)},
+                {"mailingDate", rdat.MailingDate.toString(Qt::ISODate)},
+                {"dateFiled", rdat.DateFiled.toString(Qt::ISODate)},
+                {"fkResponseAsFiled", static_cast<double>(rdat.fkResponseAsFiled)},
+                {"fkActionDocument", static_cast<double>(rdat.fkActionDocument)}
+            };
+            return r;
+        }
+    });
+
+    // tag.search: search tags by prefix (simple)
+    m_router.registerAction(QStringLiteral("tag.search"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("q"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const QString q = payload.value(QStringLiteral("q")).toString();
+            DispatchResult r; r.ok = true;
+            QJsonArray items;
+            // Use the view model via Nutdb; fallback simple LIKE
+            QSqlQuery qq(QSqlDatabase::database());
+            qq.prepare(QStringLiteral("SELECT TagId, TagText FROM tag WHERE TagText LIKE :q ORDER BY TagText LIMIT 50"));
+            qq.bindValue(":q", QString("%1%").arg(q));
+            if (qq.exec()) {
+                while (qq.next()) {
+                    items.append(QJsonObject{{"tagId", static_cast<double>(qq.value(0).toUInt())}, {"tagText", qq.value(1).toString()}});
+                }
+            }
+            r.result = QJsonObject{{"items", items}};
+            return r;
+        }
+    });
+
+    // object.tag: add/remove a tag on an object
+    m_router.registerAction(QStringLiteral("object.tag"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("objectId"), QJsonValue::Double, true},
+            FieldSpec{QStringLiteral("tagText"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("removeTagText"), QJsonValue::String, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key objectId = static_cast<Key>(payload.value(QStringLiteral("objectId")).toDouble());
+            DispatchResult r; r.ok = true;
+            if (payload.contains("tagText")) Nutdb::TagObject(objectId, payload.value("tagText").toString());
+            if (payload.contains("removeTagText")) Nutdb::ClearTag(objectId, payload.value("removeTagText").toString());
+            // Return updated tags
+            QJsonArray tagsArr; for (const auto &tg : Nutdb::GetObjectTags(objectId)) tagsArr.append(QJsonObject{{"tagId", static_cast<double>(tg.TagId)}, {"tagText", tg.TagText}});
+            r.result = QJsonObject{{"objectId", static_cast<double>(objectId)}, {"tags", tagsArr}};
             return r;
         }
     });

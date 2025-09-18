@@ -127,6 +127,20 @@ Initial Actions
 - `person.update`
   - Payload: `{ id: number, firstName?: string, lastName?: string, fkResidence?: number, fkCitizenship?: number, oldId?: number }`
   - Result: same shape as `person.get`
+- `response.get`
+  - Payload: `{ id: number }`
+  - Result: `{ id, fkClientOfficeHours, fkExaminerInterview, mailingDate: YYYY-MM-DD, dateFiled: YYYY-MM-DD, fkResponseAsFiled, fkActionDocument }`
+  - Errors: `ENOTFOUND` if the id does not exist
+- `response.update`
+  - Payload: `{ id: number, fkClientOfficeHours?: number, fkExaminerInterview?: number, mailingDate?: YYYY-MM-DD, dateFiled?: YYYY-MM-DD, fkResponseAsFiled?: number, fkActionDocument?: number }`
+  - Result: same shape as `response.get`
+  - Errors: `ENOTFOUND` if the id does not exist; `EBADREQ` on invalid date strings
+- `tag.search`
+  - Payload: `{ q: string }`
+  - Result: `{ items: [{ tagId, tagText }] }`
+- `object.tag`
+  - Payload: `{ objectId: number, tagText?: string, removeTagText?: string }`
+  - Result: `{ objectId, tags: [{ tagId, tagText }] }`
 - `flagClass.get`
   - Payload: `{ id?: number, camelCase?: string }` (at least one required)
   - Result: `{ id, camelCase, label, description }`
