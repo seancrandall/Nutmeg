@@ -12,10 +12,12 @@ Repository Structure
 
 Build Notes
 - Qt: Target Qt 6.8.
-- Compiler: Clang or MSVC. GCC is not supported (code uses `__declspec`-style properties).
+- Compiler: Always use Clang (or MSVC on Windows). GCC is not supported because the code relies on `__declspec`-style properties. We also require `-fdeclspec` when using Clang on Unix-like systems.
 - QMake-based builds.
-  - Example (Unix-like): `cd nmgui && qmake && make` or `cd nmbroker && qmake && make`.
+  - Backend (`nmbroker`) build (Unix-like, Clang): `cd nmbroker && qmake QMAKE_CXX=clang++ QMAKE_CC=clang && make -j`
+  - Windows MSVC: Open in Qt Creator with the MSVC kit or run `qmake && nmake` in a Developer Command Prompt.
   - Example (Windows MSVC): Open in Qt Creator with MSVC kit or run `qmake && nmake` in a VS-enabled shell.
+  - Ensure the Qt WebSockets module is installed (`QtWebSockets`). On Linux distros, install the `qt6-websockets` dev package.
 
 Current Direction
 - Up to now, `nmgui` and `nmbroker` have been essentially integrated.
