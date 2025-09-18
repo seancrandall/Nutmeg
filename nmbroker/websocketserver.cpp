@@ -1119,6 +1119,179 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
         }
     });
 
+    // matterView.get (read-only via viewMatters)
+    m_router.registerAction(QStringLiteral("matterView.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            auto packRecord = [](const QSqlRecord &rec){
+                QJsonObject obj;
+                for (int i = 0; i < rec.count(); ++i) {
+                    const QString name = rec.fieldName(i);
+                    const QVariant v = rec.value(i);
+                    switch (v.typeId()) {
+                        case QMetaType::Bool: obj.insert(name, v.toBool()); break;
+                        case QMetaType::Int:
+                        case QMetaType::UInt:
+                        case QMetaType::LongLong:
+                        case QMetaType::ULongLong:
+                        case QMetaType::Double: obj.insert(name, v.toDouble()); break;
+                        case QMetaType::QDate: obj.insert(name, v.toDate().toString(Qt::ISODate)); break;
+                        case QMetaType::QDateTime: obj.insert(name, v.toDateTime().toString(Qt::ISODate)); break;
+                        default: obj.insert(name, v.toString()); break;
+                    }
+                }
+                return obj;
+            };
+
+            const QStringList idColumns{
+                QStringLiteral("MatterId"),
+                QStringLiteral("PatentMatterId"),
+                QStringLiteral("TrademarkMatterId"),
+                QStringLiteral("Id")
+            };
+
+            DispatchResult r;
+            for (const QString &col : idColumns) {
+                QSqlQuery q(QSqlDatabase::database());
+                q.prepare(QStringLiteral("SELECT * FROM viewMatters WHERE ") + col + QStringLiteral(" = :id LIMIT 1"));
+                q.bindValue(":id", QVariant::fromValue(id));
+                if (q.exec() && q.next()) { r.ok = true; r.result = packRecord(q.record()); return r; }
+            }
+            r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Matter not found in view");
+            return r;
+        }
+    });
+
+    // matterView.list (read-only via viewMatters)
+    m_router.registerAction(QStringLiteral("matterView.list"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{},
+        /*handler*/ [](const QJsonObject &){
+            QSqlQuery q(QSqlDatabase::database());
+            bool ok = q.exec(QStringLiteral("SELECT * FROM viewMatters"));
+            DispatchResult r; r.ok = true;
+            QJsonArray items;
+            if (ok) {
+                while (q.next()) {
+                    const QSqlRecord rec = q.record();
+                    QJsonObject obj;
+                    for (int i = 0; i < rec.count(); ++i) {
+                        const QString name = rec.fieldName(i);
+                        const QVariant v = rec.value(i);
+                        switch (v.typeId()) {
+                            case QMetaType::Bool: obj.insert(name, v.toBool()); break;
+                            case QMetaType::Int:
+                            case QMetaType::UInt:
+                            case QMetaType::LongLong:
+                            case QMetaType::ULongLong:
+                            case QMetaType::Double: obj.insert(name, v.toDouble()); break;
+                            case QMetaType::QDate: obj.insert(name, v.toDate().toString(Qt::ISODate)); break;
+                            case QMetaType::QDateTime: obj.insert(name, v.toDateTime().toString(Qt::ISODate)); break;
+                            default: obj.insert(name, v.toString()); break;
+                        }
+                    }
+                    items.append(obj);
+                }
+            }
+            r.result = QJsonObject{{"items", items}};
+            return r;
+        }
+    });
+
+    // objectFlagView.get (read-only via viewObjectFlags) by objectId+camelCase or id
+    m_router.registerAction(QStringLiteral("objectFlagView.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("objectId"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("camelCase"), QJsonValue::String, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            auto packRecord = [](const QSqlRecord &rec){
+                QJsonObject obj;
+                for (int i = 0; i < rec.count(); ++i) {
+                    const QString name = rec.fieldName(i);
+                    const QVariant v = rec.value(i);
+                    switch (v.typeId()) {
+                        case QMetaType::Bool: obj.insert(name, v.toBool()); break;
+                        case QMetaType::Int:
+                        case QMetaType::UInt:
+                        case QMetaType::LongLong:
+                        case QMetaType::ULongLong:
+                        case QMetaType::Double: obj.insert(name, v.toDouble()); break;
+                        case QMetaType::QDate: obj.insert(name, v.toDate().toString(Qt::ISODate)); break;
+                        case QMetaType::QDateTime: obj.insert(name, v.toDateTime().toString(Qt::ISODate)); break;
+                        default: obj.insert(name, v.toString()); break;
+                    }
+                }
+                return obj;
+            };
+
+            DispatchResult r;
+            const bool hasId = payload.contains(QStringLiteral("id"));
+            const bool hasObj = payload.contains(QStringLiteral("objectId"));
+            const bool hasCC = payload.contains(QStringLiteral("camelCase"));
+            if (!hasId && !(hasObj && hasCC)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Provide 'id' or objectId+camelCase"); return r; }
+
+            if (hasId) {
+                const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+                const QStringList idCols{ QStringLiteral("ObjectFlagId"), QStringLiteral("Id") };
+                for (const QString &col : idCols) {
+                    QSqlQuery q(QSqlDatabase::database());
+                    q.prepare(QStringLiteral("SELECT * FROM viewObjectFlags WHERE ") + col + QStringLiteral(" = :id LIMIT 1"));
+                    q.bindValue(":id", QVariant::fromValue(id));
+                    if (q.exec() && q.next()) { r.ok = true; r.result = packRecord(q.record()); return r; }
+                }
+            } else {
+                const Key objectId = static_cast<Key>(payload.value(QStringLiteral("objectId")).toDouble());
+                const QString cc = payload.value(QStringLiteral("camelCase")).toString();
+                QSqlQuery q(QSqlDatabase::database());
+                q.prepare(QStringLiteral("SELECT * FROM viewObjectFlags WHERE ObjectId = :oid AND CamelCase = :cc LIMIT 1"));
+                q.bindValue(":oid", QVariant::fromValue(objectId));
+                q.bindValue(":cc", cc);
+                if (q.exec() && q.next()) { r.ok = true; r.result = packRecord(q.record()); return r; }
+            }
+            r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Object flag not found");
+            return r;
+        }
+    });
+
+    // objectFlagView.listForObject (read-only)
+    m_router.registerAction(QStringLiteral("objectFlagView.listForObject"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("objectId"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key objectId = static_cast<Key>(payload.value(QStringLiteral("objectId")).toDouble());
+            QSqlQuery q(QSqlDatabase::database());
+            q.prepare(QStringLiteral("SELECT * FROM viewObjectFlags WHERE ObjectId = :oid ORDER BY CamelCase"));
+            q.bindValue(":oid", QVariant::fromValue(objectId));
+            DispatchResult r; r.ok = true;
+            QJsonArray items;
+            if (q.exec()) {
+                while (q.next()) {
+                    const QSqlRecord rec = q.record();
+                    QJsonObject obj;
+                    for (int i = 0; i < rec.count(); ++i) {
+                        const QString name = rec.fieldName(i);
+                        const QVariant v = rec.value(i);
+                        switch (v.typeId()) {
+                            case QMetaType::Bool: obj.insert(name, v.toBool()); break;
+                            case QMetaType::Int:
+                            case QMetaType::UInt:
+                            case QMetaType::LongLong:
+                            case QMetaType::ULongLong:
+                            case QMetaType::Double: obj.insert(name, v.toDouble()); break;
+                            case QMetaType::QDate: obj.insert(name, v.toDate().toString(Qt::ISODate)); break;
+                            case QMetaType::QDateTime: obj.insert(name, v.toDateTime().toString(Qt::ISODate)); break;
+                            default: obj.insert(name, v.toString()); break;
+                        }
+                    }
+                    items.append(obj);
+                }
+            }
+            r.result = QJsonObject{{"objectId", static_cast<double>(objectId)}, {"items", items}};
+            return r;
+        }
+    });
+
     // objectType.get: by id (read-only fetch)
     m_router.registerAction(QStringLiteral("objectType.get"), ActionSpec{
         /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
