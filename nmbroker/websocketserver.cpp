@@ -14,6 +14,7 @@
 #include "objects/deadline.h"
 #include "objects/document.h"
 #include "objects/enterprise.h"
+#include "objects/entity.h"
 
 namespace Nutmeg {
 
@@ -457,6 +458,95 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
                 {"fkStateOfIncorporation", static_cast<double>(e.fkStateOfIncorporation)},
                 {"fkMainContact", static_cast<double>(e.fkMainContact)},
                 {"oldOrganizationId", static_cast<double>(e.OldOrganizationId)}
+            };
+            return r;
+        }
+    });
+
+    // entity.get: by id
+    m_router.registerAction(QStringLiteral("entity.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            const EntityData e = Nutdb::GetEntity(id);
+            DispatchResult r;
+            if (e.EntityId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Entity not found"); return r; }
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(e.EntityId)},
+                {"entityName", e.EntityName},
+                {"fullLegalName", e.FullLegalName},
+                {"primaryAddress", e.PrimaryAddress},
+                {"secondaryAddress", e.SecondaryAddress},
+                {"website", e.Website},
+                {"primaryPhone", e.PrimaryPhone},
+                {"secondaryPhone", e.SecondaryPhone},
+                {"faxNumber", e.FaxNumber},
+                {"primaryEmail", e.PrimaryEmail},
+                {"secondaryEmail", e.SecondaryEmail},
+                {"fkState", static_cast<double>(e.fkState)},
+                {"fkJurisdiction", static_cast<double>(e.fkJurisdiction)},
+                {"docketPrefix", e.DocketPrefix}
+            };
+            return r;
+        }
+    });
+
+    // entity.update: selected fields
+    m_router.registerAction(QStringLiteral("entity.update"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
+            FieldSpec{QStringLiteral("entityName"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("fullLegalName"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("primaryAddress"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("secondaryAddress"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("website"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("primaryPhone"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("secondaryPhone"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("faxNumber"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("primaryEmail"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("secondaryEmail"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("fkJurisdiction"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkState"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("docketPrefix"), QJsonValue::String, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            Entity ent{id};
+            DispatchResult r;
+            if (ent.getId() == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Entity not found"); return r; }
+
+            if (payload.contains("entityName")) ent.slotSetEntityName(payload.value("entityName").toString());
+            if (payload.contains("fullLegalName")) ent.slotSetFullLegalName(payload.value("fullLegalName").toString());
+            if (payload.contains("primaryAddress")) ent.slotSetPrimaryAddress(payload.value("primaryAddress").toString());
+            if (payload.contains("secondaryAddress")) ent.slotSetSecondaryAddress(payload.value("secondaryAddress").toString());
+            if (payload.contains("website")) ent.slotSetWebsite(payload.value("website").toString());
+            if (payload.contains("primaryPhone")) ent.slotSetPrimaryPhone(payload.value("primaryPhone").toString());
+            if (payload.contains("secondaryPhone")) ent.slotSetSecondaryPhone(payload.value("secondaryPhone").toString());
+            if (payload.contains("faxNumber")) ent.slotSetFaxNumber(payload.value("faxNumber").toString());
+            if (payload.contains("primaryEmail")) ent.slotSetPrimaryEmail(payload.value("primaryEmail").toString());
+            if (payload.contains("secondaryEmail")) ent.slotSetSecondaryEmail(payload.value("secondaryEmail").toString());
+            if (payload.contains("fkJurisdiction")) ent.slotSetfkJurisdiction(static_cast<Key>(payload.value("fkJurisdiction").toDouble()));
+            if (payload.contains("fkState")) Nutdb::UpdateField(QStringLiteral("entity"), QStringLiteral("fkState"), id, QString::number(static_cast<quint64>(payload.value("fkState").toDouble())));
+            if (payload.contains("docketPrefix")) ent.slotSetDocketPrefix(payload.value("docketPrefix").toString());
+
+            const EntityData e = Nutdb::GetEntity(id);
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(e.EntityId)},
+                {"entityName", e.EntityName},
+                {"fullLegalName", e.FullLegalName},
+                {"primaryAddress", e.PrimaryAddress},
+                {"secondaryAddress", e.SecondaryAddress},
+                {"website", e.Website},
+                {"primaryPhone", e.PrimaryPhone},
+                {"secondaryPhone", e.SecondaryPhone},
+                {"faxNumber", e.FaxNumber},
+                {"primaryEmail", e.PrimaryEmail},
+                {"secondaryEmail", e.SecondaryEmail},
+                {"fkState", static_cast<double>(e.fkState)},
+                {"fkJurisdiction", static_cast<double>(e.fkJurisdiction)},
+                {"docketPrefix", e.DocketPrefix}
             };
             return r;
         }

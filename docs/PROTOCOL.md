@@ -86,6 +86,14 @@ Initial Actions
   - Payload: `{ id: number, enterpriseName?: string, fkBusinessJurisdiction?: number, fkStateOfIncorporation?: number, fkMainContact?: number, oldOrganizationId?: number }`
   - Result: same shape as `enterprise.get`
   - Errors: `ENOTFOUND` if the id does not exist
+- `entity.get`
+  - Payload: `{ id: number }`
+  - Result: `{ id, entityName, fullLegalName, primaryAddress, secondaryAddress, website, primaryPhone, secondaryPhone, faxNumber, primaryEmail, secondaryEmail, fkState, fkJurisdiction, docketPrefix }`
+  - Errors: `ENOTFOUND` if the id does not exist
+- `entity.update`
+  - Payload: `{ id: number, entityName?: string, fullLegalName?: string, primaryAddress?: string, secondaryAddress?: string, website?: string, primaryPhone?: string, secondaryPhone?: string, faxNumber?: string, primaryEmail?: string, secondaryEmail?: string, fkJurisdiction?: number, fkState?: number, docketPrefix?: string }`
+  - Result: same shape as `entity.get`
+  - Errors: `ENOTFOUND` if the id does not exist; `EBADREQ` reserved for future validation
 - `copyrightMatter.get`
   - Payload: `{ id: number }`
   - Result: `{ id, fkAuthor, created: YYYY-MM-DD, filed: YYYY-MM-DD, registered: YYYY-MM-DD, serialNumber, registrationNumber, fkDeposit, fkWorkType, isRegistered }`
