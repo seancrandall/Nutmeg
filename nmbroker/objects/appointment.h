@@ -31,8 +31,8 @@ class Appointment : public Nutmeg::Object
     ReadOnlyProperty(getTypeString) QString typeString;
     Property(getComplete, setComplete) bool complete;
     Property(getNeedsAgenda, setNeedsAgenda) bool needsAgenda;
-    Property(getAgendaSent, setAgendaSent) bool agentdaSent;
-    Property(getConfirmed, setConfirmd) bool confirmed;
+    Property(getAgendaSent, setAgendaSent) bool agendaSent;
+    Property(getConfirmed, setConfirmed) bool confirmed;
 
     // Overrides
     virtual Key getId(void) const override;
