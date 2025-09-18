@@ -169,6 +169,18 @@ Initial Actions
   - Payload: `{ id: number }`
   - Result: `{ id, fkTaskClass, taskName }`
   - Errors: `ENOTFOUND` if the id does not exist
+- `patentMatter.get`
+  - Payload: `{ id: number }`
+  - Result: `{ id, filingDate: YYYY-MM-DD, applicationSerialNumber, confirmationNumber, artUnit, patentNumber, fkExaminer, fkFirstInventor, fkSupervisoryExaminer, fkApplicant, barDate: YYYY-MM-DD, criticalDate: YYYY-MM-DD, dateIssued: YYYY-MM-DD, fkSpecification, fkDrawings, fkAsFiledClaims }`
+  - Errors: `ENOTFOUND` if the id does not exist
+- `patentMatter.update`
+  - Payload: `{ id: number, filingDate?: YYYY-MM-DD, applicationSerialNumber?: string, confirmationNumber?: string, artUnit?: string, patentNumber?: string, fkExaminer?: number, fkFirstInventor?: number, fkSupervisoryExaminer?: number, fkApplicant?: number, barDate?: YYYY-MM-DD, criticalDate?: YYYY-MM-DD, dateIssued?: YYYY-MM-DD, fkSpecification?: number, fkDrawings?: number, fkAsFiledClaims?: number }`
+  - Result: same shape as `patentMatter.get`
+  - Errors: `ENOTFOUND` or `EBADREQ` for invalid dates
+- `responsesDashboardEntry.get`
+  - Payload: `{ taskId: number }`
+  - Result: similar to `filingsDashboardEntry.get` with response-specific fields
+  - Errors: `ENOTFOUND` if the row does not exist
 - `flagClass.get`
   - Payload: `{ id?: number, camelCase?: string }` (at least one required)
   - Result: `{ id, camelCase, label, description }`

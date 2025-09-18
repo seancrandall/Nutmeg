@@ -26,6 +26,7 @@
 #include "objects/tag.h"
 #include "objects/task.h"
 #include "objects/trademarkmatter.h"
+#include "objects/patentmatter.h"
 #include <QSqlQuery>
 #include <QSqlRecord>
 
@@ -1208,6 +1209,148 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
                 {"fkEvidenceOfUse", static_cast<double>(m.fkEvidenceOfUse)},
                 {"mark", m.Mark},
                 {"goodsServices", m.GoodsServices}
+            };
+            return r;
+        }
+    });
+
+    // patentMatter.get
+    m_router.registerAction(QStringLiteral("patentMatter.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            const PatentMatterData m = Nutdb::GetPatentMatter(id);
+            DispatchResult r;
+            if (m.PatentMatterId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("PatentMatter not found"); return r; }
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(m.PatentMatterId)},
+                {"filingDate", m.FilingDate.toString(Qt::ISODate)},
+                {"applicationSerialNumber", m.ApplicationSerialNumber},
+                {"confirmationNumber", m.ConfirmationNumber},
+                {"artUnit", m.ArtUnit},
+                {"patentNumber", m.PatentNumber},
+                {"fkExaminer", static_cast<double>(m.fkExaminer)},
+                {"fkFirstInventor", static_cast<double>(m.fkFirstInventor)},
+                {"fkSupervisoryExaminer", static_cast<double>(m.fkSupervisoryExaminer)},
+                {"fkApplicant", static_cast<double>(m.fkApplicant)},
+                {"barDate", m.BarDate.toString(Qt::ISODate)},
+                {"criticalDate", m.CriticalDate.toString(Qt::ISODate)},
+                {"dateIssued", m.DateIssued.toString(Qt::ISODate)},
+                {"fkSpecification", static_cast<double>(m.fkSpecification)},
+                {"fkDrawings", static_cast<double>(m.fkDrawings)},
+                {"fkAsFiledClaims", static_cast<double>(m.fkAsFiledClaims)}
+            };
+            return r;
+        }
+    });
+
+    // patentMatter.update
+    m_router.registerAction(QStringLiteral("patentMatter.update"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
+            FieldSpec{QStringLiteral("filingDate"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("applicationSerialNumber"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("confirmationNumber"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("artUnit"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("patentNumber"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("fkExaminer"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkFirstInventor"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkSupervisoryExaminer"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkApplicant"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("barDate"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("criticalDate"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("dateIssued"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("fkSpecification"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkDrawings"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkAsFiledClaims"), QJsonValue::Double, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            DispatchResult r;
+            const PatentMatterData cur = Nutdb::GetPatentMatter(id);
+            if (cur.PatentMatterId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("PatentMatter not found"); return r; }
+
+            auto parseDate = [](const QJsonObject &obj, const char *key, QDate &out, QString &err) -> bool {
+                if (!obj.contains(key)) return true;
+                const QString s = obj.value(QString::fromUtf8(key)).toString();
+                const QDate d = QDate::fromString(s, Qt::ISODate);
+                if (!d.isValid()) { err = QStringLiteral("Invalid date for '%1'").arg(QString::fromUtf8(key)); return false; }
+                out = d; return true;
+            };
+            QString perr; QDate dt;
+            if (!parseDate(payload, "filingDate", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("filingDate")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("FilingDate"), id, dt.toString(Qt::ISODate));
+            if (payload.contains("applicationSerialNumber")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("ApplicationSerialNumber"), id, payload.value("applicationSerialNumber").toString());
+            if (payload.contains("confirmationNumber")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("ConfirmationNumber"), id, payload.value("confirmationNumber").toString());
+            if (payload.contains("artUnit")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("ArtUnit"), id, payload.value("artUnit").toString());
+            if (payload.contains("patentNumber")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("PatentNumber"), id, payload.value("patentNumber").toString());
+            if (payload.contains("fkExaminer")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("fkExaminer"), id, QString::number(static_cast<quint64>(payload.value("fkExaminer").toDouble())));
+            if (payload.contains("fkFirstInventor")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("fkFirstInventor"), id, QString::number(static_cast<quint64>(payload.value("fkFirstInventor").toDouble())));
+            if (payload.contains("fkSupervisoryExaminer")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("fkSupervisoryExaminer"), id, QString::number(static_cast<quint64>(payload.value("fkSupervisoryExaminer").toDouble())));
+            if (payload.contains("fkApplicant")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("fkApplicant"), id, QString::number(static_cast<quint64>(payload.value("fkApplicant").toDouble())));
+            if (!parseDate(payload, "barDate", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("barDate")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("BarDate"), id, dt.toString(Qt::ISODate));
+            if (!parseDate(payload, "criticalDate", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("criticalDate")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("CriticalDate"), id, dt.toString(Qt::ISODate));
+            if (!parseDate(payload, "dateIssued", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("dateIssued")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("DateIssued"), id, dt.toString(Qt::ISODate));
+            if (payload.contains("fkSpecification")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("fkSpecification"), id, QString::number(static_cast<quint64>(payload.value("fkSpecification").toDouble())));
+            if (payload.contains("fkDrawings")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("fkDrawings"), id, QString::number(static_cast<quint64>(payload.value("fkDrawings").toDouble())));
+            if (payload.contains("fkAsFiledClaims")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("fkAsFiledClaims"), id, QString::number(static_cast<quint64>(payload.value("fkAsFiledClaims").toDouble())));
+
+            const PatentMatterData m = Nutdb::GetPatentMatter(id);
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(m.PatentMatterId)},
+                {"filingDate", m.FilingDate.toString(Qt::ISODate)},
+                {"applicationSerialNumber", m.ApplicationSerialNumber},
+                {"confirmationNumber", m.ConfirmationNumber},
+                {"artUnit", m.ArtUnit},
+                {"patentNumber", m.PatentNumber},
+                {"fkExaminer", static_cast<double>(m.fkExaminer)},
+                {"fkFirstInventor", static_cast<double>(m.fkFirstInventor)},
+                {"fkSupervisoryExaminer", static_cast<double>(m.fkSupervisoryExaminer)},
+                {"fkApplicant", static_cast<double>(m.fkApplicant)},
+                {"barDate", m.BarDate.toString(Qt::ISODate)},
+                {"criticalDate", m.CriticalDate.toString(Qt::ISODate)},
+                {"dateIssued", m.DateIssued.toString(Qt::ISODate)},
+                {"fkSpecification", static_cast<double>(m.fkSpecification)},
+                {"fkDrawings", static_cast<double>(m.fkDrawings)},
+                {"fkAsFiledClaims", static_cast<double>(m.fkAsFiledClaims)}
+            };
+            return r;
+        }
+    });
+
+    // responsesDashboardEntry.get (read-only)
+    m_router.registerAction(QStringLiteral("responsesDashboardEntry.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("taskId"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key taskId = static_cast<Key>(payload.value(QStringLiteral("taskId")).toDouble());
+            QSqlQuery q(QSqlDatabase::database());
+            q.prepare(QStringLiteral("SELECT * FROM responsesDashboardComplete WHERE TaskId = :id"));
+            q.bindValue(":id", QVariant::fromValue(taskId));
+            DispatchResult r;
+            if (!q.exec() || !q.next()) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("responsesDashboardEntry not found"); return r; }
+            const QSqlRecord rec = q.record();
+            r.ok = true;
+            r.result = QJsonObject{
+                {"taskId", static_cast<double>(rec.field("TaskId").value().toUInt())},
+                {"taskClassName", rec.field("TaskClassName").value().toString()},
+                {"attorneyDocketNumber", rec.field("AttorneyDocketNumber").value().toString()},
+                {"taskName", rec.field("TaskName").value().toString()},
+                {"title", rec.field("Title").value().toString()},
+                {"triggerDate", rec.field("TriggerDate").value().toDate().toString(Qt::ISODate)},
+                {"nextDeadline", rec.field("NextDeadline").value().toDate().toString(Qt::ISODate)},
+                {"softDeadline", rec.field("SoftDeadline").value().toDate().toString(Qt::ISODate)},
+                {"hardDeadline", rec.field("HardDeadline").value().toDate().toString(Qt::ISODate)},
+                {"clientEntityId", static_cast<double>(rec.field("ClientEntityId").value().toUInt())},
+                {"clientEntityName", rec.field("ClientEntityName").value().toString()},
+                {"paralegalEntityName", rec.field("ParalegalEntityName").value().toString()},
+                {"workAttorneyEntityName", rec.field("WorkAttorneyEntityName").value().toString()},
+                {"withParalegal", rec.field("WithParalegal").value().toBool()},
+                {"examinerInterviewScheduled", rec.field("ExaminerInterviewScheduled").value().toBool()}
             };
             return r;
         }
