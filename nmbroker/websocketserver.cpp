@@ -9,6 +9,7 @@
 #include <QDateTime>
 #include <QDebug>
 #include "objects/matter.h"
+#include "objects/appointment.h"
 
 namespace Nutmeg {
 
@@ -50,6 +51,101 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
             r.result = QJsonObject{
                 {"service", QStringLiteral("NutmegBroker")},
                 {"apiVersion", protocolVersion()}
+            };
+            return r;
+        }
+    });
+
+    // appointment.get: by id
+    m_router.registerAction(QStringLiteral("appointment.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            const AppointmentData a = Nutdb::GetAppointment(id);
+            DispatchResult r;
+            if (a.AppointmentId == 0) {
+                r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Appointment not found");
+                return r;
+            }
+            const Key assoc = Nutdb::GetAppointmentObject(id);
+            const QString typeStr = Nutdb::GetAppointmentTypeString(id);
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(a.AppointmentId)},
+                {"appointmentTime", a.AppointmentTime.toUTC().toString(Qt::ISODate)},
+                {"fkAppointmentType", static_cast<double>(a.fkAppointmentType)},
+                {"complete", a.Complete},
+                {"needsAgenda", Nutdb::GetFlag(id, QStringLiteral("NeedsAgenda"))},
+                {"agendaSent", Nutdb::GetFlag(id, QStringLiteral("AgendaSent"))},
+                {"confirmed", Nutdb::GetFlag(id, QStringLiteral("Confirmed"))},
+                {"associatedObject", static_cast<double>(assoc)},
+                {"typeString", typeStr}
+            };
+            return r;
+        }
+    });
+
+    // appointment.update: update fields for an appointment
+    m_router.registerAction(QStringLiteral("appointment.update"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
+            FieldSpec{QStringLiteral("appointmentTime"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("fkAppointmentType"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("complete"), QJsonValue::Bool, false},
+            FieldSpec{QStringLiteral("needsAgenda"), QJsonValue::Bool, false},
+            FieldSpec{QStringLiteral("agendaSent"), QJsonValue::Bool, false},
+            FieldSpec{QStringLiteral("confirmed"), QJsonValue::Bool, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            Appointment appt{id};
+            DispatchResult r;
+            if (appt.getId() == 0) {
+                r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Appointment not found");
+                return r;
+            }
+
+            if (payload.contains(QStringLiteral("appointmentTime"))) {
+                const QString s = payload.value(QStringLiteral("appointmentTime")).toString();
+                const QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
+                if (!dt.isValid()) {
+                    r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid appointmentTime ISO string");
+                    return r;
+                }
+                appt.SetAppointmentTime(dt);
+            }
+            if (payload.contains(QStringLiteral("fkAppointmentType"))) {
+                appt.SetfkAppointmentType(static_cast<Key>(payload.value(QStringLiteral("fkAppointmentType")).toDouble()));
+            }
+            if (payload.contains(QStringLiteral("complete"))) {
+                appt.setComplete(payload.value(QStringLiteral("complete")).toBool());
+            }
+            if (payload.contains(QStringLiteral("needsAgenda"))) {
+                appt.setNeedsAgenda(payload.value(QStringLiteral("needsAgenda")).toBool());
+            }
+            if (payload.contains(QStringLiteral("agendaSent"))) {
+                appt.setAgendaSent(payload.value(QStringLiteral("agendaSent")).toBool());
+            }
+            if (payload.contains(QStringLiteral("confirmed"))) {
+                appt.setConfirmed(payload.value(QStringLiteral("confirmed")).toBool());
+            }
+
+            const AppointmentData a = Nutdb::GetAppointment(id);
+            const Key assoc = Nutdb::GetAppointmentObject(id);
+            const QString typeStr = Nutdb::GetAppointmentTypeString(id);
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(a.AppointmentId)},
+                {"appointmentTime", a.AppointmentTime.toUTC().toString(Qt::ISODate)},
+                {"fkAppointmentType", static_cast<double>(a.fkAppointmentType)},
+                {"complete", a.Complete},
+                {"needsAgenda", Nutdb::GetFlag(id, QStringLiteral("NeedsAgenda"))},
+                {"agendaSent", Nutdb::GetFlag(id, QStringLiteral("AgendaSent"))},
+                {"confirmed", Nutdb::GetFlag(id, QStringLiteral("Confirmed"))},
+                {"associatedObject", static_cast<double>(assoc)},
+                {"typeString", typeStr}
             };
             return r;
         }
