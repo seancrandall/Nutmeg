@@ -1042,6 +1042,83 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
         }
     });
 
+    // jurisdictionView.get (read-only via viewJurisdictions)
+    m_router.registerAction(QStringLiteral("jurisdictionView.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            auto packRecord = [](const QSqlRecord &rec){
+                QJsonObject obj;
+                for (int i = 0; i < rec.count(); ++i) {
+                    const QString name = rec.fieldName(i);
+                    const QVariant v = rec.value(i);
+                    switch (v.typeId()) {
+                        case QMetaType::Bool: obj.insert(name, v.toBool()); break;
+                        case QMetaType::Int:
+                        case QMetaType::UInt:
+                        case QMetaType::LongLong:
+                        case QMetaType::ULongLong:
+                        case QMetaType::Double: obj.insert(name, v.toDouble()); break;
+                        case QMetaType::QDate: obj.insert(name, v.toDate().toString(Qt::ISODate)); break;
+                        case QMetaType::QDateTime: obj.insert(name, v.toDateTime().toString(Qt::ISODate)); break;
+                        default: obj.insert(name, v.toString()); break;
+                    }
+                }
+                return obj;
+            };
+
+            const QStringList idColumns{
+                QStringLiteral("JurisdictionId"),
+                QStringLiteral("Id")
+            };
+
+            DispatchResult r;
+            for (const QString &col : idColumns) {
+                QSqlQuery q(QSqlDatabase::database());
+                q.prepare(QStringLiteral("SELECT * FROM viewJurisdictions WHERE ") + col + QStringLiteral(" = :id LIMIT 1"));
+                q.bindValue(":id", QVariant::fromValue(id));
+                if (q.exec() && q.next()) { r.ok = true; r.result = packRecord(q.record()); return r; }
+            }
+            r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Jurisdiction not found");
+            return r;
+        }
+    });
+
+    // jurisdictionView.list (read-only)
+    m_router.registerAction(QStringLiteral("jurisdictionView.list"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{},
+        /*handler*/ [](const QJsonObject &){
+            QSqlQuery q(QSqlDatabase::database());
+            bool ok = q.exec(QStringLiteral("SELECT * FROM viewJurisdictions"));
+            DispatchResult r; r.ok = true;
+            QJsonArray items;
+            if (ok) {
+                while (q.next()) {
+                    const QSqlRecord rec = q.record();
+                    QJsonObject obj;
+                    for (int i = 0; i < rec.count(); ++i) {
+                        const QString name = rec.fieldName(i);
+                        const QVariant v = rec.value(i);
+                        switch (v.typeId()) {
+                            case QMetaType::Bool: obj.insert(name, v.toBool()); break;
+                            case QMetaType::Int:
+                            case QMetaType::UInt:
+                            case QMetaType::LongLong:
+                            case QMetaType::ULongLong:
+                            case QMetaType::Double: obj.insert(name, v.toDouble()); break;
+                            case QMetaType::QDate: obj.insert(name, v.toDate().toString(Qt::ISODate)); break;
+                            case QMetaType::QDateTime: obj.insert(name, v.toDateTime().toString(Qt::ISODate)); break;
+                            default: obj.insert(name, v.toString()); break;
+                        }
+                    }
+                    items.append(obj);
+                }
+            }
+            r.result = QJsonObject{{"items", items}};
+            return r;
+        }
+    });
+
     // objectType.get: by id (read-only fetch)
     m_router.registerAction(QStringLiteral("objectType.get"), ActionSpec{
         /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
