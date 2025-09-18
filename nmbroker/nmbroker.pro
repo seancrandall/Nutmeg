@@ -1,5 +1,5 @@
-QT = core
-QT += sql
+QT = core gui
+QT += sql websockets
 
 CONFIG += c++17 cmdline
 
@@ -8,32 +8,51 @@ CONFIG += c++17 cmdline
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        dbaccess/nmdatabase.cpp \
-        dbaccess/responsesdashboardtablemodel.cpp \
-        dbaccess/tablemodel.cpp \
         main.cpp \
-        objects/appointment.cpp \
-        objects/copyrightmatter.cpp \
-        objects/document.cpp \
-        objects/enterprise.cpp \
-        objects/entity.cpp \
-        objects/filing.cpp \
-        objects/flag.cpp \
-        objects/flagclass.cpp \
-        objects/matter.cpp \
-        objects/object.cpp \
-        objects/patentmatter.cpp \
-        objects/person.cpp \
-        objects/response.cpp \
-        objects/tag.cpp \
-        objects/task.cpp \
-        objects/trademarkmatter.cpp \
-        settings.cpp
+        websocketserver.cpp \
+        wsrouter.cpp \
+        nutmeg.cpp \
+        logger.cpp \
+        settings.cpp \
+        $$files(objects/*.cpp) \
+        dbaccess/databaseconnection.cpp \
+        dbaccess/exception.cpp \
+        dbaccess/models.cpp \
+        dbaccess/nutdb.cpp \
+        dbaccess/objectmodel.cpp \
+        dbaccess/sqlrecordstablemodel.cpp \
+        dbaccess/tablemodel.cpp \
+        dbaccess/objecttypemodel.cpp \
+        dbaccess/flagclassmodel.cpp \
+        dbaccess/deadlinemodel.cpp \
+        dbaccess/tagmodel.cpp \
+        dbaccess/viewappointmentobjectsmodel.cpp \
+        dbaccess/viewclientsmodel.cpp \
+        dbaccess/viewentitiesmodel.cpp \
+        dbaccess/viewinventorsmodel.cpp \
+        dbaccess/viewfilingsmodel.cpp \
+        dbaccess/viewmattersmodel.cpp \
+        dbaccess/viewobjectflagsmodel.cpp \
+        dbaccess/viewobjecttagsmodel.cpp \
+        dbaccess/viewparalegalsmodel.cpp \
+        dbaccess/viewpatentexaminersmodel.cpp \
+        dbaccess/viewpatentmattersmodel.cpp \
+        dbaccess/viewpeoplemodel.cpp \
+        dbaccess/viewresponsesmodel.cpp \
+        dbaccess/viewtasksmodel.cpp \
+        dbaccess/viewtrademarkmattersmodel.cpp \
+        dbaccess/viewworkattorneysmodel.cpp \
+        $$files(cache/*.cpp)
+
+# Exclude GUI-dependent object sources from backend build
+SOURCES -= objects/patentmatter.cpp
+SOURCES -= dbaccess/responsesdashboardmodel.cpp
 
 TRANSLATIONS += \
     nmbroker_en_US.ts
-CONFIG += lrelease
-CONFIG += embed_translations
+# Disable translation build in minimal backend builds (requires Qt Linguist tools)
+# CONFIG += lrelease
+# CONFIG += embed_translations
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -41,29 +60,43 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    dbaccess/nmdatabase.h \
-    dbaccess/responsesdashboardtablemodel.h \
-    dbaccess/tablemodel.h \
     nutmeg.h \
-    objects/appointment.h \
-    objects/copyrightmatter.h \
-    objects/document.h \
-    objects/enterprise.h \
-    objects/entity.h \
-    objects/filing.h \
-    objects/flag.h \
-    objects/flagclass.h \
-    objects/matter.h \
-    objects/object.h \
-    objects/patentmatter.h \
-    objects/person.h \
-    objects/response.h \
-    objects/tag.h \
-    objects/task.h \
-    objects/trademarkmatter.h \
+    websocketserver.h \
+    wsrouter.h \
     property.h \
     settings.h \
-    structures.h
+    structures.h \
+    exception.h \
+    logger.h \
+    $$files(objects/*.h) \
+    $$files(cache/*.h) \
+    dbaccess/databaseconnection.h \
+    dbaccess/exception.h \
+    dbaccess/models.h \
+    dbaccess/nutdb.h \
+    dbaccess/objectmodel.h \
+    dbaccess/sqlrecordstablemodel.h \
+    dbaccess/tablemodel.h \
+    dbaccess/objecttypemodel.h \
+    dbaccess/flagclassmodel.h \
+    dbaccess/deadlinemodel.h \
+    dbaccess/tagmodel.h \
+    dbaccess/viewappointmentobjectsmodel.h \
+    dbaccess/viewclientsmodel.h \
+    dbaccess/viewentitiesmodel.h \
+    dbaccess/viewinventorsmodel.h \
+    dbaccess/viewfilingsmodel.h \
+    dbaccess/viewmattersmodel.h \
+    dbaccess/viewobjectflagsmodel.h \
+    dbaccess/viewobjecttagsmodel.h \
+    dbaccess/viewparalegalsmodel.h \
+    dbaccess/viewpatentexaminersmodel.h \
+    dbaccess/viewpatentmattersmodel.h \
+    dbaccess/viewpeoplemodel.h \
+    dbaccess/viewresponsesmodel.h \
+    dbaccess/viewtasksmodel.h \
+    dbaccess/viewtrademarkmattersmodel.h \
+    dbaccess/viewworkattorneysmodel.h
 
 QMAKE_CXXFLAGS += -fdeclspec
 

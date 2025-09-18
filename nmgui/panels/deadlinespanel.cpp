@@ -1,4 +1,5 @@
 #include "deadlinespanel.h"
+#include "objects/task.h"
 
 namespace Nutmeg
 {
@@ -16,6 +17,26 @@ DeadlinesPanel::DeadlinesPanel(std::shared_ptr<Deadline> deadline, bool updateIn
     , mDeadline(deadline)
 {
     Initialize();
+}
+
+DeadlinesPanel::DeadlinesPanel(const responsesDashboardEntry &entry, QWidget *parent)
+    : DeadlinesPanel(entry, true, parent)
+{
+}
+
+DeadlinesPanel::DeadlinesPanel(const responsesDashboardEntry &entry, bool updateInstantly, QWidget *parent)
+    : Frame(parent)
+    , instantUpdate(updateInstantly)
+    , mDeadline([&entry]() {
+          Task t(entry.getTaskId());
+          return std::make_shared<Deadline>(t.fkDeadline);
+      }())
+{
+    Initialize();
+    triggerEdit->date = entry.getTriggerDate();
+    nextEdit->date = entry.getNextDeadline();
+    softEdit->date = entry.getSoftDeadline();
+    hardEdit->date = entry.getHardDeadline();
 }
 
 void DeadlinesPanel::Scatter()

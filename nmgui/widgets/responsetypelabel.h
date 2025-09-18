@@ -6,6 +6,7 @@
 #include <QWidget>
 
 #include "objects/response.h"
+#include "objects/responsesdashboardentry.h"
 
 namespace Nutmeg
 {
@@ -15,6 +16,7 @@ class ResponseTypeLabel : public QLabel
     Q_OBJECT
   public:
     ResponseTypeLabel(std::shared_ptr<Response> response, QWidget *parent = nullptr);
+    ResponseTypeLabel(const responsesDashboardEntry &entry, QWidget *parent = nullptr);
 };
 
 } // namespace Nutmeg

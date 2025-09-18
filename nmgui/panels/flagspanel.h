@@ -7,6 +7,7 @@
 
 #include "frame.h"
 #include "objects/object.h"
+#include "objects/responsesdashboardentry.h"
 #include "nutmeg.h"
 #include "widgets/flagcheckbox.h"
 
@@ -18,6 +19,7 @@ class FlagsPanel : public Nutmeg::Frame
     Q_OBJECT
   public:
     FlagsPanel(Key objectid, QWidget *parent=nullptr);
+    FlagsPanel(const responsesDashboardEntry &entry, QWidget *parent=nullptr);
 
   protected:
     std::shared_ptr<Object> mObject;

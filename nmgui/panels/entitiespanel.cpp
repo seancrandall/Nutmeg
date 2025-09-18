@@ -12,6 +12,14 @@ EntitiesPanel::EntitiesPanel(Key taskid, QWidget *parent)
     ConnectSignalsAndSlots();
 }
 
+EntitiesPanel::EntitiesPanel(const responsesDashboardEntry &entry, QWidget *parent)
+    : EntitiesPanel(entry.getTaskId(), parent)
+{
+    clientsBox->setCurrentText(entry.getClientEntityName());
+    paralegalsBox->setCurrentText(entry.getParalegalEntityName());
+    attorneysBox->setCurrentText(entry.getWorkAttorneyEntityName());
+}
+
 void EntitiesPanel::updateClient(Key newkey)
 {
     matter.fkClient = newkey;

@@ -10,6 +10,7 @@
 #include "widgets/combobox.h"
 #include "objects/task.h"
 #include "objects/matter.h"
+#include "objects/responsesdashboardentry.h"
 #include "dbaccess/viewparalegalsmodel.h"
 #include "dbaccess/viewclientsmodel.h"
 #include "dbaccess/viewworkattorneysmodel.h"
@@ -22,6 +23,7 @@ class EntitiesPanel : public Nutmeg::Frame
     Q_OBJECT
   public:
     EntitiesPanel(Key taskid, QWidget *parent=nullptr);
+    EntitiesPanel(const responsesDashboardEntry &entry, QWidget *parent=nullptr);
 
   protected slots:
     void updateClient(Key newkey);

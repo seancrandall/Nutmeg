@@ -10,6 +10,11 @@ ResponseTaskPanel::ResponseTaskPanel(std::shared_ptr<Response> response, QWidget
 {
 }
 
+ResponseTaskPanel::ResponseTaskPanel(const responsesDashboardEntry &entry, QWidget *parent)
+    : ResponseTaskPanel(std::make_shared<Response>(entry.getTaskId()), parent)
+{
+}
+
 void Nutmeg::ResponseTaskPanel::slotExtraButtonAction()
 {
     AddExaminerInterviewDialog diag(mResponse->ResponseId);
