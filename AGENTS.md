@@ -29,6 +29,12 @@ WebSocket Server
 - Docker: pass `-e NUTMEG_WS_PORT=9010` and map `-p 9010:9010` (or desired port).
 - Behavior: replies `pong` to `ping`; echoes text in a JSON envelope while protocol evolves.
 
+Protocol
+- Transport: WebSocket, JSON over UTF‑8 text.
+- Envelope: `type=req|res|event`, `id`, `action`, `payload`, `ok/result|error`.
+- Version: include `version` in requests; server announces via `server.hello` event.
+- See `docs/PROTOCOL.md` for the detailed schema, examples, and error codes.
+
 Backend WebSocket Plan (initial guidance)
 - Add a WebSocket server inside `nmbroker` (Qt 6 provides `QtWebSockets`).
 - Serve application data and operations via messages (e.g., JSON payloads).
