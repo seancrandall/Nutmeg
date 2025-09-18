@@ -80,6 +80,27 @@ bool Document::slotSetURL(String newval)
     return result;
 }
 
+void Document::slotSetFilename(String newval)
+{
+    bool result = WriteString(documentTableName, "Filename", newval);
+    if(result)
+        mDat.Filename = newval;
+}
+
+void Document::slotSetExtension(String newval)
+{
+    bool result = WriteString(documentTableName, "Extension", newval);
+    if(result)
+        mDat.Extension = newval;
+}
+
+void Document::slotSetTitle(String newval)
+{
+    bool result = WriteString(documentTableName, "Title", newval);
+    if(result)
+        mDat.Title = newval;
+}
+
 bool Document::InitializeDocument(Key id)
 {
     if(id == 0)

@@ -18,7 +18,7 @@ class Document : public Nutmeg::Object
     explicit Document(String Title);
 
     // Properties
-    Property(getId, slotSetId) Key DocumentId;
+    Property(getId, SetId) Key DocumentId;
     Property(getFullyQualifiedPath, slotSetFullyQualifiedPath) String FullyQualifiedPath;
     Property(getURL, slotSetURL) String URL;
     Property(getFilename, slotSetFilename) String Filename;
@@ -47,6 +47,9 @@ class Document : public Nutmeg::Object
     //Hold properties
     void holdFullyQualifiedPath(QString newval) {mDat.FullyQualifiedPath = newval; dirty["FullyQualifiedPath"] = true;};
     void holdURL(QString newval) {mDat.URL = newval; dirty["URL"] = true;};
+    void holdFilename(QString newval) {mDat.Filename = newval; dirty["Filename"] = true;};
+    void holdExtension(QString newval) {mDat.Extension = newval; dirty["Extension"] = true;};
+    void holdTitle(QString newval) {mDat.Title = newval; dirty["Title"] = true;};
 
   protected:
     DocumentData mDat;
