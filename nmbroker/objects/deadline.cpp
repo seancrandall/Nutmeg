@@ -108,34 +108,54 @@ bool Deadline::Update(DeadlineData newval)
 
 bool Deadline::SetTriggerDate(const QDate &newval)
 {
-    QString stringval = newval.toString("yyyy-MM-dd");
-    bool result = Nutdb::UpdateField(deadlineTableName, "TriggerDate", mDat.DeadlineId, stringval);
-    if(result) mDat.TriggerDate = newval;
-    return result;
+    if (mUpdatePolicy == Instant) {
+        QString stringval = newval.toString("yyyy-MM-dd");
+        bool result = Nutdb::UpdateField(deadlineTableName, "TriggerDate", mDat.DeadlineId, stringval);
+        if(result) mDat.TriggerDate = newval;
+        return result;
+    } else {
+        holdTriggerDate(newval);
+        return true;
+    }
 }
 
 bool Deadline::SetSoftDeadline(const QDate &newval)
 {
-    QString stringval = newval.toString("yyyy-MM-dd");
-    bool result = Nutdb::UpdateField(deadlineTableName, "SoftDeadline", mDat.DeadlineId, stringval);
-    if(result) mDat.SoftDeadline = newval;
-    return result;
+    if (mUpdatePolicy == Instant) {
+        QString stringval = newval.toString("yyyy-MM-dd");
+        bool result = Nutdb::UpdateField(deadlineTableName, "SoftDeadline", mDat.DeadlineId, stringval);
+        if(result) mDat.SoftDeadline = newval;
+        return result;
+    } else {
+        holdSoftDeadline(newval);
+        return true;
+    }
 }
 
 bool Deadline::SetHardDeadline(const QDate &newval)
 {
-    QString stringval = newval.toString("yyyy-MM-dd");
-    bool result = Nutdb::UpdateField(deadlineTableName, "HardDeadline", mDat.DeadlineId, stringval);
-    if(result) mDat.HardDeadline = newval;
-    return result;
+    if (mUpdatePolicy == Instant) {
+        QString stringval = newval.toString("yyyy-MM-dd");
+        bool result = Nutdb::UpdateField(deadlineTableName, "HardDeadline", mDat.DeadlineId, stringval);
+        if(result) mDat.HardDeadline = newval;
+        return result;
+    } else {
+        holdHardDeadline(newval);
+        return true;
+    }
 }
 
 bool Deadline::SetNextDeadline(const QDate &newval)
 {
-    QString stringval = newval.toString("yyyy-MM-dd");
-    bool result = Nutdb::UpdateField(deadlineTableName, "NextDeadline", mDat.DeadlineId, stringval);
-    if(result) mDat.NextDeadline = newval;
-    return result;
+    if (mUpdatePolicy == Instant) {
+        QString stringval = newval.toString("yyyy-MM-dd");
+        bool result = Nutdb::UpdateField(deadlineTableName, "NextDeadline", mDat.DeadlineId, stringval);
+        if(result) mDat.NextDeadline = newval;
+        return result;
+    } else {
+        holdNextDeadline(newval);
+        return true;
+    }
 }
 
 bool Deadline::InitializeDeadline(Key id)

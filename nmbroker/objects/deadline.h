@@ -42,7 +42,7 @@ class Deadline
     Property(getSoftDeadline, SetSoftDeadline) Date SoftDeadline;
     Property(getHardDeadline, SetHardDeadline) Date HardDeadline;
     Property(getNextDeadline, SetNextDeadline) Date NextDeadline;
-    Property(getUpdatePolicy, SetUpatePolicy) UpdatePolicy updatePolicy;
+    Property(getUpdatePolicy, SetUpdatePolicy) UpdatePolicy updatePolicy;
     ReadOnlyProperty(getColor) QColor color;
 
     // Getters
@@ -68,6 +68,10 @@ class Deadline
     void holdSoftDeadline(const QDate &newval){mDat.SoftDeadline = newval;}
     void holdHardDeadline(const QDate &newval){mDat.HardDeadline = newval;}
     void holdNextDeadline(const QDate &newval){mDat.NextDeadline = newval;}
+
+    // Update policy accessors
+    UpdatePolicy getUpdatePolicy(void) { return mUpdatePolicy; }
+    void SetUpdatePolicy(UpdatePolicy policy) { mUpdatePolicy = policy; }
 
   protected:
     DeadlineData mDat;
