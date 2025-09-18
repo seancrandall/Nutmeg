@@ -271,9 +271,11 @@ Batch Models — Tables and Views (lightweight)
     - Create: `{ appointmentTypeName }` → created row
     - Update: `{ id, appointmentTypeName? }` → updated row
     - Delete: `{ id }` → `{ id, deleted: true }`
-  - `objectType.get|list|update`
+  - `objectType.get|list|update|create|delete`
     - Get/List: by id or all
     - Update: `{ id, objectTypeName? }` → updated row
+    - Create: `{ objectTypeName }` → created row
+    - Delete: `{ id }` → `{ id, deleted: true }`
 
 - Views (read‑only; each returns full view columns)
   - Appointment/Object mapping
@@ -304,6 +306,9 @@ Batch Models — Tables and Views (lightweight)
     - `responseView.get|list` (viewResponses)
     - `responsesIncompleteView.get|list` (viewResponsesIncomplete)
     - `responseTaskTypeView.get|list` (viewResponseTaskTypes)
+  - Dashboards
+    - `filingsDashboardEntry.get|list` (filingsDashboardComplete) — list supports `clientEntityId?`, `withParalegal?`, `needsExaminerInterview?`, `limit?`, `offset?`
+    - `responsesDashboardEntry.get|list` (responsesDashboardComplete) — list supports `clientEntityId?`, `withParalegal?`, `limit?`, `offset?`
   - Tasks
     - `taskView.get|list` (viewTasks)
     - `taskClass.list` (viewTaskClass) — result: `{ items: [{ id, taskClassName }] }`
@@ -319,3 +324,11 @@ Batch Models — Tables and Views (lightweight)
 Notes
 - All view `.get` actions try common id columns (e.g., `Id`, `…Id`) to locate the row and return `ENOTFOUND` if not present.
 - Dates in views are encoded as ISO strings (YYYY‑MM‑DD or ISO‑8601).
+
+Additional Table Endpoints (summary)
+- `deadline.list|create|delete`
+- `flagClass.list|create|delete`
+- `object.list|create|delete`
+- `tag.list|create|update|delete`
+- `task.list`
+- `taskType.list|create|update|delete`

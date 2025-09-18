@@ -2602,6 +2602,32 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
         }
     });
 
+    // objectType.create: insert new type
+    m_router.registerAction(QStringLiteral("objectType.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("objectTypeName"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const QString name = payload.value(QStringLiteral("objectTypeName")).toString();
+            DispatchResult r; if (name.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("objectTypeName is required"); return r; }
+            QSqlQuery q(QSqlDatabase::database());
+            q.prepare(QStringLiteral("INSERT INTO objectType (TypeName) VALUES (:name)"));
+            q.bindValue(":name", name);
+            if (!q.exec()) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = q.lastError().text(); return r; }
+            const Key id = q.lastInsertId().toUInt();
+            r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"objectTypeName", name}}; return r;
+        }
+    });
+
+    // objectType.delete: delete a type
+    m_router.registerAction(QStringLiteral("objectType.delete"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            QSqlQuery q(QSqlDatabase::database()); q.prepare(QStringLiteral("DELETE FROM objectType WHERE ObjectTypeId = :id")); q.bindValue(":id", QVariant::fromValue(id));
+            DispatchResult r; if (!q.exec()) { r.ok = false; r.errorCode = QStringLiteral("EDELETE"); r.errorMessage = q.lastError().text(); return r; }
+            r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"deleted", true}}; return r;
+        }
+    });
+
     // appointment.get: by id
     m_router.registerAction(QStringLiteral("appointment.get"), ActionSpec{
         /*fields*/ QList<FieldSpec>{
