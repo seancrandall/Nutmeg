@@ -213,6 +213,51 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
         }
     });
 
+    // appointmentObject.get (read-only via viewAppointmentObjects)
+    m_router.registerAction(QStringLiteral("appointmentObject.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("appointmentId"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key apptId = static_cast<Key>(payload.value(QStringLiteral("appointmentId")).toDouble());
+            QSqlQuery q(QSqlDatabase::database());
+            q.prepare(QStringLiteral("SELECT AppointmentId, ObjectId, AppointmentTypeName FROM viewAppointmentObjects WHERE AppointmentId = :id"));
+            q.bindValue(":id", QVariant::fromValue(apptId));
+            DispatchResult r;
+            if (!q.exec() || !q.next()) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Appointment mapping not found"); return r; }
+            const QSqlRecord rec = q.record();
+            r.ok = true;
+            r.result = QJsonObject{
+                {"appointmentId", static_cast<double>(rec.field("AppointmentId").value().toUInt())},
+                {"objectId", static_cast<double>(rec.field("ObjectId").value().toUInt())},
+                {"appointmentTypeName", rec.field("AppointmentTypeName").isValid() ? rec.field("AppointmentTypeName").value().toString() : QString()}
+            };
+            return r;
+        }
+    });
+
+    // appointmentObject.listForObject (read-only): list appointments for an object
+    m_router.registerAction(QStringLiteral("appointmentObject.listForObject"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("objectId"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key objectId = static_cast<Key>(payload.value(QStringLiteral("objectId")).toDouble());
+            QSqlQuery q(QSqlDatabase::database());
+            q.prepare(QStringLiteral("SELECT AppointmentId, ObjectId, AppointmentTypeName FROM viewAppointmentObjects WHERE ObjectId = :oid ORDER BY AppointmentId"));
+            q.bindValue(":oid", QVariant::fromValue(objectId));
+            DispatchResult r; r.ok = true;
+            QJsonArray items;
+            if (q.exec()) {
+                while (q.next()) {
+                    items.append(QJsonObject{
+                        {"appointmentId", static_cast<double>(q.value(0).toUInt())},
+                        {"objectId", static_cast<double>(q.value(1).toUInt())},
+                        {"appointmentTypeName", q.value(2).toString()}
+                    });
+                }
+            }
+            r.result = QJsonObject{{"objectId", static_cast<double>(objectId)}, {"items", items}};
+            return r;
+        }
+    });
+
     // objectType.get: by id (read-only fetch)
     m_router.registerAction(QStringLiteral("objectType.get"), ActionSpec{
         /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
