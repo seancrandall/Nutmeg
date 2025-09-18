@@ -16,6 +16,10 @@
 #include "objects/enterprise.h"
 #include "objects/entity.h"
 #include "objects/filing.h"
+#include "objects/filingsdashboardentry.h"
+#include "objects/flag.h"
+#include <QSqlQuery>
+#include <QSqlRecord>
 
 namespace Nutmeg {
 
@@ -593,6 +597,60 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
                 {"id", static_cast<double>(f.FilingId)},
                 {"fkFilingStatus", static_cast<double>(f.fkFilingStatus)},
                 {"fkAsFiledDocument", static_cast<double>(f.fkAsFiledDocument)}
+            };
+            return r;
+        }
+    });
+
+    // filingsDashboardEntry.get: by TaskId (read-only view)
+    m_router.registerAction(QStringLiteral("filingsDashboardEntry.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("taskId"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key taskId = static_cast<Key>(payload.value(QStringLiteral("taskId")).toDouble());
+            QSqlQuery q(QSqlDatabase::database());
+            q.prepare(QStringLiteral("SELECT * FROM filingsDashboardComplete WHERE TaskId = :id"));
+            q.bindValue(":id", QVariant::fromValue(taskId));
+            DispatchResult r;
+            if (!q.exec() || !q.next()) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("filingsDashboardEntry not found"); return r; }
+            const QSqlRecord rec = q.record();
+            r.ok = true;
+            r.result = QJsonObject{
+                {"taskId", static_cast<double>(rec.field("TaskId").value().toUInt())},
+                {"taskClassName", rec.field("TaskClassName").value().toString()},
+                {"attorneyDocketNumber", rec.field("AttorneyDocketNumber").value().toString()},
+                {"taskName", rec.field("TaskName").value().toString()},
+                {"title", rec.field("Title").value().toString()},
+                {"triggerDate", rec.field("TriggerDate").value().toDate().toString(Qt::ISODate)},
+                {"nextDeadline", rec.field("NextDeadline").value().toDate().toString(Qt::ISODate)},
+                {"softDeadline", rec.field("SoftDeadline").value().toDate().toString(Qt::ISODate)},
+                {"hardDeadline", rec.field("HardDeadline").value().toDate().toString(Qt::ISODate)},
+                {"clientEntityId", static_cast<double>(rec.field("ClientEntityId").value().toUInt())},
+                {"clientEntityName", rec.field("ClientEntityName").value().toString()},
+                {"paralegalEntityName", rec.field("ParalegalEntityName").value().toString()},
+                {"workAttorneyEntityName", rec.field("WorkAttorneyEntityName").value().toString()},
+                {"withParalegal", rec.field("WithParalegal").value().toBool()},
+                {"needsExaminerInterview", rec.field("NeedsExaminerInterview").value().toBool()},
+                {"examinerInterviewScheduled", rec.field("ExaminerInterviewScheduled").value().toBool()}
+            };
+            return r;
+        }
+    });
+
+    // flag.get: read a boolean flag by object and camelCase
+    m_router.registerAction(QStringLiteral("flag.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("objectId"), QJsonValue::Double, true},
+            FieldSpec{QStringLiteral("camelCase"), QJsonValue::String, true}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key objectId = static_cast<Key>(payload.value(QStringLiteral("objectId")).toDouble());
+            const QString camel = payload.value(QStringLiteral("camelCase")).toString();
+            DispatchResult r; r.ok = true;
+            const bool value = Nutdb::GetFlag(objectId, camel);
+            r.result = QJsonObject{
+                {"objectId", static_cast<double>(objectId)},
+                {"camelCase", camel},
+                {"value", value}
             };
             return r;
         }

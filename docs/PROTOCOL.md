@@ -102,6 +102,13 @@ Initial Actions
   - Payload: `{ id: number, fkFilingStatus?: number, fkAsFiledDocument?: number }`
   - Result: same shape as `filing.get`
   - Errors: `ENOTFOUND` if the id does not exist
+- `filingsDashboardEntry.get`
+  - Payload: `{ taskId: number }`
+  - Result: `{ taskId, taskClassName, attorneyDocketNumber, taskName, title, triggerDate: YYYY-MM-DD, nextDeadline: YYYY-MM-DD, softDeadline: YYYY-MM-DD, hardDeadline: YYYY-MM-DD, clientEntityId, clientEntityName, paralegalEntityName, workAttorneyEntityName, withParalegal, needsExaminerInterview, examinerInterviewScheduled }`
+  - Errors: `ENOTFOUND` if the row does not exist
+- `flag.get`
+  - Payload: `{ objectId: number, camelCase: string }`
+  - Result: `{ objectId, camelCase, value: boolean }`
 - `copyrightMatter.get`
   - Payload: `{ id: number }`
   - Result: `{ id, fkAuthor, created: YYYY-MM-DD, filed: YYYY-MM-DD, registered: YYYY-MM-DD, serialNumber, registrationNumber, fkDeposit, fkWorkType, isRegistered }`
