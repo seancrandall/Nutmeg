@@ -112,6 +112,14 @@ Initial Actions
 - `flag.set`
   - Payload: `{ objectId: number, camelCase: string, value: boolean }`
   - Result: `{ objectId, camelCase, value }`
+- `flagClass.get`
+  - Payload: `{ id?: number, camelCase?: string }` (at least one required)
+  - Result: `{ id, camelCase, label, description }`
+  - Errors: `ENOTFOUND` if no match; `EBADREQ` if neither id nor camelCase provided
+- `flagClass.update`
+  - Payload: `{ id: number, camelCase?: string, label?: string, description?: string }`
+  - Result: same shape as `flagClass.get`
+  - Errors: `ENOTFOUND` if id does not exist
 - `copyrightMatter.get`
   - Payload: `{ id: number }`
   - Result: `{ id, fkAuthor, created: YYYY-MM-DD, filed: YYYY-MM-DD, registered: YYYY-MM-DD, serialNumber, registrationNumber, fkDeposit, fkWorkType, isRegistered }`

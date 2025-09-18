@@ -18,6 +18,7 @@
 #include "objects/filing.h"
 #include "objects/filingsdashboardentry.h"
 #include "objects/flag.h"
+#include "objects/flagclass.h"
 #include <QSqlQuery>
 #include <QSqlRecord>
 
@@ -675,6 +676,69 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
                 {"objectId", static_cast<double>(objectId)},
                 {"camelCase", camel},
                 {"value", value}
+            };
+            return r;
+        }
+    });
+
+    // flagClass.get: by id or camelCase (at least one required)
+    m_router.registerAction(QStringLiteral("flagClass.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("camelCase"), QJsonValue::String, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            DispatchResult r;
+            FlagClassData fc;
+            const bool hasId = payload.contains(QStringLiteral("id"));
+            const bool hasCamel = payload.contains(QStringLiteral("camelCase"));
+            if (!hasId && !hasCamel) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Provide 'id' or 'camelCase'"); return r; }
+
+            if (hasId) {
+                const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+                fc = Nutdb::GetFlagClass(id);
+            } else {
+                fc = Nutdb::GetFlagClass(payload.value(QStringLiteral("camelCase")).toString());
+            }
+            if (fc.FlagClassId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("FlagClass not found"); return r; }
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(fc.FlagClassId)},
+                {"camelCase", fc.CamelCase},
+                {"label", fc.Label},
+                {"description", fc.Description}
+            };
+            return r;
+        }
+    });
+
+    // flagClass.update: by id; updates camelCase/label/description
+    m_router.registerAction(QStringLiteral("flagClass.update"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
+            FieldSpec{QStringLiteral("camelCase"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("label"), QJsonValue::String, false},
+            FieldSpec{QStringLiteral("description"), QJsonValue::String, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            DispatchResult r;
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            FlagClass fc(id);
+            // We can't directly check existence from FlagClass; validate using Nutdb
+            const FlagClassData cur = Nutdb::GetFlagClass(id);
+            if (cur.FlagClassId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("FlagClass not found"); return r; }
+
+            if (payload.contains(QStringLiteral("camelCase"))) fc.setCamelCase(payload.value(QStringLiteral("camelCase")).toString());
+            if (payload.contains(QStringLiteral("label"))) fc.setLabel(payload.value(QStringLiteral("label")).toString());
+            if (payload.contains(QStringLiteral("description"))) fc.setDescription(payload.value(QStringLiteral("description")).toString());
+
+            const FlagClassData out = Nutdb::GetFlagClass(id);
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(out.FlagClassId)},
+                {"camelCase", out.CamelCase},
+                {"label", out.Label},
+                {"description", out.Description}
             };
             return r;
         }
