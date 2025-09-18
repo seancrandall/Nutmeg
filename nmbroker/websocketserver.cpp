@@ -213,6 +213,77 @@ WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
         }
     });
 
+    // objectType.get: by id (read-only fetch)
+    m_router.registerAction(QStringLiteral("objectType.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            QSqlQuery q(QSqlDatabase::database());
+            q.prepare(QStringLiteral("SELECT ObjectTypeId, TypeName FROM objectType WHERE ObjectTypeId = :id"));
+            q.bindValue(":id", QVariant::fromValue(id));
+            DispatchResult r;
+            if (!q.exec() || !q.next()) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("ObjectType not found"); return r; }
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(q.value(0).toUInt())},
+                {"objectTypeName", q.value(1).toString()}
+            };
+            return r;
+        }
+    });
+
+    // objectType.list: list all rows (read-only)
+    m_router.registerAction(QStringLiteral("objectType.list"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{},
+        /*handler*/ [](const QJsonObject &){
+            QSqlQuery q(QSqlDatabase::database());
+            DispatchResult r; r.ok = true;
+            QJsonArray items;
+            if (q.exec(QStringLiteral("SELECT ObjectTypeId, TypeName FROM objectType ORDER BY TypeName"))) {
+                while (q.next()) {
+                    items.append(QJsonObject{
+                        {"id", static_cast<double>(q.value(0).toUInt())},
+                        {"objectTypeName", q.value(1).toString()}
+                    });
+                }
+            }
+            r.result = QJsonObject{{"items", items}};
+            return r;
+        }
+    });
+
+    // objectType.update: update TypeName by id
+    m_router.registerAction(QStringLiteral("objectType.update"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
+            FieldSpec{QStringLiteral("objectTypeName"), QJsonValue::String, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            bool any = false;
+            if (payload.contains(QStringLiteral("objectTypeName"))) {
+                any = true;
+                QSqlQuery q(QSqlDatabase::database());
+                q.prepare(QStringLiteral("UPDATE objectType SET TypeName = :name WHERE ObjectTypeId = :id"));
+                q.bindValue(":name", payload.value(QStringLiteral("objectTypeName")).toString());
+                q.bindValue(":id", QVariant::fromValue(id));
+                if (!q.exec()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EUPDATE"); r.errorMessage = q.lastError().text(); return r; }
+            }
+            DispatchResult r;
+            if (!any) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("No updatable fields provided"); return r; }
+            QSqlQuery qr(QSqlDatabase::database());
+            qr.prepare(QStringLiteral("SELECT ObjectTypeId, TypeName FROM objectType WHERE ObjectTypeId = :id"));
+            qr.bindValue(":id", QVariant::fromValue(id));
+            if (!qr.exec() || !qr.next()) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("ObjectType not found"); return r; }
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(qr.value(0).toUInt())},
+                {"objectTypeName", qr.value(1).toString()}
+            };
+            return r;
+        }
+    });
+
     // appointment.get: by id
     m_router.registerAction(QStringLiteral("appointment.get"), ActionSpec{
         /*fields*/ QList<FieldSpec>{
