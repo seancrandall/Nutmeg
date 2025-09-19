@@ -47,6 +47,7 @@ class Settings : public QSettings
 {
   public:
     Settings(QObject *parent = nullptr);
+    explicit Settings(const QString &filePath, QObject *parent = nullptr);
 
     ReadOnlyProperty(getCompanyName) QString companyName;
     ReadOnlyProperty(getSoftwareName) QString softwareName;

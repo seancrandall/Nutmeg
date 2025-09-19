@@ -34,14 +34,19 @@
 namespace Nutmeg {
 
 WebSocketServer::WebSocketServer(quint16 port, QObject *parent)
+    : WebSocketServer(QHostAddress::Any, port, parent)
+{
+}
+
+WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject *parent)
     : QObject(parent)
     , m_server(new QWebSocketServer(QStringLiteral("NutmegBroker"),
                                     QWebSocketServer::NonSecureMode,
                                     this))
 {
-    const bool ok = m_server->listen(QHostAddress::Any, port);
+    const bool ok = m_server->listen(addr, port);
     if (!ok) {
-        qWarning() << "WebSocketServer failed to listen on port" << port
+        qWarning() << "WebSocketServer failed to listen on" << addr.toString() << ":" << port
                    << ":" << m_server->errorString();
     } else {
         qInfo() << "WebSocketServer listening on" << m_server->serverAddress()

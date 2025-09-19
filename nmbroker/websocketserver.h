@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QList>
 #include <QJsonObject>
+#include <QHostAddress>
 #include "wsrouter.h"
 
 class QWebSocketServer;
@@ -16,6 +17,7 @@ class WebSocketServer : public QObject
     Q_OBJECT
   public:
     explicit WebSocketServer(quint16 port, QObject *parent = nullptr);
+    explicit WebSocketServer(const QHostAddress &addr, quint16 port, QObject *parent = nullptr);
     ~WebSocketServer() override;
 
     bool isListening() const;
