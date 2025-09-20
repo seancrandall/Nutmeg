@@ -3697,6 +3697,18 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         /*handler*/ [](const QJsonObject &payload){ const Key matterId = static_cast<Key>(payload.value("matterId").toDouble()); QDate trig = QDate::currentDate(); if (payload.contains("triggerDate")) { const QString s = payload.value("triggerDate").toString(); QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid triggerDate"); return r; } trig = d; } const Key id = Nutdb::InsertPatentFiling(matterId, trig); DispatchResult r; if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert patentFiling"); return r; } const PatentFilingData pf = Nutdb::GetPatentFiling(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(pf.PatentFilingId)}, {"fkInventorInterview", static_cast<double>(pf.fkInventorInterview)}}; return r; }
     });
 
+    // patentFiling.get
+    m_router.registerAction(QStringLiteral("patentFiling.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            const PatentFilingData pf = Nutdb::GetPatentFiling(id);
+            DispatchResult r;
+            if (pf.PatentFilingId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("PatentFiling not found"); return r; }
+            r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(pf.PatentFilingId)}, {"fkInventorInterview", static_cast<double>(pf.fkInventorInterview)}}; return r;
+        }
+    });
+
     // patentMatter.create
     m_router.registerAction(QStringLiteral("patentMatter.create"), ActionSpec{
         /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("docketNumber"), QJsonValue::String, true} },
@@ -3707,6 +3719,26 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
     m_router.registerAction(QStringLiteral("patentResponse.create"), ActionSpec{
         /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("matterId"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("triggerDate"), QJsonValue::String, false} },
         /*handler*/ [](const QJsonObject &payload){ const Key matterId = static_cast<Key>(payload.value("matterId").toDouble()); QDate trig = QDate::currentDate(); if (payload.contains("triggerDate")) { const QString s = payload.value("triggerDate").toString(); QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid triggerDate"); return r; } trig = d; } const Key id = Nutdb::InsertPatentResponse(matterId, trig); DispatchResult r; if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert patentResponse"); return r; } const PatentResponseData pr = Nutdb::GetPatentResponse(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(pr.PatentResponseId)}, {"fkOfficeAction", static_cast<double>(pr.fkOfficeAction)}, {"fkAsFiledResponse", static_cast<double>(pr.fkAsFiledResponse)}, {"fkLastFiledResponse", static_cast<double>(pr.fkLastFiledResponse)}, {"fkClaimAmendment", static_cast<double>(pr.fkClaimAmendment)}}; return r; }
+    });
+
+    // patentResponse.get
+    m_router.registerAction(QStringLiteral("patentResponse.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            const PatentResponseData pr = Nutdb::GetPatentResponse(id);
+            DispatchResult r;
+            if (pr.PatentResponseId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("PatentResponse not found"); return r; }
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(pr.PatentResponseId)},
+                {"fkOfficeAction", static_cast<double>(pr.fkOfficeAction)},
+                {"fkAsFiledResponse", static_cast<double>(pr.fkAsFiledResponse)},
+                {"fkLastFiledResponse", static_cast<double>(pr.fkLastFiledResponse)},
+                {"fkClaimAmendment", static_cast<double>(pr.fkClaimAmendment)}
+            };
+            return r;
+        }
     });
 
     // person.create
@@ -3775,6 +3807,18 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         /*handler*/ [](const QJsonObject &payload){ const Key matterId = static_cast<Key>(payload.value("matterId").toDouble()); QDate trig = QDate::currentDate(); if (payload.contains("triggerDate")) { const QString s = payload.value("triggerDate").toString(); QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid triggerDate"); return r; } trig = d; } const Key id = Nutdb::InsertTrademarkFiling(matterId, trig); DispatchResult r; if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert trademarkFiling"); return r; } const TrademarkFilingData tf = Nutdb::GetTrademarkFiling(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(tf.TrademarkFilingId)}}; return r; }
     });
 
+    // trademarkFiling.get
+    m_router.registerAction(QStringLiteral("trademarkFiling.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            const TrademarkFilingData tf = Nutdb::GetTrademarkFiling(id);
+            DispatchResult r;
+            if (tf.TrademarkFilingId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("TrademarkFiling not found"); return r; }
+            r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(tf.TrademarkFilingId)}}; return r;
+        }
+    });
+
     // trademarkMatter.create
     m_router.registerAction(QStringLiteral("trademarkMatter.create"), ActionSpec{
         /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("docketNumber"), QJsonValue::String, true} },
@@ -3785,6 +3829,18 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
     m_router.registerAction(QStringLiteral("trademarkResponse.create"), ActionSpec{
         /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("matterId"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("triggerDate"), QJsonValue::String, false} },
         /*handler*/ [](const QJsonObject &payload){ const Key matterId = static_cast<Key>(payload.value("matterId").toDouble()); QDate trig = QDate::currentDate(); if (payload.contains("triggerDate")) { const QString s = payload.value("triggerDate").toString(); QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid triggerDate"); return r; } trig = d; } const Key id = Nutdb::InsertTrademarkResponse(matterId, trig); DispatchResult r; if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert trademarkResponse"); return r; } const TrademarkResponseData tr = Nutdb::GetTrademarkResponse(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(tr.TrademarkResponseId)}, {"fkOfficeAction", static_cast<double>(tr.fkOfficeAction)}}; return r; }
+    });
+
+    // trademarkResponse.get
+    m_router.registerAction(QStringLiteral("trademarkResponse.get"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+            const TrademarkResponseData tr = Nutdb::GetTrademarkResponse(id);
+            DispatchResult r;
+            if (tr.TrademarkResponseId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("TrademarkResponse not found"); return r; }
+            r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(tr.TrademarkResponseId)}, {"fkOfficeAction", static_cast<double>(tr.fkOfficeAction)}}; return r;
+        }
     });
 
     // workAttorney.create

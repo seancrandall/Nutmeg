@@ -173,6 +173,11 @@ Initial Actions
   - Payload: `{ id: number }`
   - Result: `{ id, filingDate: YYYY-MM-DD, applicationSerialNumber, confirmationNumber, artUnit, patentNumber, fkExaminer, fkFirstInventor, fkSupervisoryExaminer, fkApplicant, barDate: YYYY-MM-DD, criticalDate: YYYY-MM-DD, dateIssued: YYYY-MM-DD, fkSpecification, fkDrawings, fkAsFiledClaims }`
   - Errors: `ENOTFOUND` if the id does not exist
+Additional Gets
+- `patentFiling.get` → `{ id, fkInventorInterview }`
+- `patentResponse.get` → `{ id, fkOfficeAction, fkAsFiledResponse, fkLastFiledResponse, fkClaimAmendment }`
+- `trademarkFiling.get` → `{ id }`
+- `trademarkResponse.get` → `{ id, fkOfficeAction }`
 - `patentMatter.update`
   - Payload: `{ id: number, filingDate?: YYYY-MM-DD, applicationSerialNumber?: string, confirmationNumber?: string, artUnit?: string, patentNumber?: string, fkExaminer?: number, fkFirstInventor?: number, fkSupervisoryExaminer?: number, fkApplicant?: number, barDate?: YYYY-MM-DD, criticalDate?: YYYY-MM-DD, dateIssued?: YYYY-MM-DD, fkSpecification?: number, fkDrawings?: number, fkAsFiledClaims?: number }`
   - Result: same shape as `patentMatter.get`
