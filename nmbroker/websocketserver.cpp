@@ -3512,6 +3512,286 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("objectType"), QJsonValue::String, true} },
         /*handler*/ [](const QJsonObject &payload){ const QString type = payload.value("objectType").toString(); DispatchResult r; if (type.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("objectType required"); return r; } const Key id = Nutdb::InsertObject(type); if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert object"); return r; } QSqlQuery q(QSqlDatabase::database()); q.prepare(QStringLiteral("SELECT ObjectId, fkObjectType FROM object WHERE ObjectId = :id")); q.bindValue(":id", QVariant::fromValue(id)); if (q.exec() && q.next()) { r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(q.value(0).toUInt())}, {"fkObjectType", static_cast<double>(q.value(1).toUInt())}, {"objectType", type}}; return r; } r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"objectType", type}}; return r; }
     });
+
+    // ==== Create endpoints backed by Nutdb::Insert* ====
+
+    // appointment.create: create appointment (optional taskId, optional utcOffset hours)
+    m_router.registerAction(QStringLiteral("appointment.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("appointmentTime"), QJsonValue::String, true},
+            FieldSpec{QStringLiteral("taskId"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("fkTask"), QJsonValue::Double, false},
+            FieldSpec{QStringLiteral("utcOffset"), QJsonValue::Double, false}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            DispatchResult r;
+            const QString t = payload.value(QStringLiteral("appointmentTime")).toString();
+            QDateTime dt = QDateTime::fromString(t, Qt::ISODate);
+            if (!dt.isValid()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid appointmentTime (ISO-8601 required)"); return r; }
+            const bool hasTaskId = payload.contains(QStringLiteral("taskId")) || payload.contains(QStringLiteral("fkTask"));
+            const Key taskId = hasTaskId ? static_cast<Key>((payload.contains(QStringLiteral("taskId")) ? payload.value(QStringLiteral("taskId")) : payload.value(QStringLiteral("fkTask"))).toDouble()) : 0;
+            const bool hasOffset = payload.contains(QStringLiteral("utcOffset"));
+            Key id = 0;
+            if (hasOffset && hasTaskId) {
+                id = Nutdb::InsertAppointmentWithZone(dt, static_cast<int>(payload.value(QStringLiteral("utcOffset")).toDouble()), taskId);
+            } else if (hasOffset) {
+                id = Nutdb::InsertAppointmentWithZone(dt, static_cast<int>(payload.value(QStringLiteral("utcOffset")).toDouble()));
+            } else if (hasTaskId) {
+                id = Nutdb::InsertAppointment(dt, taskId);
+            } else {
+                id = Nutdb::InsertAppointment(dt);
+            }
+            if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert appointment"); return r; }
+            const AppointmentData a = Nutdb::GetAppointment(id);
+            const Key assoc = Nutdb::GetAppointmentObject(id);
+            const QString typeStr = Nutdb::GetAppointmentTypeString(id);
+            r.ok = true;
+            r.result = QJsonObject{
+                {"id", static_cast<double>(a.AppointmentId)},
+                {"appointmentTime", a.AppointmentTime.toUTC().toString(Qt::ISODate)},
+                {"fkAppointmentType", static_cast<double>(a.fkAppointmentType)},
+                {"complete", a.Complete},
+                {"needsAgenda", Nutdb::GetFlag(assoc, QStringLiteral("NeedsAgenda"))},
+                {"agendaSent", Nutdb::GetFlag(assoc, QStringLiteral("AgendaSent"))},
+                {"confirmed", Nutdb::GetFlag(assoc, QStringLiteral("Confirmed"))},
+                {"associatedObject", static_cast<double>(assoc)},
+                {"typeString", typeStr}
+            };
+            return r;
+        }
+    });
+
+    // caseInventor.create: create a new inventor for a patentMatter
+    m_router.registerAction(QStringLiteral("caseInventor.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{
+            FieldSpec{QStringLiteral("firstName"), QJsonValue::String, true},
+            FieldSpec{QStringLiteral("lastName"), QJsonValue::String, true},
+            FieldSpec{QStringLiteral("patentMatterId"), QJsonValue::Double, true}
+        },
+        /*handler*/ [](const QJsonObject &payload){
+            const QString first = payload.value(QStringLiteral("firstName")).toString();
+            const QString last = payload.value(QStringLiteral("lastName")).toString();
+            const Key pm = static_cast<Key>(payload.value(QStringLiteral("patentMatterId")).toDouble());
+            DispatchResult r;
+            if (first.trimmed().isEmpty() || last.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("firstName and lastName are required"); return r; }
+            const Key id = Nutdb::InsertCaseInventor(first, last, pm);
+            if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert case inventor"); return r; }
+            r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"patentMatterId", static_cast<double>(pm)}, {"firstName", first}, {"lastName", last}}; return r;
+        }
+    });
+
+    // client.createEnterprise
+    m_router.registerAction(QStringLiteral("client.createEnterprise"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("enterpriseName"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){
+            const QString name = payload.value(QStringLiteral("enterpriseName")).toString();
+            DispatchResult r; if (name.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("enterpriseName is required"); return r; }
+            const Key id = Nutdb::InsertClientEnterprise(name);
+            if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to create client enterprise"); return r; }
+            // Return using client.get shape when possible
+            QSqlQuery q(QSqlDatabase::database()); q.prepare(QStringLiteral("SELECT * FROM viewClients WHERE ClientEntityId = :id OR EntityId = :id LIMIT 1")); q.bindValue(":id", QVariant::fromValue(id));
+            if (q.exec() && q.next()) { const QSqlRecord rec = q.record(); QJsonObject obj; for (int i=0;i<rec.count();++i){ const QString n=rec.fieldName(i); const QVariant v=rec.value(i); switch(v.typeId()){ case QMetaType::Bool: obj.insert(n, v.toBool()); break; case QMetaType::Int: case QMetaType::UInt: case QMetaType::LongLong: case QMetaType::ULongLong: case QMetaType::Double: obj.insert(n, v.toDouble()); break; case QMetaType::QDate: obj.insert(n, v.toDate().toString(Qt::ISODate)); break; case QMetaType::QDateTime: obj.insert(n, v.toDateTime().toString(Qt::ISODate)); break; default: obj.insert(n, v.toString()); break; } } r.ok = true; r.result = obj; return r; }
+            r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"enterpriseName", name}}; return r;
+        }
+    });
+
+    // client.createNatural
+    m_router.registerAction(QStringLiteral("client.createNatural"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("firstName"), QJsonValue::String, true}, FieldSpec{QStringLiteral("lastName"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){ const QString first = payload.value("firstName").toString(); const QString last = payload.value("lastName").toString(); DispatchResult r; if (first.trimmed().isEmpty() || last.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("firstName and lastName are required"); return r; } const Key id = Nutdb::InsertClientNatural(first, last); if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to create client person"); return r; } QSqlQuery q(QSqlDatabase::database()); q.prepare(QStringLiteral("SELECT * FROM viewClients WHERE ClientEntityId = :id OR EntityId = :id LIMIT 1")); q.bindValue(":id", QVariant::fromValue(id)); if (q.exec() && q.next()) { const QSqlRecord rec = q.record(); QJsonObject obj; for (int i=0;i<rec.count();++i){ const QString n=rec.fieldName(i); const QVariant v=rec.value(i); switch(v.typeId()){ case QMetaType::Bool: obj.insert(n, v.toBool()); break; case QMetaType::Int: case QMetaType::UInt: case QMetaType::LongLong: case QMetaType::ULongLong: case QMetaType::Double: obj.insert(n, v.toDouble()); break; case QMetaType::QDate: obj.insert(n, v.toDate().toString(Qt::ISODate)); break; case QMetaType::QDateTime: obj.insert(n, v.toDateTime().toString(Qt::ISODate)); break; default: obj.insert(n, v.toString()); break; } } r.ok = true; r.result = obj; return r; } r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"firstName", first}, {"lastName", last}}; return r; }
+    });
+
+    // copyrightFiling.create
+    m_router.registerAction(QStringLiteral("copyrightFiling.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("matterId"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("triggerDate"), QJsonValue::String, false} },
+        /*handler*/ [](const QJsonObject &payload){ const Key matterId = static_cast<Key>(payload.value("matterId").toDouble()); QDate trig = QDate::currentDate(); if (payload.contains("triggerDate")) { const QString s = payload.value("triggerDate").toString(); QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid triggerDate"); return r; } trig = d; } const Key id = Nutdb::InsertCopyrightFiling(matterId, trig); DispatchResult r; if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert copyrightFiling"); return r; } const CopyrightFilingData d = Nutdb::GetCopyrightFiling(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(d.CopyrightFilingId)}, {"fkMatter", static_cast<double>(matterId)}, {"triggerDate", trig.toString(Qt::ISODate)}}; return r; }
+    });
+
+    // copyrightMatter.create
+    m_router.registerAction(QStringLiteral("copyrightMatter.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("docketNumber"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){ const QString docket = payload.value("docketNumber").toString(); DispatchResult r; if (docket.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("docketNumber is required"); return r; } const Key id = Nutdb::InsertCopyrightMatter(docket); if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert copyrightMatter"); return r; } const CopyrightMatterData m = Nutdb::GetCopyrightMatter(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(m.CopyrightMatterId)}}; return r; }
+    });
+
+    // document.create
+    m_router.registerAction(QStringLiteral("document.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("title"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){ const QString title = payload.value("title").toString(); DispatchResult r; if (title.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("title is required"); return r; } const Key id = Nutdb::InsertDocument(title); if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert document"); return r; } const DocumentData d = Nutdb::GetDocument(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(d.DocumentId)}, {"title", d.Title}}; return r; }
+    });
+
+    // enterprise.create
+    m_router.registerAction(QStringLiteral("enterprise.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("enterpriseName"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){ const QString name = payload.value("enterpriseName").toString(); DispatchResult r; if (name.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("enterpriseName is required"); return r; } const Key id = Nutdb::InsertEnterprise(name); if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert enterprise"); return r; } const EnterpriseData e = Nutdb::GetEnterprise(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(e.EnterpriseId)}, {"enterpriseName", e.EnterpriseName}}; return r; }
+    });
+
+    // entity.create
+    m_router.registerAction(QStringLiteral("entity.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("entityName"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){ const QString name = payload.value("entityName").toString(); DispatchResult r; if (name.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("entityName is required"); return r; } const Key id = Nutdb::InsertEntity(name); if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert entity"); return r; } const EntityData e = Nutdb::GetEntity(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(e.EntityId)}, {"entityName", e.EntityName}}; return r; }
+    });
+
+    // examiner.create (generic)
+    m_router.registerAction(QStringLiteral("examiner.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("firstName"), QJsonValue::String, true}, FieldSpec{QStringLiteral("lastName"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){ const QString first = payload.value("firstName").toString(); const QString last = payload.value("lastName").toString(); DispatchResult r; if (first.trimmed().isEmpty() || last.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("firstName and lastName are required"); return r; } const Key id = Nutdb::InsertExaminer(first, last); if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert examiner"); return r; } const PersonData p = Nutdb::GetPerson(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(p.PersonId)}, {"firstName", p.FirstName}, {"lastName", p.LastName}}; return r; }
+    });
+
+    // filing.create
+    m_router.registerAction(QStringLiteral("filing.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("matterId"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("triggerDate"), QJsonValue::String, false} },
+        /*handler*/ [](const QJsonObject &payload){ const Key matterId = static_cast<Key>(payload.value("matterId").toDouble()); QDate trig = QDate::currentDate(); if (payload.contains("triggerDate")) { const QString s = payload.value("triggerDate").toString(); QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid triggerDate"); return r; } trig = d; } const Key id = Nutdb::InsertFiling(matterId, trig); DispatchResult r; if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert filing"); return r; } const FilingData f = Nutdb::GetFiling(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(f.FilingId)}, {"fkMatter", static_cast<double>(matterId)}, {"triggerDate", trig.toString(Qt::ISODate)}}; return r; }
+    });
+
+    // finalOA.create
+    m_router.registerAction(QStringLiteral("finalOA.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("matterId"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("triggerDate"), QJsonValue::String, false} },
+        /*handler*/ [](const QJsonObject &payload){ const Key matterId = static_cast<Key>(payload.value("matterId").toDouble()); QDate trig = QDate::currentDate(); if (payload.contains("triggerDate")) { const QString s = payload.value("triggerDate").toString(); QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid triggerDate"); return r; } trig = d; } const Key id = Nutdb::InsertFinalOA(matterId, trig); DispatchResult r; if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert finalOA"); return r; } r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"fkMatter", static_cast<double>(matterId)}, {"triggerDate", trig.toString(Qt::ISODate)}}; return r; }
+    });
+
+    // generalMatter.create
+    m_router.registerAction(QStringLiteral("generalMatter.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("docketNumber"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){ const QString docket = payload.value("docketNumber").toString(); DispatchResult r; if (docket.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("docketNumber is required"); return r; } const Key id = Nutdb::InsertGeneralMatter(docket); if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert generalMatter"); return r; } r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}}; return r; }
+    });
+
+    // inventor.create (person role)
+    m_router.registerAction(QStringLiteral("inventor.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("firstName"), QJsonValue::String, true}, FieldSpec{QStringLiteral("lastName"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){ const QString first = payload.value("firstName").toString(); const QString last = payload.value("lastName").toString(); DispatchResult r; if (first.trimmed().isEmpty() || last.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("firstName and lastName are required"); return r; } const Key id = Nutdb::InsertInventor(first, last); if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert inventor"); return r; } const PersonData p = Nutdb::GetPerson(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(p.PersonId)}, {"firstName", p.FirstName}, {"lastName", p.LastName}}; return r; }
+    });
+
+    // matter.create
+    m_router.registerAction(QStringLiteral("matter.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("docketNumber"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){ const QString docket = payload.value("docketNumber").toString(); DispatchResult r; if (docket.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("docketNumber is required"); return r; } const Key id = Nutdb::InsertMatter(docket); if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert matter"); return r; } const MatterData m = Nutdb::GetMatter(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(m.MatterId)}, {"attorneyDocketNumber", m.AttorneyDocketNumber}, {"clientDocketNumber", m.ClientDocketNumber}, {"title", m.Title}}; return r; }
+    });
+
+    // nonfinalOA.create
+    m_router.registerAction(QStringLiteral("nonfinalOA.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("matterId"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("triggerDate"), QJsonValue::String, false} },
+        /*handler*/ [](const QJsonObject &payload){ const Key matterId = static_cast<Key>(payload.value("matterId").toDouble()); QDate trig = QDate::currentDate(); if (payload.contains("triggerDate")) { const QString s = payload.value("triggerDate").toString(); QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid triggerDate"); return r; } trig = d; } const Key id = Nutdb::InsertNonfinalOA(matterId, trig); DispatchResult r; if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert nonfinalOA"); return r; } r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"fkMatter", static_cast<double>(matterId)}, {"triggerDate", trig.toString(Qt::ISODate)}}; return r; }
+    });
+
+    // note.create
+    m_router.registerAction(QStringLiteral("note.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("objectId"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("noteText"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){ const Key oid = static_cast<Key>(payload.value("objectId").toDouble()); const QString text = payload.value("noteText").toString(); DispatchResult r; if (text.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("noteText is required"); return r; } const Key id = Nutdb::InsertNote(oid, text); if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert note"); return r; } r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"content", text}, {"objectId", static_cast<double>(oid)}}; return r; }
+    });
+
+    // paralegal.create
+    m_router.registerAction(QStringLiteral("paralegal.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("firstName"), QJsonValue::String, true}, FieldSpec{QStringLiteral("lastName"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){ const QString first = payload.value("firstName").toString(); const QString last = payload.value("lastName").toString(); DispatchResult r; if (first.trimmed().isEmpty() || last.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("firstName and lastName are required"); return r; } const Key id = Nutdb::InsertParalegal(first, last); if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert paralegal"); return r; } const PersonData p = Nutdb::GetPerson(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(p.PersonId)}, {"firstName", p.FirstName}, {"lastName", p.LastName}}; return r; }
+    });
+
+    // patentExaminer.create
+    m_router.registerAction(QStringLiteral("patentExaminer.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("firstName"), QJsonValue::String, true}, FieldSpec{QStringLiteral("lastName"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){ const QString first = payload.value("firstName").toString(); const QString last = payload.value("lastName").toString(); DispatchResult r; if (first.trimmed().isEmpty() || last.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("firstName and lastName are required"); return r; } const Key id = Nutdb::InsertPatentExaminer(first, last); if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert patent examiner"); return r; } const PersonData p = Nutdb::GetPerson(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(p.PersonId)}, {"firstName", p.FirstName}, {"lastName", p.LastName}}; return r; }
+    });
+
+    // patentFiling.create
+    m_router.registerAction(QStringLiteral("patentFiling.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("matterId"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("triggerDate"), QJsonValue::String, false} },
+        /*handler*/ [](const QJsonObject &payload){ const Key matterId = static_cast<Key>(payload.value("matterId").toDouble()); QDate trig = QDate::currentDate(); if (payload.contains("triggerDate")) { const QString s = payload.value("triggerDate").toString(); QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid triggerDate"); return r; } trig = d; } const Key id = Nutdb::InsertPatentFiling(matterId, trig); DispatchResult r; if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert patentFiling"); return r; } r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"fkMatter", static_cast<double>(matterId)}, {"triggerDate", trig.toString(Qt::ISODate)}}; return r; }
+    });
+
+    // patentMatter.create
+    m_router.registerAction(QStringLiteral("patentMatter.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("docketNumber"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){ const QString docket = payload.value("docketNumber").toString(); DispatchResult r; if (docket.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("docketNumber is required"); return r; } const Key id = Nutdb::InsertPatentMatter(docket); if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert patentMatter"); return r; } const PatentMatterData m = Nutdb::GetPatentMatter(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(m.PatentMatterId)}}; return r; }
+    });
+
+    // patentResponse.create
+    m_router.registerAction(QStringLiteral("patentResponse.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("matterId"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("triggerDate"), QJsonValue::String, false} },
+        /*handler*/ [](const QJsonObject &payload){ const Key matterId = static_cast<Key>(payload.value("matterId").toDouble()); QDate trig = QDate::currentDate(); if (payload.contains("triggerDate")) { const QString s = payload.value("triggerDate").toString(); QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid triggerDate"); return r; } trig = d; } const Key id = Nutdb::InsertPatentResponse(matterId, trig); DispatchResult r; if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert patentResponse"); return r; } r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"fkMatter", static_cast<double>(matterId)}, {"triggerDate", trig.toString(Qt::ISODate)}}; return r; }
+    });
+
+    // person.create
+    m_router.registerAction(QStringLiteral("person.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("firstName"), QJsonValue::String, true}, FieldSpec{QStringLiteral("lastName"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){ const QString first = payload.value("firstName").toString(); const QString last = payload.value("lastName").toString(); DispatchResult r; if (first.trimmed().isEmpty() || last.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("firstName and lastName are required"); return r; } const Key id = Nutdb::InsertPerson(first, last); if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert person"); return r; } const PersonData p = Nutdb::GetPerson(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(p.PersonId)}, {"firstName", p.FirstName}, {"lastName", p.LastName}}; return r; }
+    });
+
+    // response.create
+    m_router.registerAction(QStringLiteral("response.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("matterId"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("triggerDate"), QJsonValue::String, false} },
+        /*handler*/ [](const QJsonObject &payload){ const Key matterId = static_cast<Key>(payload.value("matterId").toDouble()); QDate trig = QDate::currentDate(); if (payload.contains("triggerDate")) { const QString s = payload.value("triggerDate").toString(); QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid triggerDate"); return r; } trig = d; } const Key id = Nutdb::InsertResponse(matterId, trig); DispatchResult r; if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert response"); return r; } const ResponseData rd = Nutdb::GetResponse(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(rd.ResponseId)}, {"fkActionDocument", static_cast<double>(rd.fkActionDocument)}}; return r; }
+    });
+
+    // task.create (generic)
+    m_router.registerAction(QStringLiteral("task.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("matterId"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("triggerDate"), QJsonValue::String, false} },
+        /*handler*/ [](const QJsonObject &payload){ const Key matterId = static_cast<Key>(payload.value("matterId").toDouble()); QDate trig = QDate::currentDate(); if (payload.contains("triggerDate")) { const QString s = payload.value("triggerDate").toString(); QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid triggerDate"); return r; } trig = d; } const Key id = Nutdb::InsertTask(matterId, trig); DispatchResult r; if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert task"); return r; } const TaskData td = Nutdb::GetTask(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(td.TaskId)}, {"fkMatter", static_cast<double>(td.fkMatter)}, {"fkDeadline", static_cast<double>(td.fkDeadline)}}; return r; }
+    });
+
+    // taskNinety.create
+    m_router.registerAction(QStringLiteral("taskNinety.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("matterId"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("triggerDate"), QJsonValue::String, false} },
+        /*handler*/ [](const QJsonObject &payload){ const Key matterId = static_cast<Key>(payload.value("matterId").toDouble()); QDate trig = QDate::currentDate(); if (payload.contains("triggerDate")) { const QString s = payload.value("triggerDate").toString(); QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid triggerDate"); return r; } trig = d; } const Key id = Nutdb::InsertTaskNinety(matterId, trig); DispatchResult r; if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert 90-day task"); return r; } const TaskData td = Nutdb::GetTask(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(td.TaskId)}}; return r; }
+    });
+
+    // taskSixty.create
+    m_router.registerAction(QStringLiteral("taskSixty.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("matterId"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("triggerDate"), QJsonValue::String, false} },
+        /*handler*/ [](const QJsonObject &payload){ const Key matterId = static_cast<Key>(payload.value("matterId").toDouble()); QDate trig = QDate::currentDate(); if (payload.contains("triggerDate")) { const QString s = payload.value("triggerDate").toString(); QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid triggerDate"); return r; } trig = d; } const Key id = Nutdb::InsertTaskSixty(matterId, trig); DispatchResult r; if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert 60-day task"); return r; } const TaskData td = Nutdb::GetTask(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(td.TaskId)}}; return r; }
+    });
+
+    // taskThirty.create
+    m_router.registerAction(QStringLiteral("taskThirty.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("matterId"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("triggerDate"), QJsonValue::String, false} },
+        /*handler*/ [](const QJsonObject &payload){ const Key matterId = static_cast<Key>(payload.value("matterId").toDouble()); QDate trig = QDate::currentDate(); if (payload.contains("triggerDate")) { const QString s = payload.value("triggerDate").toString(); QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid triggerDate"); return r; } trig = d; } const Key id = Nutdb::InsertTaskThirty(matterId, trig); DispatchResult r; if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert 30-day task"); return r; } const TaskData td = Nutdb::GetTask(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(td.TaskId)}}; return r; }
+    });
+
+    // taskTwoMonth.create
+    m_router.registerAction(QStringLiteral("taskTwoMonth.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("matterId"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("triggerDate"), QJsonValue::String, false} },
+        /*handler*/ [](const QJsonObject &payload){ const Key matterId = static_cast<Key>(payload.value("matterId").toDouble()); QDate trig = QDate::currentDate(); if (payload.contains("triggerDate")) { const QString s = payload.value("triggerDate").toString(); QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid triggerDate"); return r; } trig = d; } const Key id = Nutdb::InsertTaskTwoMonth(matterId, trig); DispatchResult r; if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert 2-month task"); return r; } const TaskData td = Nutdb::GetTask(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(td.TaskId)}}; return r; }
+    });
+
+    // taskThreeMonth.create
+    m_router.registerAction(QStringLiteral("taskThreeMonth.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("matterId"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("triggerDate"), QJsonValue::String, false} },
+        /*handler*/ [](const QJsonObject &payload){ const Key matterId = static_cast<Key>(payload.value("matterId").toDouble()); QDate trig = QDate::currentDate(); if (payload.contains("triggerDate")) { const QString s = payload.value("triggerDate").toString(); QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid triggerDate"); return r; } trig = d; } const Key id = Nutdb::InsertTaskThreeMonth(matterId, trig); DispatchResult r; if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert 3-month task"); return r; } const TaskData td = Nutdb::GetTask(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(td.TaskId)}}; return r; }
+    });
+
+    // taskThreeMonthHard.create
+    m_router.registerAction(QStringLiteral("taskThreeMonthHard.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("matterId"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("triggerDate"), QJsonValue::String, false} },
+        /*handler*/ [](const QJsonObject &payload){ const Key matterId = static_cast<Key>(payload.value("matterId").toDouble()); QDate trig = QDate::currentDate(); if (payload.contains("triggerDate")) { const QString s = payload.value("triggerDate").toString(); QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid triggerDate"); return r; } trig = d; } const Key id = Nutdb::InsertTaskThreeMonthHard(matterId, trig); DispatchResult r; if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert 3-month hard task"); return r; } const TaskData td = Nutdb::GetTask(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(td.TaskId)}}; return r; }
+    });
+
+    // taskWithMatter.create
+    m_router.registerAction(QStringLiteral("taskWithMatter.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("docketNumber"), QJsonValue::String, true}, FieldSpec{QStringLiteral("triggerDate"), QJsonValue::String, false} },
+        /*handler*/ [](const QJsonObject &payload){ const QString docket = payload.value("docketNumber").toString(); if (docket.trimmed().isEmpty()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("docketNumber is required"); return r; } QDate trig = QDate::currentDate(); if (payload.contains("triggerDate")) { const QString s = payload.value("triggerDate").toString(); QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid triggerDate"); return r; } trig = d; } const Key id = Nutdb::InsertTaskWithMatter(docket, trig); DispatchResult r; if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert task with matter"); return r; } const TaskData td = Nutdb::GetTask(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(td.TaskId)}}; return r; }
+    });
+
+    // trademarkFiling.create
+    m_router.registerAction(QStringLiteral("trademarkFiling.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("matterId"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("triggerDate"), QJsonValue::String, false} },
+        /*handler*/ [](const QJsonObject &payload){ const Key matterId = static_cast<Key>(payload.value("matterId").toDouble()); QDate trig = QDate::currentDate(); if (payload.contains("triggerDate")) { const QString s = payload.value("triggerDate").toString(); QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid triggerDate"); return r; } trig = d; } const Key id = Nutdb::InsertTrademarkFiling(matterId, trig); DispatchResult r; if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert trademarkFiling"); return r; } r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"fkMatter", static_cast<double>(matterId)}, {"triggerDate", trig.toString(Qt::ISODate)}}; return r; }
+    });
+
+    // trademarkMatter.create
+    m_router.registerAction(QStringLiteral("trademarkMatter.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("docketNumber"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){ const QString docket = payload.value("docketNumber").toString(); DispatchResult r; if (docket.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("docketNumber is required"); return r; } const Key id = Nutdb::InsertTrademarkMatter(docket); if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert trademarkMatter"); return r; } const TrademarkMatterData m = Nutdb::GetTrademarkMatter(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(m.TrademarkMatterId)}}; return r; }
+    });
+
+    // trademarkResponse.create
+    m_router.registerAction(QStringLiteral("trademarkResponse.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("matterId"), QJsonValue::Double, true}, FieldSpec{QStringLiteral("triggerDate"), QJsonValue::String, false} },
+        /*handler*/ [](const QJsonObject &payload){ const Key matterId = static_cast<Key>(payload.value("matterId").toDouble()); QDate trig = QDate::currentDate(); if (payload.contains("triggerDate")) { const QString s = payload.value("triggerDate").toString(); QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { DispatchResult r; r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid triggerDate"); return r; } trig = d; } const Key id = Nutdb::InsertTrademarkResponse(matterId, trig); DispatchResult r; if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert trademarkResponse"); return r; } r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(id)}, {"fkMatter", static_cast<double>(matterId)}, {"triggerDate", trig.toString(Qt::ISODate)}}; return r; }
+    });
+
+    // workAttorney.create
+    m_router.registerAction(QStringLiteral("workAttorney.create"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("firstName"), QJsonValue::String, true}, FieldSpec{QStringLiteral("lastName"), QJsonValue::String, true} },
+        /*handler*/ [](const QJsonObject &payload){ const QString first = payload.value("firstName").toString(); const QString last = payload.value("lastName").toString(); DispatchResult r; if (first.trimmed().isEmpty() || last.trimmed().isEmpty()) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("firstName and lastName are required"); return r; } const Key id = Nutdb::InsertWorkAttorney(first, last); if (id == 0) { r.ok = false; r.errorCode = QStringLiteral("EINSERT"); r.errorMessage = QStringLiteral("Failed to insert work attorney"); return r; } const PersonData p = Nutdb::GetPerson(id); r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(p.PersonId)}, {"firstName", p.FirstName}, {"lastName", p.LastName}}; return r; }
+    });
     // object.delete (table)
     m_router.registerAction(QStringLiteral("object.delete"), ActionSpec{
         /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("id"), QJsonValue::Double, true} },

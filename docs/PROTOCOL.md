@@ -222,8 +222,70 @@ Examples
 - appointment.update (ok)
   Request: `{ "type": "req", "id": "1001", "action": "appointment.update", "payload": { "id": 77, "appointmentTime": "2025-05-01T16:00:00Z", "confirmed": true }, "version": "0.1" }`
   Response: `{ "type": "res", "id": "1001", "ok": true, "result": { "id": 77, "appointmentTime": "2025-05-01T16:00:00Z", ... } }`
-- appointment.get (not found)
+  - appointment.get (not found)
   Response: `{ "type": "res", "id": "1002", "ok": false, "error": { "code": "ENOTFOUND", "message": "Appointment not found" } }`
+
+Create Endpoints
+- appointment.create
+  - Payload: `{ appointmentTime: ISO-8601, taskId?: number, utcOffset?: number }`
+  - Result: same shape as `appointment.get`
+- caseInventor.create
+  - Payload: `{ firstName: string, lastName: string, patentMatterId: number }`
+  - Result: `{ id, patentMatterId, firstName, lastName }`
+- client.createEnterprise
+  - Payload: `{ enterpriseName: string }`
+  - Result: client row from `viewClients` when available
+- client.createNatural
+  - Payload: `{ firstName: string, lastName: string }`
+  - Result: client row from `viewClients` when available
+- copyrightFiling.create
+  - Payload: `{ matterId: number, triggerDate?: YYYY-MM-DD }`
+  - Result: `{ id, fkMatter, triggerDate }`
+- copyrightMatter.create
+  - Payload: `{ docketNumber: string }`
+  - Result: `{ id }`
+- document.create
+  - Payload: `{ title: string }`
+  - Result: `{ id, title }`
+- enterprise.create
+  - Payload: `{ enterpriseName: string }`
+  - Result: `{ id, enterpriseName }`
+- entity.create
+  - Payload: `{ entityName: string }`
+  - Result: `{ id, entityName }`
+- examiner.create
+  - Payload: `{ firstName: string, lastName: string }`
+  - Result: person basics `{ id, firstName, lastName }`
+- filing.create | finalOA.create | nonfinalOA.create
+  - Payload: `{ matterId: number, triggerDate?: YYYY-MM-DD }`
+  - Result: `{ id, fkMatter, triggerDate }` (final/nonfinal OA are specific filing types)
+- generalMatter.create | matter.create
+  - Payload: `{ docketNumber: string }`
+  - Result: matter basics `{ id, attorneyDocketNumber?, clientDocketNumber?, title? }`
+- inventor.create | paralegal.create | patentExaminer.create | workAttorney.create
+  - Payload: `{ firstName: string, lastName: string }`
+  - Result: person basics `{ id, firstName, lastName }`
+- note.create
+  - Payload: `{ objectId: number, noteText: string }`
+  - Result: `{ id, content }`
+- patentFiling.create | trademarkFiling.create
+  - Payload: `{ matterId: number, triggerDate?: YYYY-MM-DD }`
+  - Result: `{ id, fkMatter, triggerDate }`
+- patentMatter.create | trademarkMatter.create
+  - Payload: `{ docketNumber: string }`
+  - Result: `{ id }`
+- patentResponse.create | trademarkResponse.create | response.create
+  - Payload: `{ matterId: number, triggerDate?: YYYY-MM-DD }`
+  - Result: `{ id, fkMatter?, triggerDate? }`
+- task.create
+  - Payload: `{ matterId: number, triggerDate?: YYYY-MM-DD }`
+  - Result: `{ id, fkMatter, fkDeadline }`
+- taskNinety.create | taskSixty.create | taskThirty.create | taskTwoMonth.create | taskThreeMonth.create | taskThreeMonthHard.create
+  - Payload: `{ matterId: number, triggerDate?: YYYY-MM-DD }`
+  - Result: `{ id }`
+- taskWithMatter.create
+  - Payload: `{ docketNumber: string, triggerDate?: YYYY-MM-DD }`
+  - Result: `{ id }`
 
 Client Example (JavaScript)
 - Minimal browser client that connects, logs `server.hello`, and performs get/update calls.
