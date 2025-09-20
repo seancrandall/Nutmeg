@@ -201,14 +201,21 @@ bool Object::ClearFlag(QString camelCase)
 
 bool Object::SetFlagValue(QString camelCase, bool value)
 {
+    Logger::LogMessage(QString("[Object] SetFlagValue objectId=%1 flag=%2 val=%3")
+                       .arg(mDat.ObjectId)
+                       .arg(camelCase)
+                       .arg(value));
     bool result;
     if (value)
         result = (bool) Nutdb::SetFlag(mDat.ObjectId, camelCase);
     else
         result = (bool) Nutdb::ClearFlag(mDat.ObjectId, camelCase);
 
-    if(result)
+    Logger::LogMessage(QString("[Object] SetFlagValue result=%1").arg(result));
+    if(result) {
         getObjectFlags();
+        Logger::LogMessage(QString("[Object] Refreshed flags for objectId=%1").arg(mDat.ObjectId));
+    }
     return result;
 }
 

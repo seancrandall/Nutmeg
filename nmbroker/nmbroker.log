@@ -1,0 +1,20 @@
+2025-09-19T18:30:29Z [INFO] DB config: "nutmeg.sccpatlaw.com" : 7699 , db= "docket" , user= "docket"
+2025-09-19T18:30:29Z [INFO] WebSocketServer listening on QHostAddress("0.0.0.0") : 8787
+2025-09-19T18:30:29Z [INFO] nmbroker ready on "0.0.0.0" : 8787
+2025-09-19T18:30:50Z [INFO] WebSocket client connected: "127.0.0.1"
+2025-09-19T19:16:59Z [INFO] WebSocket client disconnected
+2025-09-19T19:16:59Z [WARN] QObject::disconnect: wildcard call disconnects from destroyed signal of QTcpSocket::unnamed
+2025-09-19T19:17:01Z [INFO] WebSocket client connected: "127.0.0.1"
+2025-09-19T19:40:36Z [INFO] DB config: "nutmeg.sccpatlaw.com" : 7699 , db= "docket" , user= "docket"
+2025-09-19T19:40:36Z [INFO] WebSocketServer listening on QHostAddress("0.0.0.0") : 8787
+2025-09-19T19:40:36Z [INFO] nmbroker ready on "0.0.0.0" : 8787
+2025-09-19T19:40:42Z [INFO] WebSocket client connected: "127.0.0.1"
+2025-09-19T20:28:08Z [INFO] WebSocket client disconnected
+2025-09-19T20:28:08Z [WARN] QObject::disconnect: wildcard call disconnects from destroyed signal of QTcpSocket::unnamed
+2025-09-19T20:28:08Z [INFO] WebSocket client connected: "127.0.0.1"
+2025-09-19T20:28:08Z [INFO] WebSocket client connected: "127.0.0.1"
+2025-09-19T20:28:08Z [INFO] WebSocket client disconnected
+2025-09-19T20:28:08Z [INFO] WebSocket client disconnected
+2025-09-19T20:28:08Z [WARN] QObject::disconnect: wildcard call disconnects from destroyed signal of QTcpSocket::unnamed
+2025-09-19T20:28:08Z [WARN] QObject::disconnect: wildcard call disconnects from destroyed signal of QTcpSocket::unnamed
+2025-09-19T20:28:30Z [INFO] WebSocket client connected: "127.0.0.1"

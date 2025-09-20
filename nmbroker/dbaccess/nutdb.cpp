@@ -712,12 +712,16 @@ Key Nutdb::MergeTags(Key tagOneId, Key tagTwoId, QString tagText)
 
 Key Nutdb::SetFlag(Key associatedObjectId, QString camelCase)
 {
+    Logger::LogMessage(QString("[Nutdb] SetFlag objectId=%1 flag=%2")
+                       .arg(associatedObjectId)
+                       .arg(camelCase));
     QVariantList params;
 
     params.append(QVariant::fromValue(associatedObjectId));
     params.append(camelCase);
-
-    return CallStoredKeyProcedure("SetFlag", params);
+    Key k = CallStoredKeyProcedure("SetFlag", params);
+    Logger::LogMessage(QString("[Nutdb] SetFlag result=%1").arg(k));
+    return k;
 }
 
 Key Nutdb::TagObject(Key objectId, QString tagText)
@@ -998,6 +1002,7 @@ FilingData Nutdb::GetFiling(Key id)
 
 bool Nutdb::GetFlag(Key objectId, QString camelCase)
 {
+    Logger::LogMessage(QString("[Nutdb] GetFlag objectId=%1 flag=%2").arg(objectId).arg(camelCase));
     if(!gViewObjectFlagsModel)
         gViewObjectFlagsModel = std::make_unique<viewObjectFlagsModel>();
 
@@ -1008,6 +1013,7 @@ bool Nutdb::GetFlag(Key objectId, QString camelCase)
         Key id = gViewObjectFlagsModel->getIndex(objectId, camelCase);
         rec = gViewObjectFlagsModel->keyRecord[id];
         flagValue = rec.field("FlagValue").value().toBool();
+        Logger::LogMessage(QString("[Nutdb] GetFlag cache-hit value=%1").arg(flagValue));
         return flagValue;
     }
 
@@ -1019,12 +1025,14 @@ bool Nutdb::GetFlag(Key objectId, QString camelCase)
 
     QVariant result = CallStoredReturnProcedure("GetFlag", params);
     if(!mLastOperationSuccessful){
+        Logger::LogMessage(QString("[Nutdb] GetFlag stored-proc failed for objectId=%1 flag=%2").arg(objectId).arg(camelCase));
         return false;
     }
     else{
         //Reload the table so we have current values
         gViewObjectFlagsModel = std::make_unique<viewObjectFlagsModel>();
         flagValue = result.toBool();
+        Logger::LogMessage(QString("[Nutdb] GetFlag stored-proc value=%1").arg(flagValue));
     }
     return flagValue;
 }
@@ -1966,12 +1974,16 @@ Key Nutdb::AssociateDocumentWithObject(Key documentId, Key objectId)
 
 Key Nutdb::ClearFlag(Key associatedObjectId, QString camelCase)
 {
+    Logger::LogMessage(QString("[Nutdb] ClearFlag objectId=%1 flag=%2")
+                       .arg(associatedObjectId)
+                       .arg(camelCase));
     QVariantList params;
 
     params.append(QVariant::fromValue(associatedObjectId));
     params.append(camelCase);
-
-    return CallStoredKeyProcedure("ClearFlag", params);
+    Key k = CallStoredKeyProcedure("ClearFlag", params);
+    Logger::LogMessage(QString("[Nutdb] ClearFlag result=%1").arg(k));
+    return k;
 }
 
 Key Nutdb::ClearTag(Key objectId, QString tagText)

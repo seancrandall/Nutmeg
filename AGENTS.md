@@ -80,6 +80,27 @@ Testing Tips
 - Quick check with `wscat` or a simple JS snippet (see `docs/PROTOCOL.md` for example).
 - First message on connect: `server.hello { service, apiVersion }`.
 
+Full-Record Updates
+- Most `*.update` actions now update a full record in a single DB transaction:
+  - appointment, deadline, document, person, response, matter, entity, enterprise, filing, trademarkMatter, patentMatter, copyrightMatter.
+- Handler flow: load current `*Data` via `Nutdb::Get*`, overlay JSON fields, start transaction, call domain `Update/slotUpdate` (or `Nutdb::Update*` when the class is excluded), commit on success, then return a fresh `Get*`.
+- Single-field changes: use the generic helpers when you truly need a surgical update:
+  - `UpdateKey`, `UpdateInteger`, `UpdateFloat`, `UpdateString`, `UpdateBoolean` → `{ table, field, id, value }`.
+- Appointment flags are stored on the associated object. Reads use `assoc = Nutdb::GetAppointmentObject(id)` and `Nutdb::GetFlag(assoc, ...)`.
+- PatentMatter caveat: the backend excludes `objects/patentmatter.cpp`, so `patentMatter.update` calls `Nutdb::UpdatePatentMatter` directly instead of using the `PatentMatter` class.
+
+Tester
+- A simple GUI test client exists at `nmbroker/testbroker.py` (PyQt6 or PySide6):
+  - Objects tab: select resource, enter ID, Get/Update JSON.
+  - Actions tab: list of endpoints parsed from `docs/PROTOCOL.md`; edit payload JSON and send.
+  - Auto-connects to `localhost:8787`; press Enter in the Port field to reconnect.
+
+Logging & Debugging
+- Logger writes to file and also prints to console for immediate feedback.
+- Start broker with a log file to capture traces: `./nmbroker --port 8787 --log-file /tmp/nmbroker.log` (or set `LOG` env var).
+- Debug build: `cd nmbroker && make clean && qmake QMAKE_CXX=clang++ QMAKE_CC=clang CONFIG+=debug && make -j`.
+- You can attach a debugger to `nmbroker` or inspect the log for detailed traces (appointment/flags, Nutdb flag ops, etc.).
+
 Daemon CLI
 - `-p, --port <port>`: Listen port.
 - `-b, --bind <addr>`: Bind address (IPv4/IPv6 or `localhost`).
@@ -87,6 +108,7 @@ Daemon CLI
 - `--pidfile <file>`: Write PID to file after start.
 - `--log-file <file>`: Append logs to this file. If not set, `LOG` env var can be used.
 - `--config <file>`: Use an explicit INI config file for `QSettings`.
+- DB CLI: `--db-host`, `--db-port`, `--db-user`, `--db-password`, `--db-name` (overrides env + settings).
 
 Settings keys
 - `websocket/port` (uint, default `8787`)

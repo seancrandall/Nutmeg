@@ -2654,9 +2654,9 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
                 {"appointmentTime", a.AppointmentTime.toUTC().toString(Qt::ISODate)},
                 {"fkAppointmentType", static_cast<double>(a.fkAppointmentType)},
                 {"complete", a.Complete},
-                {"needsAgenda", Nutdb::GetFlag(id, QStringLiteral("NeedsAgenda"))},
-                {"agendaSent", Nutdb::GetFlag(id, QStringLiteral("AgendaSent"))},
-                {"confirmed", Nutdb::GetFlag(id, QStringLiteral("Confirmed"))},
+                {"needsAgenda", Nutdb::GetFlag(assoc, QStringLiteral("NeedsAgenda"))},
+                {"agendaSent", Nutdb::GetFlag(assoc, QStringLiteral("AgendaSent"))},
+                {"confirmed", Nutdb::GetFlag(assoc, QStringLiteral("Confirmed"))},
                 {"associatedObject", static_cast<double>(assoc)},
                 {"typeString", typeStr}
             };
@@ -2664,7 +2664,7 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         }
     });
 
-    // appointment.update: update fields for an appointment
+    // appointment.update: update using a single AppointmentData transaction + flags
     m_router.registerAction(QStringLiteral("appointment.update"), ActionSpec{
         /*fields*/ QList<FieldSpec>{
             FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
@@ -2676,14 +2676,21 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
             FieldSpec{QStringLiteral("confirmed"), QJsonValue::Bool, false}
         },
         /*handler*/ [](const QJsonObject &payload){
+            DispatchResult r;
             const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
             Appointment appt{id};
-            DispatchResult r;
             if (appt.getId() == 0) {
                 r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Appointment not found");
                 return r;
             }
 
+            AppointmentData dat = Nutdb::GetAppointment(id);
+            if (dat.AppointmentId == 0) {
+                r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Appointment not found");
+                return r;
+            }
+
+            // Merge incoming fields into dat
             if (payload.contains(QStringLiteral("appointmentTime"))) {
                 const QString s = payload.value(QStringLiteral("appointmentTime")).toString();
                 const QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
@@ -2691,26 +2698,45 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
                     r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Invalid appointmentTime ISO string");
                     return r;
                 }
-                appt.SetAppointmentTime(dt);
+                dat.AppointmentTime = dt;
             }
             if (payload.contains(QStringLiteral("fkAppointmentType"))) {
-                appt.SetfkAppointmentType(static_cast<Key>(payload.value(QStringLiteral("fkAppointmentType")).toDouble()));
+                dat.fkAppointmentType = static_cast<Key>(payload.value(QStringLiteral("fkAppointmentType")).toDouble());
             }
             if (payload.contains(QStringLiteral("complete"))) {
-                appt.setComplete(payload.value(QStringLiteral("complete")).toBool());
-            }
-            if (payload.contains(QStringLiteral("needsAgenda"))) {
-                appt.setNeedsAgenda(payload.value(QStringLiteral("needsAgenda")).toBool());
-            }
-            if (payload.contains(QStringLiteral("agendaSent"))) {
-                appt.setAgendaSent(payload.value(QStringLiteral("agendaSent")).toBool());
-            }
-            if (payload.contains(QStringLiteral("confirmed"))) {
-                appt.setConfirmed(payload.value(QStringLiteral("confirmed")).toBool());
+                dat.Complete = payload.value(QStringLiteral("complete")).toBool();
             }
 
-            const AppointmentData a = Nutdb::GetAppointment(id);
+            // Start a DB transaction to bundle changes
+            QSqlDatabase db = QSqlDatabase::database();
+            bool tx = db.isValid() ? db.transaction() : false;
+
+            if (!appt.Update(dat)) {
+                if (tx) db.rollback();
+                r.ok = false; r.errorCode = QStringLiteral("EUPDATE"); r.errorMessage = QStringLiteral("Failed to update appointment");
+                return r;
+            }
+
+            // Update flags against the associated object, if present
             const Key assoc = Nutdb::GetAppointmentObject(id);
+            auto updFlag = [&](const char *name, bool value){
+                if (!payload.contains(QLatin1String(name))) return true; // no change requested
+                if (value) return Nutdb::SetFlag(assoc, QLatin1String(name)) != 0; else return Nutdb::ClearFlag(assoc, QLatin1String(name)) != 0;
+            };
+            bool ok = true;
+            ok = ok && updFlag("needsAgenda", payload.value(QStringLiteral("needsAgenda")).toBool());
+            ok = ok && updFlag("agendaSent", payload.value(QStringLiteral("agendaSent")).toBool());
+            ok = ok && updFlag("confirmed", payload.value(QStringLiteral("confirmed")).toBool());
+            if (!ok) {
+                if (tx) db.rollback();
+                r.ok = false; r.errorCode = QStringLiteral("EUPDATE"); r.errorMessage = QStringLiteral("Failed to update flags");
+                return r;
+            }
+
+            if (tx) db.commit();
+
+            // Return the updated row
+            const AppointmentData a = Nutdb::GetAppointment(id);
             const QString typeStr = Nutdb::GetAppointmentTypeString(id);
             r.ok = true;
             r.result = QJsonObject{
@@ -2718,15 +2744,44 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
                 {"appointmentTime", a.AppointmentTime.toUTC().toString(Qt::ISODate)},
                 {"fkAppointmentType", static_cast<double>(a.fkAppointmentType)},
                 {"complete", a.Complete},
-                {"needsAgenda", Nutdb::GetFlag(id, QStringLiteral("NeedsAgenda"))},
-                {"agendaSent", Nutdb::GetFlag(id, QStringLiteral("AgendaSent"))},
-                {"confirmed", Nutdb::GetFlag(id, QStringLiteral("Confirmed"))},
+                {"needsAgenda", Nutdb::GetFlag(assoc, QStringLiteral("NeedsAgenda"))},
+                {"agendaSent", Nutdb::GetFlag(assoc, QStringLiteral("AgendaSent"))},
+                {"confirmed", Nutdb::GetFlag(assoc, QStringLiteral("Confirmed"))},
                 {"associatedObject", static_cast<double>(assoc)},
                 {"typeString", typeStr}
             };
             return r;
         }
     });
+
+    // Generic UpdateX endpoints for targeted field updates
+    auto registerUpdateGeneric = [this](const QString &name, QJsonValue::Type vtype, std::function<QString(const QJsonValue&)> toString){
+        m_router.registerAction(name, ActionSpec{
+            QList<FieldSpec>{
+                FieldSpec{QStringLiteral("table"), QJsonValue::String, true},
+                FieldSpec{QStringLiteral("field"), QJsonValue::String, true},
+                FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
+                FieldSpec{QStringLiteral("value"), vtype, true}
+            },
+            [toString](const QJsonObject &payload){
+                const QString table = payload.value(QStringLiteral("table")).toString();
+                const QString field = payload.value(QStringLiteral("field")).toString();
+                const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
+                const QJsonValue v = payload.value(QStringLiteral("value"));
+                DispatchResult r;
+                if (table.isEmpty() || field.isEmpty() || id == 0) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = QStringLiteral("Missing/invalid table, field, or id"); return r; }
+                const QString s = toString(v);
+                if (!Nutdb::UpdateField(table, field, id, s)) { r.ok = false; r.errorCode = QStringLiteral("EUPDATE"); r.errorMessage = QStringLiteral("Update failed"); return r; }
+                r.ok = true; r.result = QJsonObject{{"updated", true}}; return r;
+            }
+        });
+    };
+
+    registerUpdateGeneric(QStringLiteral("UpdateKey"), QJsonValue::Double, [](const QJsonValue &v){ return QString::number(static_cast<qulonglong>(v.toDouble())); });
+    registerUpdateGeneric(QStringLiteral("UpdateInteger"), QJsonValue::Double, [](const QJsonValue &v){ return QString::number(static_cast<qlonglong>(v.toDouble())); });
+    registerUpdateGeneric(QStringLiteral("UpdateFloat"), QJsonValue::Double, [](const QJsonValue &v){ return QString::number(v.toDouble()); });
+    registerUpdateGeneric(QStringLiteral("UpdateString"), QJsonValue::String, [](const QJsonValue &v){ return v.toString(); });
+    registerUpdateGeneric(QStringLiteral("UpdateBoolean"), QJsonValue::Bool, [](const QJsonValue &v){ return QString::number(v.toBool() ? 1 : 0); });
 
     // copyrightMatter.get: by id
     m_router.registerAction(QStringLiteral("copyrightMatter.get"), ActionSpec{
@@ -2758,7 +2813,7 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         }
     });
 
-    // copyrightMatter.update: updates provided fields
+    // copyrightMatter.update: full-record update + flag in one transaction
     m_router.registerAction(QStringLiteral("copyrightMatter.update"), ActionSpec{
         /*fields*/ QList<FieldSpec>{
             FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
@@ -2774,39 +2829,33 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         },
         /*handler*/ [](const QJsonObject &payload){
             const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
-            CopyrightMatter cm{id};
             DispatchResult r;
-            if (cm.getId() == 0) {
-                r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("CopyrightMatter not found");
-                return r;
+            CopyrightMatter cm{id};
+            if (cm.getId() == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("CopyrightMatter not found"); return r; }
+            CopyrightMatterData dat = Nutdb::GetCopyrightMatter(id);
+            if (dat.CopyrightMatterId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("CopyrightMatter not found"); return r; }
+            if (payload.contains("fkAuthor")) dat.fkAuthor = static_cast<Key>(payload.value("fkAuthor").toDouble());
+            auto parseDate = [](const QJsonObject &obj, const char *key, QDate &out, QString &err) -> bool { if (!obj.contains(key)) return true; const QString s = obj.value(QString::fromUtf8(key)).toString(); const QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { err = QStringLiteral("Invalid date for '%1'").arg(QString::fromUtf8(key)); return false; } out = d; return true; };
+            QString perr; QDate dt;
+            if (!parseDate(payload, "created", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("created")) dat.Created = dt;
+            if (!parseDate(payload, "filed", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("filed")) dat.Filed = dt;
+            if (!parseDate(payload, "registered", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
+            if (payload.contains("registered")) dat.Registered = dt;
+            if (payload.contains("serialNumber")) dat.SerialNumber = payload.value("serialNumber").toString();
+            if (payload.contains("registrationNumber")) dat.RegistrationNumber = payload.value("registrationNumber").toString();
+            if (payload.contains("fkDeposit")) dat.fkDeposit = static_cast<Key>(payload.value("fkDeposit").toDouble());
+            if (payload.contains("fkWorkType")) dat.fkWorkType = static_cast<Key>(payload.value("fkWorkType").toDouble());
+
+            QSqlDatabase db = QSqlDatabase::database();
+            bool tx = db.isValid() ? db.transaction() : false;
+            if (!cm.slotUpdate(dat)) { if (tx) db.rollback(); r.ok = false; r.errorCode = QStringLiteral("EUPDATE"); r.errorMessage = QStringLiteral("Failed to update copyrightMatter"); return r; }
+            if (payload.contains("isRegistered")) {
+                const bool v = payload.value("isRegistered").toBool();
+                if (v) Nutdb::SetFlag(id, QStringLiteral("Registered")); else Nutdb::ClearFlag(id, QStringLiteral("Registered"));
             }
-
-            if (payload.contains("fkAuthor")) cm.slotSetfkAuthor(static_cast<Key>(payload.value("fkAuthor").toDouble()));
-
-            auto parseDate = [](const QJsonObject &obj, const char *key, QDate &out, QString &err) -> bool {
-                if (!obj.contains(key)) return true;
-                const QString s = obj.value(QString::fromUtf8(key)).toString();
-                const QDate d = QDate::fromString(s, Qt::ISODate);
-                if (!d.isValid()) { err = QStringLiteral("Invalid date for '%1'").arg(QString::fromUtf8(key)); return false; }
-                out = d; return true;
-            };
-
-            QString perr;
-            QDate d;
-            if (!parseDate(payload, "created", d, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
-            if (payload.contains("created")) cm.slotSetCreated(d);
-
-            if (!parseDate(payload, "filed", d, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
-            if (payload.contains("filed")) cm.slotSetFiled(d);
-
-            if (!parseDate(payload, "registered", d, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
-            if (payload.contains("registered")) cm.slotSetRegistered(d);
-
-            if (payload.contains("serialNumber")) cm.slotSetSerialNumber(payload.value("serialNumber").toString());
-            if (payload.contains("registrationNumber")) cm.slotSetRegistrationNumber(payload.value("registrationNumber").toString());
-            if (payload.contains("fkDeposit")) cm.slotSetfkDeposit(static_cast<Key>(payload.value("fkDeposit").toDouble()));
-            if (payload.contains("fkWorkType")) cm.slotSetfkWorkType(static_cast<Key>(payload.value("fkWorkType").toDouble()));
-            if (payload.contains("isRegistered")) cm.slotSetIsRegistered(payload.value("isRegistered").toBool());
+            if (tx) db.commit();
 
             const CopyrightMatterData m = Nutdb::GetCopyrightMatter(id);
             r.ok = true;
@@ -2854,7 +2903,7 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         }
     });
 
-    // deadline.update: update any of the date fields
+    // deadline.update: full-record update in a single transaction
     m_router.registerAction(QStringLiteral("deadline.update"), ActionSpec{
         /*fields*/ QList<FieldSpec>{
             FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
@@ -2867,11 +2916,9 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
             const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
             DispatchResult r;
             Deadline dl{id};
-            if (dl.getId() == 0) {
-                r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Deadline not found");
-                return r;
-            }
-
+            if (dl.getId() == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Deadline not found"); return r; }
+            DeadlineData dat = Nutdb::GetDeadline(id);
+            if (dat.DeadlineId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Deadline not found"); return r; }
             auto parseDate = [](const QJsonObject &obj, const char *key, QDate &out, QString &err) -> bool {
                 if (!obj.contains(key)) return true;
                 const QString s = obj.value(QString::fromUtf8(key)).toString();
@@ -2879,19 +2926,20 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
                 if (!d.isValid()) { err = QStringLiteral("Invalid date for '%1'").arg(QString::fromUtf8(key)); return false; }
                 out = d; return true;
             };
-
             QString perr; QDate dt;
             if (!parseDate(payload, "triggerDate", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
-            if (payload.contains("triggerDate")) dl.SetTriggerDate(dt);
-
+            if (payload.contains("triggerDate")) dat.TriggerDate = dt;
             if (!parseDate(payload, "softDeadline", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
-            if (payload.contains("softDeadline")) dl.SetSoftDeadline(dt);
-
+            if (payload.contains("softDeadline")) dat.SoftDeadline = dt;
             if (!parseDate(payload, "hardDeadline", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
-            if (payload.contains("hardDeadline")) dl.SetHardDeadline(dt);
-
+            if (payload.contains("hardDeadline")) dat.HardDeadline = dt;
             if (!parseDate(payload, "nextDeadline", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
-            if (payload.contains("nextDeadline")) dl.SetNextDeadline(dt);
+            if (payload.contains("nextDeadline")) dat.NextDeadline = dt;
+
+            QSqlDatabase db = QSqlDatabase::database();
+            bool tx = db.isValid() ? db.transaction() : false;
+            if (!dl.Update(dat)) { if (tx) db.rollback(); r.ok = false; r.errorCode = QStringLiteral("EUPDATE"); r.errorMessage = QStringLiteral("Failed to update deadline"); return r; }
+            if (tx) db.commit();
 
             const DeadlineData d = Nutdb::GetDeadline(id);
             const QColor c = Deadline::getDateColor(d.NextDeadline);
@@ -2993,7 +3041,7 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         }
     });
 
-    // document.update: update fields on a document
+    // document.update: full-record update
     m_router.registerAction(QStringLiteral("document.update"), ActionSpec{
         /*fields*/ QList<FieldSpec>{
             FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
@@ -3007,19 +3055,19 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
             const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
             Document doc{id};
             DispatchResult r;
-            if (doc.getId() == 0) {
-                r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Document not found");
-                return r;
-            }
+            if (doc.getId() == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Document not found"); return r; }
+            DocumentData dat = Nutdb::GetDocument(id);
+            if (dat.DocumentId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Document not found"); return r; }
+            if (payload.contains("fullyQualifiedPath")) dat.FullyQualifiedPath = payload.value("fullyQualifiedPath").toString();
+            if (payload.contains("url")) dat.URL = payload.value("url").toString();
+            if (payload.contains("filename")) dat.Filename = payload.value("filename").toString();
+            if (payload.contains("extension")) dat.Extension = payload.value("extension").toString();
+            if (payload.contains("title")) dat.Title = payload.value("title").toString();
 
-            if (payload.contains("fullyQualifiedPath")) doc.slotSetFullyQualifiedPath(payload.value("fullyQualifiedPath").toString());
-            if (payload.contains("url")) doc.slotSetURL(payload.value("url").toString());
-            if (payload.contains("filename"))
-                Nutdb::UpdateField(QStringLiteral("document"), QStringLiteral("Filename"), id, payload.value("filename").toString());
-            if (payload.contains("extension"))
-                Nutdb::UpdateField(QStringLiteral("document"), QStringLiteral("Extension"), id, payload.value("extension").toString());
-            if (payload.contains("title"))
-                Nutdb::UpdateField(QStringLiteral("document"), QStringLiteral("Title"), id, payload.value("title").toString());
+            QSqlDatabase db = QSqlDatabase::database();
+            bool tx = db.isValid() ? db.transaction() : false;
+            if (!doc.slotUpdate(dat)) { if (tx) db.rollback(); r.ok = false; r.errorCode = QStringLiteral("EUPDATE"); r.errorMessage = QStringLiteral("Failed to update document"); return r; }
+            if (tx) db.commit();
 
             const DocumentData d = Nutdb::GetDocument(id);
             r.ok = true;
@@ -3057,7 +3105,7 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         }
     });
 
-    // enterprise.update: update selected fields
+    // enterprise.update: full-record update
     m_router.registerAction(QStringLiteral("enterprise.update"), ActionSpec{
         /*fields*/ QList<FieldSpec>{
             FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
@@ -3069,15 +3117,28 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         },
         /*handler*/ [](const QJsonObject &payload){
             const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
-            Enterprise ent{id};
             DispatchResult r;
+            Enterprise ent{id};
             if (ent.getId() == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Enterprise not found"); return r; }
+            EnterpriseData dat = Nutdb::GetEnterprise(id);
+            if (dat.EnterpriseId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Enterprise not found"); return r; }
+            if (payload.contains("enterpriseName")) dat.EnterpriseName = payload.value("enterpriseName").toString();
+            if (payload.contains("fkStateOfIncorporation")) dat.fkStateOfIncorporation = static_cast<Key>(payload.value("fkStateOfIncorporation").toDouble());
+            if (payload.contains("fkMainContact")) dat.fkMainContact = static_cast<Key>(payload.value("fkMainContact").toDouble());
+            if (payload.contains("oldOrganizationId")) dat.OldOrganizationId = static_cast<Key>(payload.value("oldOrganizationId").toDouble());
 
-            if (payload.contains("enterpriseName")) ent.slotSetEnterpriseName(payload.value("enterpriseName").toString());
-            if (payload.contains("fkBusinessJurisdiction")) ent.slotSetfkBusinessJurisdiction(static_cast<Key>(payload.value("fkBusinessJurisdiction").toDouble()));
-            if (payload.contains("fkStateOfIncorporation")) ent.slotSetfkStateOfIncorporation(static_cast<Key>(payload.value("fkStateOfIncorporation").toDouble()));
-            if (payload.contains("fkMainContact")) ent.slotSetfkMainContact(static_cast<Key>(payload.value("fkMainContact").toDouble()));
-            if (payload.contains("oldOrganizationId")) ent.slotSetOldOrganizationId(static_cast<Key>(payload.value("oldOrganizationId").toDouble()));
+            QSqlDatabase db = QSqlDatabase::database();
+            bool tx = db.isValid() ? db.transaction() : false;
+            if (!ent.slotUpdate(dat)) { if (tx) db.rollback(); r.ok = false; r.errorCode = QStringLiteral("EUPDATE"); r.errorMessage = QStringLiteral("Failed to update enterprise"); return r; }
+            // Persist fkBusinessJurisdiction when provided (not covered by UpdateEnterprise SP)
+            if (payload.contains("fkBusinessJurisdiction")) {
+                const Key v = static_cast<Key>(payload.value("fkBusinessJurisdiction").toDouble());
+                if (!Nutdb::UpdateField(QStringLiteral("enterprise"), QStringLiteral("fkBusinessJurisdiction"), id, QString::number(static_cast<qulonglong>(v)))) {
+                    if (tx) db.rollback();
+                    r.ok = false; r.errorCode = QStringLiteral("EUPDATE"); r.errorMessage = QStringLiteral("Failed to update fkBusinessJurisdiction"); return r;
+                }
+            }
+            if (tx) db.commit();
 
             const EnterpriseData e = Nutdb::GetEnterprise(id);
             r.ok = true;
@@ -3123,7 +3184,7 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         }
     });
 
-    // entity.update: selected fields
+    // entity.update: full-record update
     m_router.registerAction(QStringLiteral("entity.update"), ActionSpec{
         /*fields*/ QList<FieldSpec>{
             FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
@@ -3146,20 +3207,26 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
             Entity ent{id};
             DispatchResult r;
             if (ent.getId() == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Entity not found"); return r; }
+            EntityData dat = Nutdb::GetEntity(id);
+            if (dat.EntityId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Entity not found"); return r; }
+            if (payload.contains("entityName")) dat.EntityName = payload.value("entityName").toString();
+            if (payload.contains("fullLegalName")) dat.FullLegalName = payload.value("fullLegalName").toString();
+            if (payload.contains("primaryAddress")) dat.PrimaryAddress = payload.value("primaryAddress").toString();
+            if (payload.contains("secondaryAddress")) dat.SecondaryAddress = payload.value("secondaryAddress").toString();
+            if (payload.contains("website")) dat.Website = payload.value("website").toString();
+            if (payload.contains("primaryPhone")) dat.PrimaryPhone = payload.value("primaryPhone").toString();
+            if (payload.contains("secondaryPhone")) dat.SecondaryPhone = payload.value("secondaryPhone").toString();
+            if (payload.contains("faxNumber")) dat.FaxNumber = payload.value("faxNumber").toString();
+            if (payload.contains("primaryEmail")) dat.PrimaryEmail = payload.value("primaryEmail").toString();
+            if (payload.contains("secondaryEmail")) dat.SecondaryEmail = payload.value("secondaryEmail").toString();
+            if (payload.contains("fkJurisdiction")) dat.fkJurisdiction = static_cast<Key>(payload.value("fkJurisdiction").toDouble());
+            if (payload.contains("fkState")) dat.fkState = static_cast<Key>(payload.value("fkState").toDouble());
+            if (payload.contains("docketPrefix")) dat.DocketPrefix = payload.value("docketPrefix").toString();
 
-            if (payload.contains("entityName")) ent.slotSetEntityName(payload.value("entityName").toString());
-            if (payload.contains("fullLegalName")) ent.slotSetFullLegalName(payload.value("fullLegalName").toString());
-            if (payload.contains("primaryAddress")) ent.slotSetPrimaryAddress(payload.value("primaryAddress").toString());
-            if (payload.contains("secondaryAddress")) ent.slotSetSecondaryAddress(payload.value("secondaryAddress").toString());
-            if (payload.contains("website")) ent.slotSetWebsite(payload.value("website").toString());
-            if (payload.contains("primaryPhone")) ent.slotSetPrimaryPhone(payload.value("primaryPhone").toString());
-            if (payload.contains("secondaryPhone")) ent.slotSetSecondaryPhone(payload.value("secondaryPhone").toString());
-            if (payload.contains("faxNumber")) ent.slotSetFaxNumber(payload.value("faxNumber").toString());
-            if (payload.contains("primaryEmail")) ent.slotSetPrimaryEmail(payload.value("primaryEmail").toString());
-            if (payload.contains("secondaryEmail")) ent.slotSetSecondaryEmail(payload.value("secondaryEmail").toString());
-            if (payload.contains("fkJurisdiction")) ent.slotSetfkJurisdiction(static_cast<Key>(payload.value("fkJurisdiction").toDouble()));
-            if (payload.contains("fkState")) Nutdb::UpdateField(QStringLiteral("entity"), QStringLiteral("fkState"), id, QString::number(static_cast<quint64>(payload.value("fkState").toDouble())));
-            if (payload.contains("docketPrefix")) ent.slotSetDocketPrefix(payload.value("docketPrefix").toString());
+            QSqlDatabase db = QSqlDatabase::database();
+            bool tx = db.isValid() ? db.transaction() : false;
+            if (!ent.update(dat)) { if (tx) db.rollback(); r.ok = false; r.errorCode = QStringLiteral("EUPDATE"); r.errorMessage = QStringLiteral("Failed to update entity"); return r; }
+            if (tx) db.commit();
 
             const EntityData e = Nutdb::GetEntity(id);
             r.ok = true;
@@ -3201,7 +3268,7 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         }
     });
 
-    // filing.update: update fields
+    // filing.update: full-record update
     m_router.registerAction(QStringLiteral("filing.update"), ActionSpec{
         /*fields*/ QList<FieldSpec>{
             FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
@@ -3213,9 +3280,15 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
             Filing filing{id};
             DispatchResult r;
             if (filing.getId() == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Filing not found"); return r; }
+            FilingData dat = Nutdb::GetFiling(id);
+            if (dat.FilingId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Filing not found"); return r; }
+            if (payload.contains("fkFilingStatus")) dat.fkFilingStatus = static_cast<Key>(payload.value("fkFilingStatus").toDouble());
+            if (payload.contains("fkAsFiledDocument")) dat.fkAsFiledDocument = static_cast<Key>(payload.value("fkAsFiledDocument").toDouble());
 
-            if (payload.contains("fkFilingStatus")) filing.setfkFilingStatus(static_cast<Key>(payload.value("fkFilingStatus").toDouble()));
-            if (payload.contains("fkAsFiledDocument")) filing.setfkAsFiledDocument(static_cast<Key>(payload.value("fkAsFiledDocument").toDouble()));
+            QSqlDatabase db = QSqlDatabase::database();
+            bool tx = db.isValid() ? db.transaction() : false;
+            if (!filing.slotUpdate(dat)) { if (tx) db.rollback(); r.ok = false; r.errorCode = QStringLiteral("EUPDATE"); r.errorMessage = QStringLiteral("Failed to update filing"); return r; }
+            if (tx) db.commit();
 
             const FilingData f = Nutdb::GetFiling(id);
             r.ok = true;
@@ -3500,7 +3573,7 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         }
     });
 
-    // person.update: update person-specific fields
+    // person.update: full-record update
     m_router.registerAction(QStringLiteral("person.update"), ActionSpec{
         /*fields*/ QList<FieldSpec>{
             FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
@@ -3512,14 +3585,21 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         },
         /*handler*/ [](const QJsonObject &payload){
             const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
-            Person person{id};
             DispatchResult r;
+            Person person{id};
             if (person.getId() == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Person not found"); return r; }
-            if (payload.contains("firstName")) person.slotSetFirstName(payload.value("firstName").toString());
-            if (payload.contains("lastName")) person.slotSetLastName(payload.value("lastName").toString());
-            if (payload.contains("fkResidence")) person.slotSetfkResidence(static_cast<Key>(payload.value("fkResidence").toDouble()));
-            if (payload.contains("fkCitizenship")) person.slotSetfkCitizenship(static_cast<Key>(payload.value("fkCitizenship").toDouble()));
-            if (payload.contains("oldId")) person.slotSetOldId(static_cast<Key>(payload.value("oldId").toDouble()));
+            PersonData dat = Nutdb::GetPerson(id);
+            if (dat.PersonId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Person not found"); return r; }
+            if (payload.contains("firstName")) dat.FirstName = payload.value("firstName").toString();
+            if (payload.contains("lastName")) dat.LastName = payload.value("lastName").toString();
+            if (payload.contains("fkResidence")) dat.fkResidence = static_cast<Key>(payload.value("fkResidence").toDouble());
+            if (payload.contains("fkCitizenship")) dat.fkCitizenship = static_cast<Key>(payload.value("fkCitizenship").toDouble());
+            if (payload.contains("oldId")) dat.OldId = static_cast<Key>(payload.value("oldId").toDouble());
+
+            QSqlDatabase db = QSqlDatabase::database();
+            bool tx = db.isValid() ? db.transaction() : false;
+            if (!person.slotUpdate(dat)) { if (tx) db.rollback(); r.ok = false; r.errorCode = QStringLiteral("EUPDATE"); r.errorMessage = QStringLiteral("Failed to update person"); return r; }
+            if (tx) db.commit();
 
             const PersonData p = Nutdb::GetPerson(id);
             r.ok = true;
@@ -3557,7 +3637,7 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         }
     });
 
-    // response.update
+    // response.update: full-record update
     m_router.registerAction(QStringLiteral("response.update"), ActionSpec{
         /*fields*/ QList<FieldSpec>{
             FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
@@ -3570,12 +3650,13 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         },
         /*handler*/ [](const QJsonObject &payload){
             const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
-            Response resp{id};
             DispatchResult r;
+            Response resp{id};
             if (resp.getId() == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Response not found"); return r; }
-
-            if (payload.contains("fkClientOfficeHours")) resp.slotSetfkClientOfficeHours(static_cast<Key>(payload.value("fkClientOfficeHours").toDouble()));
-            if (payload.contains("fkExaminerInterview")) resp.slotSetfkExaminerInterview(static_cast<Key>(payload.value("fkExaminerInterview").toDouble()));
+            ResponseData dat = Nutdb::GetResponse(id);
+            if (dat.ResponseId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Response not found"); return r; }
+            if (payload.contains("fkClientOfficeHours")) dat.fkClientOfficeHours = static_cast<Key>(payload.value("fkClientOfficeHours").toDouble());
+            if (payload.contains("fkExaminerInterview")) dat.fkExaminerInterview = static_cast<Key>(payload.value("fkExaminerInterview").toDouble());
             auto parseDate = [](const QJsonObject &obj, const char *key, QDate &out, QString &err) -> bool {
                 if (!obj.contains(key)) return true;
                 const QString s = obj.value(QString::fromUtf8(key)).toString();
@@ -3585,11 +3666,16 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
             };
             QString perr; QDate dt;
             if (!parseDate(payload, "mailingDate", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
-            if (payload.contains("mailingDate")) resp.slotSetMailingDate(dt);
+            if (payload.contains("mailingDate")) dat.MailingDate = dt;
             if (!parseDate(payload, "dateFiled", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
-            if (payload.contains("dateFiled")) resp.slotSetDateFiled(dt);
-            if (payload.contains("fkResponseAsFiled")) resp.slotSetfkResponseAsFiled(static_cast<Key>(payload.value("fkResponseAsFiled").toDouble()));
-            if (payload.contains("fkActionDocument")) resp.slotSetfkActionDocument(static_cast<Key>(payload.value("fkActionDocument").toDouble()));
+            if (payload.contains("dateFiled")) dat.DateFiled = dt;
+            if (payload.contains("fkResponseAsFiled")) dat.fkResponseAsFiled = static_cast<Key>(payload.value("fkResponseAsFiled").toDouble());
+            if (payload.contains("fkActionDocument")) dat.fkActionDocument = static_cast<Key>(payload.value("fkActionDocument").toDouble());
+
+            QSqlDatabase db = QSqlDatabase::database();
+            bool tx = db.isValid() ? db.transaction() : false;
+            if (!resp.slotUpdate(dat)) { if (tx) db.rollback(); r.ok = false; r.errorCode = QStringLiteral("EUPDATE"); r.errorMessage = QStringLiteral("Failed to update response"); return r; }
+            if (tx) db.commit();
 
             const ResponseData rdat = Nutdb::GetResponse(id);
             r.ok = true;
@@ -3681,7 +3767,7 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         /*handler*/ [](const QJsonObject &){ QSqlQuery q(QSqlDatabase::database()); DispatchResult r; r.ok = true; QJsonArray items; if (q.exec(QStringLiteral("SELECT TaskId, fkTaskType, OldTaskId FROM task ORDER BY TaskId DESC LIMIT 500"))) { while (q.next()) items.append(QJsonObject{{"id", static_cast<double>(q.value(0).toUInt())}, {"fkTaskType", static_cast<double>(q.value(1).toUInt())}, {"oldTaskId", static_cast<double>(q.value(2).toUInt())}}); } r.result = QJsonObject{{"items", items}}; return r; }
     });
 
-    // task.update
+    // task.update: full-record update
     m_router.registerAction(QStringLiteral("task.update"), ActionSpec{
         /*fields*/ QList<FieldSpec>{
             FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
@@ -3701,33 +3787,34 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         },
         /*handler*/ [](const QJsonObject &payload){
             const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
-            Task task{id};
             DispatchResult r;
+            Task task{id};
             if (task.getId() == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Task not found"); return r; }
-            auto parseDate = [](const QJsonObject &obj, const char *key, QDate &out, QString &err) -> bool {
-                if (!obj.contains(key)) return true;
-                const QString s = obj.value(QString::fromUtf8(key)).toString();
-                const QDate d = QDate::fromString(s, Qt::ISODate);
-                if (!d.isValid()) { err = QStringLiteral("Invalid date for '%1'").arg(QString::fromUtf8(key)); return false; }
-                out = d; return true;
-            };
+            TaskData dat = Nutdb::GetTask(id);
+            if (dat.TaskId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Task not found"); return r; }
+            auto parseDate = [](const QJsonObject &obj, const char *key, QDate &out, QString &err) -> bool { if (!obj.contains(key)) return true; const QString s = obj.value(QString::fromUtf8(key)).toString(); const QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { err = QStringLiteral("Invalid date for '%1'").arg(QString::fromUtf8(key)); return false; } out = d; return true; };
             QString perr; QDate dt;
-            if (payload.contains("fkMatter")) task.SetfkMatter(static_cast<Key>(payload.value("fkMatter").toDouble()));
+            if (payload.contains("fkMatter")) dat.fkMatter = static_cast<Key>(payload.value("fkMatter").toDouble());
             if (!parseDate(payload, "dateAssigned", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
-            if (payload.contains("dateAssigned")) task.SetDateAssigned(dt);
-            if (payload.contains("fkDeadline")) task.SetfkDeadline(static_cast<Key>(payload.value("fkDeadline").toDouble()));
-            if (payload.contains("expectedFee")) task.SetExpectedFee(static_cast<float>(payload.value("expectedFee").toDouble()));
-            if (payload.contains("feePercent")) task.SetFeePercent(static_cast<float>(payload.value("feePercent").toDouble()));
+            if (payload.contains("dateAssigned")) dat.DateAssigned = dt;
+            if (payload.contains("fkDeadline")) dat.fkDeadline = static_cast<Key>(payload.value("fkDeadline").toDouble());
+            if (payload.contains("expectedFee")) dat.ExpectedFee = static_cast<int>(payload.value("expectedFee").toDouble());
+            if (payload.contains("feePercent")) dat.FeePercent = static_cast<int>(payload.value("feePercent").toDouble());
             if (!parseDate(payload, "approvalRequested", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
-            if (payload.contains("approvalRequested")) task.SetApprovalRequested(dt);
+            if (payload.contains("approvalRequested")) dat.ApprovalRequested = dt;
             if (!parseDate(payload, "approvalReceived", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
-            if (payload.contains("approvalReceived")) task.SetApprovalReceived(dt);
-            if (payload.contains("complete")) task.SetComplete(payload.value("complete").toBool());
-            if (payload.contains("fkWorkAttorney")) task.SetfkWorkAttorney(static_cast<Key>(payload.value("fkWorkAttorney").toDouble()));
-            if (payload.contains("fkParalegal")) task.SetfkParalegal(static_cast<Key>(payload.value("fkParalegal").toDouble()));
-            if (payload.contains("fkAuthorizationDocument")) task.SetfkAuthorizationDocument(static_cast<Key>(payload.value("fkAuthorizationDocument").toDouble()));
-            if (payload.contains("oldTaskId")) task.SetOldTaskId(static_cast<Key>(payload.value("oldTaskId").toDouble()));
-            if (payload.contains("fkTaskType")) task.SetfkTaskType(static_cast<Key>(payload.value("fkTaskType").toDouble()));
+            if (payload.contains("approvalReceived")) dat.ApprovalReceived = dt;
+            if (payload.contains("complete")) dat.Complete = payload.value("complete").toBool();
+            if (payload.contains("fkWorkAttorney")) dat.fkWorkAttorney = static_cast<Key>(payload.value("fkWorkAttorney").toDouble());
+            if (payload.contains("fkParalegal")) dat.fkParalegal = static_cast<Key>(payload.value("fkParalegal").toDouble());
+            if (payload.contains("fkAuthorizationDocument")) dat.fkAuthorizationDocument = static_cast<Key>(payload.value("fkAuthorizationDocument").toDouble());
+            if (payload.contains("oldTaskId")) dat.OldTaskId = static_cast<Key>(payload.value("oldTaskId").toDouble());
+            if (payload.contains("fkTaskType")) dat.fkTaskType = static_cast<Key>(payload.value("fkTaskType").toDouble());
+
+            QSqlDatabase db = QSqlDatabase::database();
+            bool tx = db.isValid() ? db.transaction() : false;
+            if (!task.Update(dat)) { if (tx) db.rollback(); r.ok = false; r.errorCode = QStringLiteral("EUPDATE"); r.errorMessage = QStringLiteral("Failed to update task"); return r; }
+            if (tx) db.commit();
 
             const TaskData t = Nutdb::GetTask(id);
             r.ok = true;
@@ -3784,7 +3871,7 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         }
     });
 
-    // trademarkMatter.update
+    // trademarkMatter.update: full-record update
     m_router.registerAction(QStringLiteral("trademarkMatter.update"), ActionSpec{
         /*fields*/ QList<FieldSpec>{
             FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
@@ -3807,43 +3894,35 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         },
         /*handler*/ [](const QJsonObject &payload){
             const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
-            TrademarkMatter tm{id};
-            DispatchResult r;
+            DispatchResult r; TrademarkMatter tm{id};
             if (tm.getId() == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("TrademarkMatter not found"); return r; }
-
-            auto parseDate = [](const QJsonObject &obj, const char *key, QDate &out, QString &err) -> bool {
-                if (!obj.contains(key)) return true;
-                const QString s = obj.value(QString::fromUtf8(key)).toString();
-                const QDate d = QDate::fromString(s, Qt::ISODate);
-                if (!d.isValid()) { err = QStringLiteral("Invalid date for '%1'").arg(QString::fromUtf8(key)); return false; }
-                out = d; return true;
-            };
+            TrademarkMatterData dat = Nutdb::GetTrademarkMatter(id);
+            if (dat.TrademarkMatterId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("TrademarkMatter not found"); return r; }
+            auto parseDate = [](const QJsonObject &obj, const char *key, QDate &out, QString &err) -> bool { if (!obj.contains(key)) return true; const QString s = obj.value(QString::fromUtf8(key)).toString(); const QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { err = QStringLiteral("Invalid date for '%1'").arg(QString::fromUtf8(key)); return false; } out = d; return true; };
             QString perr; QDate dt;
-            if (!parseDate(payload, "firstUseInCommerce", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
-            if (payload.contains("firstUseInCommerce")) tm.slotSetFirstUseInCommerce(dt);
-            if (payload.contains("internationalClass")) tm.slotSetInternationalClass(static_cast<int>(payload.value("internationalClass").toDouble()));
-            if (payload.contains("fkStatus")) tm.slotSetfkStatus(static_cast<Key>(payload.value("fkStatus").toDouble()));
-            if (payload.contains("serialNumber")) tm.slotSetSerialNumber(payload.value("serialNumber").toString());
-            if (payload.contains("registrationNumber")) tm.slotSetRegistrationNumber(payload.value("registrationNumber").toString());
-            if (!parseDate(payload, "publicationDate", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
-            if (payload.contains("publicationDate")) tm.slotSetPublicationDate(dt);
-            if (!parseDate(payload, "windowOpens", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
-            if (payload.contains("windowOpens")) tm.slotSetWindowOpens(dt);
-            if (!parseDate(payload, "nofeeWindowCloses", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
-            if (payload.contains("nofeeWindowCloses")) tm.slotSetNofeeWindowCloses(dt);
-            if (!parseDate(payload, "finalWindowCloses", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
-            if (payload.contains("finalWindowCloses")) tm.slotSetFinalWindowCloses(dt);
-            if (payload.contains("fkTrademarkExaminer")) tm.slotSetfkTrademarkExaminer(static_cast<Key>(payload.value("fkTrademarkExaminer").toDouble()));
-            if (payload.contains("fkFilingBasis")) tm.slotSetfkFilingBasis(static_cast<Key>(payload.value("fkFilingBasis").toDouble()));
-            if (payload.contains("fkTrademarkJurisdiction")) tm.slotSetfkTrademarkJurisdiction(static_cast<Key>(payload.value("fkTrademarkJurisdiction").toDouble()));
-            if (payload.contains("fkSpecimen")) tm.slotSetfkSpecimen(static_cast<Key>(payload.value("fkSpecimen").toDouble()));
-            if (payload.contains("fkEvidenceOfUse")) tm.slotSetfkEvidenceOfUse(static_cast<Key>(payload.value("fkEvidenceOfUse").toDouble()));
-            if (payload.contains("mark")) tm.slotSetMark(payload.value("mark").toString());
-            if (payload.contains("goodsServices")) tm.slotSetGoodsServices(payload.value("goodsServices").toString());
+            if (!parseDate(payload, "firstUseInCommerce", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; } if (payload.contains("firstUseInCommerce")) dat.FirstUseInCommerce = dt;
+            if (payload.contains("internationalClass")) dat.InternationalClass = static_cast<int>(payload.value("internationalClass").toDouble());
+            if (payload.contains("fkStatus")) dat.fkStatus = static_cast<Key>(payload.value("fkStatus").toDouble());
+            if (payload.contains("serialNumber")) dat.SerialNumber = payload.value("serialNumber").toString();
+            if (payload.contains("registrationNumber")) dat.RegistrationNumber = payload.value("registrationNumber").toString();
+            if (!parseDate(payload, "publicationDate", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; } if (payload.contains("publicationDate")) dat.PublicationDate = dt;
+            if (!parseDate(payload, "windowOpens", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; } if (payload.contains("windowOpens")) dat.WindowOpens = dt;
+            if (!parseDate(payload, "nofeeWindowCloses", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; } if (payload.contains("nofeeWindowCloses")) dat.NofeeWindowCloses = dt;
+            if (!parseDate(payload, "finalWindowCloses", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; } if (payload.contains("finalWindowCloses")) dat.FinalWindowCloses = dt;
+            if (payload.contains("fkTrademarkExaminer")) dat.fkTrademarkExaminer = static_cast<Key>(payload.value("fkTrademarkExaminer").toDouble());
+            if (payload.contains("fkFilingBasis")) dat.fkFilingBasis = static_cast<Key>(payload.value("fkFilingBasis").toDouble());
+            if (payload.contains("fkTrademarkJurisdiction")) dat.fkTrademarkJurisdiction = static_cast<Key>(payload.value("fkTrademarkJurisdiction").toDouble());
+            if (payload.contains("fkSpecimen")) dat.fkSpecimen = static_cast<Key>(payload.value("fkSpecimen").toDouble());
+            if (payload.contains("fkEvidenceOfUse")) dat.fkEvidenceOfUse = static_cast<Key>(payload.value("fkEvidenceOfUse").toDouble());
+            if (payload.contains("mark")) dat.Mark = payload.value("mark").toString();
+            if (payload.contains("goodsServices")) dat.GoodsServices = payload.value("goodsServices").toString();
+
+            QSqlDatabase db = QSqlDatabase::database(); bool tx = db.isValid() ? db.transaction() : false;
+            if (!tm.slotUpdate(dat)) { if (tx) db.rollback(); r.ok = false; r.errorCode = QStringLiteral("EUPDATE"); r.errorMessage = QStringLiteral("Failed to update trademarkMatter"); return r; }
+            if (tx) db.commit();
 
             const TrademarkMatterData m = Nutdb::GetTrademarkMatter(id);
-            r.ok = true;
-            r.result = QJsonObject{
+            r.ok = true; r.result = QJsonObject{
                 {"id", static_cast<double>(m.TrademarkMatterId)},
                 {"firstUseInCommerce", m.FirstUseInCommerce.toString(Qt::ISODate)},
                 {"internationalClass", m.InternationalClass},
@@ -3861,8 +3940,7 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
                 {"fkEvidenceOfUse", static_cast<double>(m.fkEvidenceOfUse)},
                 {"mark", m.Mark},
                 {"goodsServices", m.GoodsServices}
-            };
-            return r;
+            }; return r;
         }
     });
 
@@ -3897,7 +3975,7 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         }
     });
 
-    // patentMatter.update
+    // patentMatter.update: full-record update
     m_router.registerAction(QStringLiteral("patentMatter.update"), ActionSpec{
         /*fields*/ QList<FieldSpec>{
             FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
@@ -3920,40 +3998,32 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         /*handler*/ [](const QJsonObject &payload){
             const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
             DispatchResult r;
-            const PatentMatterData cur = Nutdb::GetPatentMatter(id);
-            if (cur.PatentMatterId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("PatentMatter not found"); return r; }
-
-            auto parseDate = [](const QJsonObject &obj, const char *key, QDate &out, QString &err) -> bool {
-                if (!obj.contains(key)) return true;
-                const QString s = obj.value(QString::fromUtf8(key)).toString();
-                const QDate d = QDate::fromString(s, Qt::ISODate);
-                if (!d.isValid()) { err = QStringLiteral("Invalid date for '%1'").arg(QString::fromUtf8(key)); return false; }
-                out = d; return true;
-            };
+            PatentMatterData dat = Nutdb::GetPatentMatter(id);
+            if (dat.PatentMatterId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("PatentMatter not found"); return r; }
+            auto parseDate = [](const QJsonObject &obj, const char *key, QDate &out, QString &err) -> bool { if (!obj.contains(key)) return true; const QString s = obj.value(QString::fromUtf8(key)).toString(); const QDate d = QDate::fromString(s, Qt::ISODate); if (!d.isValid()) { err = QStringLiteral("Invalid date for '%1'").arg(QString::fromUtf8(key)); return false; } out = d; return true; };
             QString perr; QDate dt;
-            if (!parseDate(payload, "filingDate", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
-            if (payload.contains("filingDate")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("FilingDate"), id, dt.toString(Qt::ISODate));
-            if (payload.contains("applicationSerialNumber")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("ApplicationSerialNumber"), id, payload.value("applicationSerialNumber").toString());
-            if (payload.contains("confirmationNumber")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("ConfirmationNumber"), id, payload.value("confirmationNumber").toString());
-            if (payload.contains("artUnit")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("ArtUnit"), id, payload.value("artUnit").toString());
-            if (payload.contains("patentNumber")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("PatentNumber"), id, payload.value("patentNumber").toString());
-            if (payload.contains("fkExaminer")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("fkExaminer"), id, QString::number(static_cast<quint64>(payload.value("fkExaminer").toDouble())));
-            if (payload.contains("fkFirstInventor")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("fkFirstInventor"), id, QString::number(static_cast<quint64>(payload.value("fkFirstInventor").toDouble())));
-            if (payload.contains("fkSupervisoryExaminer")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("fkSupervisoryExaminer"), id, QString::number(static_cast<quint64>(payload.value("fkSupervisoryExaminer").toDouble())));
-            if (payload.contains("fkApplicant")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("fkApplicant"), id, QString::number(static_cast<quint64>(payload.value("fkApplicant").toDouble())));
-            if (!parseDate(payload, "barDate", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
-            if (payload.contains("barDate")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("BarDate"), id, dt.toString(Qt::ISODate));
-            if (!parseDate(payload, "criticalDate", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
-            if (payload.contains("criticalDate")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("CriticalDate"), id, dt.toString(Qt::ISODate));
-            if (!parseDate(payload, "dateIssued", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; }
-            if (payload.contains("dateIssued")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("DateIssued"), id, dt.toString(Qt::ISODate));
-            if (payload.contains("fkSpecification")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("fkSpecification"), id, QString::number(static_cast<quint64>(payload.value("fkSpecification").toDouble())));
-            if (payload.contains("fkDrawings")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("fkDrawings"), id, QString::number(static_cast<quint64>(payload.value("fkDrawings").toDouble())));
-            if (payload.contains("fkAsFiledClaims")) Nutdb::UpdateField(QStringLiteral("patentMatter"), QStringLiteral("fkAsFiledClaims"), id, QString::number(static_cast<quint64>(payload.value("fkAsFiledClaims").toDouble())));
+            if (!parseDate(payload, "filingDate", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; } if (payload.contains("filingDate")) dat.FilingDate = dt;
+            if (payload.contains("applicationSerialNumber")) dat.ApplicationSerialNumber = payload.value("applicationSerialNumber").toString();
+            if (payload.contains("confirmationNumber")) dat.ConfirmationNumber = payload.value("confirmationNumber").toString();
+            if (payload.contains("artUnit")) dat.ArtUnit = payload.value("artUnit").toString();
+            if (payload.contains("patentNumber")) dat.PatentNumber = payload.value("patentNumber").toString();
+            if (payload.contains("fkExaminer")) dat.fkExaminer = static_cast<Key>(payload.value("fkExaminer").toDouble());
+            if (payload.contains("fkFirstInventor")) dat.fkFirstInventor = static_cast<Key>(payload.value("fkFirstInventor").toDouble());
+            if (payload.contains("fkSupervisoryExaminer")) dat.fkSupervisoryExaminer = static_cast<Key>(payload.value("fkSupervisoryExaminer").toDouble());
+            if (payload.contains("fkApplicant")) dat.fkApplicant = static_cast<Key>(payload.value("fkApplicant").toDouble());
+            if (!parseDate(payload, "barDate", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; } if (payload.contains("barDate")) dat.BarDate = dt;
+            if (!parseDate(payload, "criticalDate", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; } if (payload.contains("criticalDate")) dat.CriticalDate = dt;
+            if (!parseDate(payload, "dateIssued", dt, perr)) { r.ok = false; r.errorCode = QStringLiteral("EBADREQ"); r.errorMessage = perr; return r; } if (payload.contains("dateIssued")) dat.DateIssued = dt;
+            if (payload.contains("fkSpecification")) dat.fkSpecification = static_cast<Key>(payload.value("fkSpecification").toDouble());
+            if (payload.contains("fkDrawings")) dat.fkDrawings = static_cast<Key>(payload.value("fkDrawings").toDouble());
+            if (payload.contains("fkAsFiledClaims")) dat.fkAsFiledClaims = static_cast<Key>(payload.value("fkAsFiledClaims").toDouble());
+
+            QSqlDatabase db = QSqlDatabase::database(); bool tx = db.isValid() ? db.transaction() : false;
+            if (!Nutdb::UpdatePatentMatter(dat)) { if (tx) db.rollback(); r.ok = false; r.errorCode = QStringLiteral("EUPDATE"); r.errorMessage = QStringLiteral("Failed to update patentMatter"); return r; }
+            if (tx) db.commit();
 
             const PatentMatterData m = Nutdb::GetPatentMatter(id);
-            r.ok = true;
-            r.result = QJsonObject{
+            r.ok = true; r.result = QJsonObject{
                 {"id", static_cast<double>(m.PatentMatterId)},
                 {"filingDate", m.FilingDate.toString(Qt::ISODate)},
                 {"applicationSerialNumber", m.ApplicationSerialNumber},
@@ -3970,8 +4040,7 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
                 {"fkSpecification", static_cast<double>(m.fkSpecification)},
                 {"fkDrawings", static_cast<double>(m.fkDrawings)},
                 {"fkAsFiledClaims", static_cast<double>(m.fkAsFiledClaims)}
-            };
-            return r;
+            }; return r;
         }
     });
 
@@ -4198,7 +4267,7 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         }
     });
 
-    // matter.update: updates provided fields; returns updated record
+    // matter.update: full-record update in one pass
     m_router.registerAction(QStringLiteral("matter.update"), ActionSpec{
         /*fields*/ QList<FieldSpec>{
             FieldSpec{QStringLiteral("id"), QJsonValue::Double, true},
@@ -4216,38 +4285,28 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         },
         /*handler*/ [](const QJsonObject &payload){
             const Key id = static_cast<Key>(payload.value(QStringLiteral("id")).toDouble());
-            Matter matter{id};
             DispatchResult r;
-            if (matter.getId() == 0) {
-                r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Matter not found");
-                return r;
-            }
+            Matter matter{id};
+            if (matter.getId() == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Matter not found"); return r; }
+            MatterData dat = Nutdb::GetMatter(id);
+            if (dat.MatterId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("Matter not found"); return r; }
+            if (payload.contains("fkParent")) dat.fkParent = static_cast<Key>(payload.value("fkParent").toDouble());
+            if (payload.contains("attorneyDocketNumber")) dat.AttorneyDocketNumber = payload.value("attorneyDocketNumber").toString();
+            if (payload.contains("clientDocketNumber")) dat.ClientDocketNumber = payload.value("clientDocketNumber").toString();
+            if (payload.contains("title")) dat.Title = payload.value("title").toString();
+            if (payload.contains("fkClient")) dat.fkClient = static_cast<Key>(payload.value("fkClient").toDouble());
+            if (payload.contains("fkAssigningFirm")) dat.fkAssigningFirm = static_cast<Key>(payload.value("fkAssigningFirm").toDouble());
+            if (payload.contains("fkDefaultWorkAttorney")) dat.fkDefaultWorkAttorney = static_cast<Key>(payload.value("fkDefaultWorkAttorney").toDouble());
+            if (payload.contains("fkDefaultParalegal")) dat.fkDefaultParalegal = static_cast<Key>(payload.value("fkDefaultParalegal").toDouble());
+            if (payload.contains("fkKeyDocument")) dat.fkKeyDocument = static_cast<Key>(payload.value("fkKeyDocument").toDouble());
+            if (payload.contains("fkMatterJurisdiction")) dat.fkMatterJurisdiction = static_cast<Key>(payload.value("fkMatterJurisdiction").toDouble());
+            if (payload.contains("oldMatterId")) dat.OldMatterId = static_cast<Key>(payload.value("oldMatterId").toDouble());
 
-            // Apply provided fields with explicit type checks
-            if (payload.contains("fkParent") && payload.value("fkParent").isDouble())
-                matter.SetfkParent(static_cast<Key>(payload.value("fkParent").toDouble()));
-            if (payload.contains("attorneyDocketNumber") && payload.value("attorneyDocketNumber").isString())
-                matter.SetAttorneyDocketNumber(payload.value("attorneyDocketNumber").toString());
-            if (payload.contains("clientDocketNumber") && payload.value("clientDocketNumber").isString())
-                matter.SetClientDocketNumber(payload.value("clientDocketNumber").toString());
-            if (payload.contains("title") && payload.value("title").isString())
-                matter.SetTitle(payload.value("title").toString());
-            if (payload.contains("fkClient") && payload.value("fkClient").isDouble())
-                matter.SetfkClient(static_cast<Key>(payload.value("fkClient").toDouble()));
-            if (payload.contains("fkAssigningFirm") && payload.value("fkAssigningFirm").isDouble())
-                matter.SetfkAssigningFirm(static_cast<Key>(payload.value("fkAssigningFirm").toDouble()));
-            if (payload.contains("fkDefaultWorkAttorney") && payload.value("fkDefaultWorkAttorney").isDouble())
-                matter.SetfkDefaultWorkAttorney(static_cast<Key>(payload.value("fkDefaultWorkAttorney").toDouble()));
-            if (payload.contains("fkDefaultParalegal") && payload.value("fkDefaultParalegal").isDouble())
-                matter.SetfkDefaultParalegal(static_cast<Key>(payload.value("fkDefaultParalegal").toDouble()));
-            if (payload.contains("fkKeyDocument") && payload.value("fkKeyDocument").isDouble())
-                matter.SetfkKeyDocument(static_cast<Key>(payload.value("fkKeyDocument").toDouble()));
-            if (payload.contains("fkMatterJurisdiction") && payload.value("fkMatterJurisdiction").isDouble())
-                matter.SetfkMatterJurisdiction(static_cast<Key>(payload.value("fkMatterJurisdiction").toDouble()));
-            if (payload.contains("oldMatterId") && payload.value("oldMatterId").isDouble())
-                matter.SetOldId(static_cast<Key>(payload.value("oldMatterId").toDouble()));
+            QSqlDatabase db = QSqlDatabase::database();
+            bool tx = db.isValid() ? db.transaction() : false;
+            if (!matter.Update(dat)) { if (tx) db.rollback(); r.ok = false; r.errorCode = QStringLiteral("EUPDATE"); r.errorMessage = QStringLiteral("Failed to update matter"); return r; }
+            if (tx) db.commit();
 
-            // Return fresh record
             const MatterData m = Nutdb::GetMatter(id);
             r.ok = true;
             r.result = QJsonObject{

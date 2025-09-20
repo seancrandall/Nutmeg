@@ -1,4 +1,6 @@
 #include "appointment.h"
+#include "logger.h"
+#include <QDateTime>
 
 namespace Nutmeg
 {
@@ -19,6 +21,7 @@ Appointment::Appointment(Key apptid)
         }
     }
     // If not in cache, proceed with initialization
+    Logger::LogMessage(QString("[Appointment] ctor(id=%1) initializing").arg(apptid));
     InitializeAppointment(apptid);
 }
 
@@ -48,13 +51,24 @@ Appointment::Appointment(DateTime apptime, Key taskId) : Nutmeg::Object{}
 
 bool Appointment::Update(AppointmentData dat)
 {
+    Logger::LogMessage(QString("[Appointment] Update requested id=%1 time=%2 fkType=%3 complete=%4")
+                       .arg(dat.AppointmentId)
+                       .arg(dat.AppointmentTime.toString(Qt::ISODate))
+                       .arg(dat.fkAppointmentType)
+                       .arg(dat.Complete));
     bool result = Nutdb::UpdateAppointment(dat);
+    Logger::LogMessage(QString("[Appointment] Update -> Nutdb::UpdateAppointment returned %1").arg(result));
     if(!result) return false;
 
     result = Object::Commit();
+    Logger::LogMessage(QString("[Appointment] Update -> Object::Commit returned %1").arg(result));
     if(!result) return false;
 
-    return InitializeAppointment(dat.AppointmentId);
+    const bool reloaded = InitializeAppointment(dat.AppointmentId);
+    Logger::LogMessage(QString("[Appointment] Update -> InitializeAppointment(%1) returned %2")
+                       .arg(dat.AppointmentId)
+                       .arg(reloaded));
+    return reloaded;
 }
 
 bool Appointment::SetId(Key newid)
@@ -64,6 +78,7 @@ bool Appointment::SetId(Key newid)
 
 bool Appointment::Commit()
 {
+    Logger::LogMessage(QString("[Appointment] Commit id=%1").arg(mDat.AppointmentId));
     return Update(mDat);
 }
 
@@ -99,50 +114,91 @@ bool Appointment::getConfirmed()
 
 bool Appointment::SetAppointmentTime(DateTime newappt)
 {
+    Logger::LogMessage(QString("[Appointment] SetAppointmentTime id=%1 new=%2")
+                       .arg(mDat.AppointmentId)
+                       .arg(newappt.toString(Qt::ISODate)));
     bool result = WriteDateTime(appointmentTableName, "AppointmentTime", newappt);
+    Logger::LogMessage(QString("[Appointment] SetAppointmentTime -> write %1").arg(result));
     if(result) mDat.AppointmentTime = newappt;
     return result;
 }
 
 bool Appointment::SetfkAppointmentType(Key newfk)
 {
+    Logger::LogMessage(QString("[Appointment] SetfkAppointmentType id=%1 new=%2")
+                       .arg(mDat.AppointmentId)
+                       .arg(newfk));
     bool result = WriteKey(appointmentTableName, "fkAppointmentType", newfk);
+    Logger::LogMessage(QString("[Appointment] SetfkAppointmentType -> write %1").arg(result));
     if(result) mDat.fkAppointmentType = newfk;
     return result;
 }
 
 void Appointment::setNeedsAgenda(bool val)
 {
-    SetFlagValue("NeedsAgenda", val);
+    const Key assoc = getAssociatedObject();
+    Logger::LogMessage(QString("[Appointment] setNeedsAgenda id=%1 assocObject=%2 val=%3")
+                       .arg(mDat.AppointmentId)
+                       .arg(assoc)
+                       .arg(val));
+    bool ok = SetFlagValue("NeedsAgenda", val);
+    Logger::LogMessage(QString("[Appointment] setNeedsAgenda -> SetFlagValue result=%1").arg(ok));
 }
 
 void Appointment::setAgendaSent(bool val)
 {
-    SetFlagValue("AgendaSent", val);
+    const Key assoc = getAssociatedObject();
+    Logger::LogMessage(QString("[Appointment] setAgendaSent id=%1 assocObject=%2 val=%3")
+                       .arg(mDat.AppointmentId)
+                       .arg(assoc)
+                       .arg(val));
+    bool ok = SetFlagValue("AgendaSent", val);
+    Logger::LogMessage(QString("[Appointment] setAgendaSent -> SetFlagValue result=%1").arg(ok));
 }
 
 void Appointment::setComplete(bool val)
 {
+    Logger::LogMessage(QString("[Appointment] setComplete id=%1 val=%2")
+                       .arg(mDat.AppointmentId)
+                       .arg(val));
     bool result = WriteBoolean(appointmentTableName, "Complete", val);
+    Logger::LogMessage(QString("[Appointment] setComplete -> write %1").arg(result));
     if(result) mDat.Complete = val;
 }
 
 void Appointment::setConfirmed(bool val)
 {
-    SetFlagValue("Confirmed", val);
+    const Key assoc = getAssociatedObject();
+    Logger::LogMessage(QString("[Appointment] setConfirmed id=%1 assocObject=%2 val=%3")
+                       .arg(mDat.AppointmentId)
+                       .arg(assoc)
+                       .arg(val));
+    bool ok = SetFlagValue("Confirmed", val);
+    Logger::LogMessage(QString("[Appointment] setConfirmed -> SetFlagValue result=%1").arg(ok));
 }
 
 bool Appointment::InitializeAppointment(Key id)
 {
+    Logger::LogMessage(QString("[Appointment] InitializeAppointment(%1)").arg(id));
     mDat = Nutdb::GetAppointment(id);
     if(mDat.AppointmentId == 0)
     {
+        Logger::LogMessage(QString("[Appointment] InitializeAppointment: not found"));
         return false;
     }
 
     bNeedsAgenda = getNeedsAgenda();
     bAgendaSent = getAgendaSent();
     bConfirmed = getConfirmed();
+    Logger::LogMessage(QString("[Appointment] Initialized id=%1 time=%2 fkType=%3 complete=%4 flags{NeedsAgenda=%5, AgendaSent=%6, Confirmed=%7} assocObject=%8")
+                       .arg(mDat.AppointmentId)
+                       .arg(mDat.AppointmentTime.toString(Qt::ISODate))
+                       .arg(mDat.fkAppointmentType)
+                       .arg(mDat.Complete)
+                       .arg(bNeedsAgenda)
+                       .arg(bAgendaSent)
+                       .arg(bConfirmed)
+                       .arg(getAssociatedObject()));
 
     return Object::SetId(id);
 }

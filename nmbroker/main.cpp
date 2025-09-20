@@ -233,7 +233,7 @@ int main(int argc, char *argv[])
     if (parser.isSet(dbPassOpt)) dbPass = parser.value(dbPassOpt);
     if (parser.isSet(dbNameOpt)) dbName = parser.value(dbNameOpt);
 
-    // Establish default DB connection used by all models/queries
+    // Establish default DB connection used by all models/queries (non-fatal on failure)
     qInfo() << "DB config:" << dbHost << ":" << dbPort << ", db=" << dbName << ", user=" << dbUser;
     Nutmeg::DatabaseConnection db;
     db.setServer(dbHost);
@@ -242,8 +242,7 @@ int main(int argc, char *argv[])
     db.setUsername(dbUser);
     db.setPassword(dbPass);
     if (!db.Connect()) {
-        qCritical() << "Database connection failed; check credentials and server.";
-        return 4;
+        qWarning() << "Database connection failed; starting broker anyway. DB-backed actions will return errors.";
     }
 
     Nutmeg::WebSocketServer wsServer(bindAddr, wsPort);

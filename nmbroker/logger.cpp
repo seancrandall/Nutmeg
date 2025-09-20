@@ -14,17 +14,12 @@ unsigned int Logger::preferredLogLines = 1000;
 const QString Logger::LogMessage(const QString& message) {
     // Create a time-stamped message
     QString timeStampedMessage = QString();
-
-#ifdef QT_DEBUG
-    timeStampedMessage += "[DEBUG] ";
-#endif
     timeStampedMessage += QString("[%1] %2")
                             .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm"))
                             .arg(message);
 
-#ifdef QT_DEBUG
-    qDebug() << timeStampedMessage;
-#endif
+    // Also print to console immediately for operator feedback
+    qInfo() << timeStampedMessage;
            // Get the log file path
     QString logFilePath = getLogFilePath();
 
@@ -125,4 +120,3 @@ QString Logger::getLogFilePath() {
 }
 
 } // namespace Nutmeg
-
