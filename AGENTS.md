@@ -150,3 +150,18 @@ Working Guidelines
 Notes for Agents
 - If you add or modify files, keep this AGENTS.md updated with any conventions or architectural decisions.
 - See `README.md` for a brief project overview.
+
+Recent Backend Changes (WebSocket)
+- Implemented create endpoints backed by Nutdb::Insert* in `nmbroker/websocketserver.cpp` (e.g., appointment, filing/response variants, matter variants, person/role variants, note, object, tag, task variants, etc.).
+- Create handlers now return full-record readback by calling the corresponding Nutdb getters when available.
+- Added missing Nutdb getters in `nmbroker/dbaccess/nutdb.{h,cpp}` to support full readback:
+  - `GetNote`, `GetPatentFiling`, `GetPatentResponse`, `GetTrademarkFiling`, `GetTrademarkResponse`.
+- Added new table endpoints:
+  - `patentFiling.get|list`, `patentResponse.get|list`, `trademarkFiling.get|list`, `trademarkResponse.get|list`.
+- Updated `docs/PROTOCOL.md` to document all new create/get/list actions and summarize additional gets and lists.
+- Verified debug build with Clang and Qt 6.8; resolved compile/link issues encountered during integration.
+
+Endpoint Behavior Notes
+- Dates in request payloads must be ISO-8601 (`YYYY-MM-DD` for dates, full ISO for datetimes). Invalid dates → `EBADREQ`.
+- Create endpoints prefer full-record response via `Nutdb::Get*`; when a domain getter is not applicable, minimal table shape is returned.
+- List endpoints for new tables return `{ items: [...] }` with essential columns and stable field names matching their `.get` counterparts.
