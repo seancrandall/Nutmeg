@@ -3709,6 +3709,24 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         }
     });
 
+    // patentFiling.list
+    m_router.registerAction(QStringLiteral("patentFiling.list"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{},
+        /*handler*/ [](const QJsonObject &){
+            QSqlQuery q(QSqlDatabase::database());
+            DispatchResult r; r.ok = true; QJsonArray items;
+            if (q.exec(QStringLiteral("SELECT PatentFilingId, fkInventorInterview FROM patentFiling ORDER BY PatentFilingId"))) {
+                while (q.next()) {
+                    items.append(QJsonObject{
+                        {"id", static_cast<double>(q.value(0).toUInt())},
+                        {"fkInventorInterview", static_cast<double>(q.value(1).toUInt())}
+                    });
+                }
+            }
+            r.result = QJsonObject{{"items", items}}; return r;
+        }
+    });
+
     // patentMatter.create
     m_router.registerAction(QStringLiteral("patentMatter.create"), ActionSpec{
         /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("docketNumber"), QJsonValue::String, true} },
@@ -3738,6 +3756,27 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
                 {"fkClaimAmendment", static_cast<double>(pr.fkClaimAmendment)}
             };
             return r;
+        }
+    });
+
+    // patentResponse.list
+    m_router.registerAction(QStringLiteral("patentResponse.list"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{},
+        /*handler*/ [](const QJsonObject &){
+            QSqlQuery q(QSqlDatabase::database());
+            DispatchResult r; r.ok = true; QJsonArray items;
+            if (q.exec(QStringLiteral("SELECT PatentResponseId, fkOfficeAction, fkAsFiledResponse, fkLastFiledResponse, fkClaimAmendment FROM patentResponse ORDER BY PatentResponseId"))) {
+                while (q.next()) {
+                    items.append(QJsonObject{
+                        {"id", static_cast<double>(q.value(0).toUInt())},
+                        {"fkOfficeAction", static_cast<double>(q.value(1).toUInt())},
+                        {"fkAsFiledResponse", static_cast<double>(q.value(2).toUInt())},
+                        {"fkLastFiledResponse", static_cast<double>(q.value(3).toUInt())},
+                        {"fkClaimAmendment", static_cast<double>(q.value(4).toUInt())}
+                    });
+                }
+            }
+            r.result = QJsonObject{{"items", items}}; return r;
         }
     });
 
@@ -3819,6 +3858,21 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
         }
     });
 
+    // trademarkFiling.list
+    m_router.registerAction(QStringLiteral("trademarkFiling.list"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{},
+        /*handler*/ [](const QJsonObject &){
+            QSqlQuery q(QSqlDatabase::database());
+            DispatchResult r; r.ok = true; QJsonArray items;
+            if (q.exec(QStringLiteral("SELECT TrademarkFilingId FROM trademarkFiling ORDER BY TrademarkFilingId"))) {
+                while (q.next()) {
+                    items.append(QJsonObject{{"id", static_cast<double>(q.value(0).toUInt())}});
+                }
+            }
+            r.result = QJsonObject{{"items", items}}; return r;
+        }
+    });
+
     // trademarkMatter.create
     m_router.registerAction(QStringLiteral("trademarkMatter.create"), ActionSpec{
         /*fields*/ QList<FieldSpec>{ FieldSpec{QStringLiteral("docketNumber"), QJsonValue::String, true} },
@@ -3840,6 +3894,21 @@ WebSocketServer::WebSocketServer(const QHostAddress &addr, quint16 port, QObject
             DispatchResult r;
             if (tr.TrademarkResponseId == 0) { r.ok = false; r.errorCode = QStringLiteral("ENOTFOUND"); r.errorMessage = QStringLiteral("TrademarkResponse not found"); return r; }
             r.ok = true; r.result = QJsonObject{{"id", static_cast<double>(tr.TrademarkResponseId)}, {"fkOfficeAction", static_cast<double>(tr.fkOfficeAction)}}; return r;
+        }
+    });
+
+    // trademarkResponse.list
+    m_router.registerAction(QStringLiteral("trademarkResponse.list"), ActionSpec{
+        /*fields*/ QList<FieldSpec>{},
+        /*handler*/ [](const QJsonObject &){
+            QSqlQuery q(QSqlDatabase::database());
+            DispatchResult r; r.ok = true; QJsonArray items;
+            if (q.exec(QStringLiteral("SELECT TrademarkResponseId, fkOfficeAction FROM trademarkResponse ORDER BY TrademarkResponseId"))) {
+                while (q.next()) {
+                    items.append(QJsonObject{{"id", static_cast<double>(q.value(0).toUInt())}, {"fkOfficeAction", static_cast<double>(q.value(1).toUInt())}});
+                }
+            }
+            r.result = QJsonObject{{"items", items}}; return r;
         }
     });
 

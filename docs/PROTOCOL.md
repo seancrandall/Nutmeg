@@ -365,6 +365,8 @@ Batch Models — Tables and Views (lightweight)
     - `filingIncompleteView.get|list` (viewFilingsIncomplete)
     - `filingTaskType.get|list` (viewFilingTaskTypes)
     - `filingType.get|list` (viewFilingTypes)
+    - `patentFiling.get|list` (table)
+    - `trademarkFiling.get|list` (table)
   - Matters
     - `matterView.get|list` (viewMatters)
     - `patentMatterView.get|list` (viewPatentMatters)
@@ -373,6 +375,8 @@ Batch Models — Tables and Views (lightweight)
     - `responseView.get|list` (viewResponses)
     - `responsesIncompleteView.get|list` (viewResponsesIncomplete)
     - `responseTaskTypeView.get|list` (viewResponseTaskTypes)
+    - `patentResponse.get|list` (table)
+    - `trademarkResponse.get|list` (table)
   - Dashboards
     - `filingsDashboardEntry.get|list` (filingsDashboardComplete) — list supports `clientEntityId?`, `withParalegal?`, `needsExaminerInterview?`, `limit?`, `offset?`
     - `responsesDashboardEntry.get|list` (responsesDashboardComplete) — list supports `clientEntityId?`, `withParalegal?`, `limit?`, `offset?`
