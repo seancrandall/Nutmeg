@@ -194,6 +194,7 @@ class Nutdb
     static QList<TagData> GetObjectTags(Key objectId);
     static QList<Key> GetTagObjects(const QString &tagText);
     static PatentMatterData GetPatentMatter(Key id);
+    static PatentFilingData GetPatentFiling(Key id);
     static PatentResponseData GetPatentResponse(Key id);
     static PersonData GetPerson(Key id);
     static PortfolioData GetPortfolio(Key id);

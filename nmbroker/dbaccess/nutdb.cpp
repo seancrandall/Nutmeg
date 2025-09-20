@@ -1000,6 +1000,63 @@ FilingData Nutdb::GetFiling(Key id)
     return dat;
 }
 
+NoteData Nutdb::GetNote(Key id)
+{
+    NoteData dat;
+    QSqlRecord rec = GetRecord("note", id);
+    if (!mLastOperationSuccessful || rec.isEmpty())
+        return dat;
+    dat.NoteId = rec.KeyField("NoteId");
+    dat.Content = rec.StringField("Content");
+    return dat;
+}
+
+PatentFilingData Nutdb::GetPatentFiling(Key id)
+{
+    PatentFilingData dat;
+    QSqlRecord rec = GetRecord("patentFiling", id);
+    if (!mLastOperationSuccessful || rec.isEmpty())
+        return dat;
+    dat.PatentFilingId = rec.KeyField("PatentFilingId");
+    dat.fkInventorInterview = rec.KeyField("fkInventorInterview");
+    return dat;
+}
+
+PatentResponseData Nutdb::GetPatentResponse(Key id)
+{
+    PatentResponseData dat;
+    QSqlRecord rec = GetRecord("patentResponse", id);
+    if (!mLastOperationSuccessful || rec.isEmpty())
+        return dat;
+    dat.PatentResponseId = rec.KeyField("PatentResponseId");
+    dat.fkOfficeAction = rec.KeyField("fkOfficeAction");
+    dat.fkAsFiledResponse = rec.KeyField("fkAsFiledResponse");
+    dat.fkLastFiledResponse = rec.KeyField("fkLastFiledResponse");
+    dat.fkClaimAmendment = rec.KeyField("fkClaimAmendment");
+    return dat;
+}
+
+TrademarkFilingData Nutdb::GetTrademarkFiling(Key id)
+{
+    TrademarkFilingData dat;
+    QSqlRecord rec = GetRecord("trademarkFiling", id);
+    if (!mLastOperationSuccessful || rec.isEmpty())
+        return dat;
+    dat.TrademarkFilingId = rec.KeyField("TrademarkFilingId");
+    return dat;
+}
+
+TrademarkResponseData Nutdb::GetTrademarkResponse(Key id)
+{
+    TrademarkResponseData dat;
+    QSqlRecord rec = GetRecord("trademarkResponse", id);
+    if (!mLastOperationSuccessful || rec.isEmpty())
+        return dat;
+    dat.TrademarkResponseId = rec.KeyField("TrademarkResponseId");
+    dat.fkOfficeAction = rec.KeyField("fkOfficeAction");
+    return dat;
+}
+
 bool Nutdb::GetFlag(Key objectId, QString camelCase)
 {
     Logger::LogMessage(QString("[Nutdb] GetFlag objectId=%1 flag=%2").arg(objectId).arg(camelCase));
